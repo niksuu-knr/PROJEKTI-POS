@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <title>Kassaohjelma Demo</title>
+    <style>
+        body { font-family: sans-serif; display: grid; grid-template-columns: 200px 1fr 300px; height: 100vh; margin: 0; background: #f4f4f4; }
+        
+        /* Kategoriat */
+        nav { background: #003399; color: white; padding: 10px; }
+        nav button { width: 100%; padding: 15px; margin-bottom: 5px; cursor: pointer; background: #0044cc; border: 1px solid #ffffff33; color: white; font-weight: bold; }
+
+        /* Tuoteruudukko */
+        main { padding: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); grid-gap: 10px; align-content: start; }
+        .product-btn { height: 100px; background: white; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .product-btn:active { background: #e0e0e0; transform: scale(0.95); }
+
+        /* Ostoskori */
+        aside { background: white; border-left: 2px solid #ccc; display: flex; flex-direction: column; }
+        .cart-list { flex-grow: 1; padding: 10px; overflow-y: auto; }
+        .total-area { padding: 20px; background: #eee; font-size: 1.5rem; font-weight: bold; text-align: center; }
+        .checkout-btn { background: #28a745; color: white; border: none; padding: 20px; font-size: 1.2rem; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <h3>Kategoriat</h3>
+        <button>PATJAT</button>
+        <button>PEITOT</button>
+        <button>TYYNYT</button>
+        <button>PUUTARHA</button>
+    </nav>
+
+    <main id="product-grid">
+        <!-- Tuotteet generoidaan tässä tai haetaan JS:llä -->
+        <button class="product-btn" onclick="addToCart('GOLD F30', 450)">GOLD F30<br>450€</button>
+        <button class="product-btn" onclick="addToCart('PLUS S20', 299)">PLUS S20<br>299€</button>
+        <button class="product-btn" onclick="addToCart('BASIC B10', 120)">BASIC B10<br>120€</button>
+        <button class="product-btn" onclick="addToCart('Tyyny LOKKA', 15)">LOKKA<br>15€</button>
+    </main>
+
+    <aside>
+        <div class="cart-list" id="cart">
+            <h4>Ostoskori</h4>
+            <hr>
+        </div>
+        <div class="total-area">
+            Yhteensä: <span id="total">0</span>€
+        </div>
+        <button class="checkout-btn">MAKSA (F12)</button>
+    </aside>
+
+    <script>
+        let total = 0;
+        function addToCart(name, price) {
+            const cart = document.getElementById('cart');
+            const item = document.createElement('p');
+            item.innerHTML = `<strong>${name}</strong> - ${price}€`;
+            cart.appendChild(item);
+            
+            total += price;
+            document.getElementById('total').innerText = total;
+        }
+    </script>
+</body>
+</html>
