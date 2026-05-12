@@ -2,28 +2,28 @@
 <html lang="fi">
 <head>
     <meta charset="UTF-8">
-    <title>KASSA</title>
+    <title>KASSAOHJELMA</title>
     <style>
         :root {
             --k-orange: #ff6600; --k-blue: #004593; --bg-grey: #d1d1d1;
             --border-color: #888; --danger: #cc0000; --success: #28a745;
         }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg-grey); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
-        
         header { background: var(--k-blue); color: white; padding: 5px 15px; display: flex; justify-content: space-between; align-items: center; height: 40px; font-weight: bold; }
         .main-container { display: flex; flex: 1; gap: 5px; padding: 5px; height: calc(100vh - 75px); }
 
-        /* Kuitin ulkoasu ja navigointi */
+        /* Kuittialue */
         .left-panel { width: 380px; display: flex; flex-direction: column; }
         .receipt-area { flex: 1; background: white; border: 1px solid var(--border-color); display: flex; flex-direction: column; overflow: hidden; }
         .receipt-info { background: #eee; padding: 5px; font-size: 0.8rem; border-bottom: 1px solid #ccc; display: flex; justify-content: space-between; }
-        .receipt-content { flex: 1; overflow-y: auto; font-family: 'Consolas', monospace; padding: 5px; font-size: 0.9rem; }
-        .receipt-row { display: flex; justify-content: space-between; padding: 6px 8px; border-bottom: 1px solid #eee; cursor: pointer; }
+        .receipt-content { flex: 1; overflow-y: auto; font-family: 'Consolas', monospace; padding: 5px; font-size: 0.85rem; }
+        .receipt-row { padding: 6px 8px; border-bottom: 1px solid #eee; cursor: pointer; }
         .receipt-row.selected { background: var(--k-orange); color: white; }
+        .row-main { display: flex; justify-content: space-between; font-weight: bold; }
+        .row-details { font-size: 0.75rem; color: #666; font-style: italic; }
+        .selected .row-details { color: white; }
         
         .total-row { display: flex; justify-content: space-between; font-size: 2.2rem; font-weight: bold; color: var(--k-blue); padding: 10px; background: #f0f0f0; border-top: 1px solid #ccc; }
-        .total-row.change-mode { color: var(--danger); background: #fff3f3; }
-
         .input-display { background: #1a1a1a; color: #0f0; padding: 10px; text-align: right; font-size: 2rem; font-family: monospace; margin: 5px 0; height: 45px; display: flex; justify-content: space-between; align-items: center; border: 2px inset #555; }
         #mode-label { font-size: 0.8rem; color: #ff0; text-transform: uppercase; }
 
@@ -32,34 +32,42 @@
         .num-btn.blue { background: var(--k-blue); color: white; }
         .num-btn.orange { background: var(--k-orange); color: white; }
 
+        /* Keskipaneeli */
         .center-panel { flex: 1; display: flex; flex-direction: column; gap: 5px; }
-        .product-grid { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(5, 1fr); gap: 5px; }
-        .product-btn { background: white; border: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; font-weight: bold; cursor: pointer; font-size: 0.8rem; padding: 5px; }
+        .grid-container { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(5, 1fr); gap: 5px; }
+        .grid-btn { background: white; border: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; font-weight: bold; cursor: pointer; font-size: 0.8rem; padding: 5px; }
+        .grid-btn.category { background: #eee; border-left: 5px solid var(--k-blue); }
 
+        /* Oikea paneeli */
         .right-panel { width: 180px; display: grid; grid-template-rows: repeat(12, 1fr); gap: 4px; }
         .f-btn { background: #eee; border: 1px solid #777; font-size: 0.75rem; font-weight: bold; padding-left: 10px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; }
         .f-btn span { color: var(--k-blue); font-size: 0.85rem; }
+        .f-btn.success { background: var(--success); color: white; }
+        .f-btn.danger { background: var(--danger); color: white; }
 
+        /* Hallinta-Modaali */
         .modal { display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; }
-        .modal-content { background: white; padding: 20px; border: 4px solid var(--k-blue); width: 450px; max-height: 90vh; overflow-y: auto; }
-        .modal-content input, .modal-content select { width: 95%; padding: 8px; margin: 5px 0; font-size: 1rem; }
-        
-        #lock-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #111; z-index: 4000; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
+        .modal-content { background: white; padding: 20px; border: 4px solid var(--k-blue); width: 600px; max-height: 80vh; overflow-y: auto; }
+        .admin-nav { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .admin-nav button { flex: 1; padding: 10px; cursor: pointer; border: 1px solid #ccc; background: #f9f9f9; font-weight: bold; }
+        .admin-nav button.active { background: var(--k-blue); color: white; border-color: var(--k-blue); }
+        .admin-list { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; }
+        .admin-list th, .admin-list td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        .admin-form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #f0f0f0; padding: 15px; margin-bottom: 20px; }
+        .admin-form input, .admin-form select { padding: 8px; border: 1px solid #ccc; }
+        .btn-row { display: flex; gap: 5px; }
+        .small-btn { padding: 4px 8px; cursor: pointer; font-size: 0.7rem; border: none; color: white; }
+        .edit-btn { background: var(--k-blue); }
+        .del-btn { background: var(--danger); }
     </style>
 </head>
-<body>
+<body onload="init()">
 
 <header>
-    <div>KASSAOHJELMA</div>
-    <div id="seller-info">MYYJÄ: EI KIRJAUTUNUT</div>
+    <div>KASSA</div>
+    <div id="seller-display">MYYJÄ: -</div>
     <div id="clock">00:00:00</div>
 </header>
-
-<div id="lock-screen">
-    <h1 style="color: var(--k-orange);">KASSA LUKITTU</h1>
-    <p>SYÖTÄ MYYJÄNUMERO (4422)</p>
-    <div id="login-display" style="font-size: 3rem; border: 2px solid var(--k-orange); padding: 10px 40px; margin: 20px;"></div>
-</div>
 
 <div class="main-container">
     <div class="left-panel">
@@ -69,8 +77,8 @@
                 <span id="receipt-date"></span>
             </div>
             <div class="receipt-content" id="receipt-list"></div>
-            <div class="total-row" id="total-container">
-                <span id="total-label">YHTEENSÄ</span> 
+            <div class="total-row">
+                <span>YHTEENSÄ</span> 
                 <span id="total-display">0.00</span>
             </div>
         </div>
@@ -80,258 +88,267 @@
         </div>
         <div class="numpad">
             <div class="num-btn" onclick="uiPress('7')">7</div><div class="num-btn" onclick="uiPress('8')">8</div><div class="num-btn" onclick="uiPress('9')">9</div><div class="num-btn blue" onclick="setQty()">KPL</div>
-            <div class="num-btn" onclick="uiPress('4')">4</div><div class="num-btn" onclick="uiPress('5')">5</div><div class="num-btn" onclick="uiPress('6')">6</div><div class="num-btn blue" onclick="setMode('SEARCH')">HAE</div>
+            <div class="num-btn" onclick="uiPress('4')">4</div><div class="num-btn" onclick="uiPress('5')">5</div><div class="num-btn" onclick="uiPress('6')">6</div><div class="num-btn blue" onclick="executeSearch()">HAE</div>
             <div class="num-btn" onclick="uiPress('1')">1</div><div class="num-btn" onclick="uiPress('2')">2</div><div class="num-btn" onclick="uiPress('3')">3</div><div class="num-btn orange" onclick="clearInput()">CLR</div>
             <div class="num-btn" onclick="uiPress('0')">0</div><div class="num-btn" onclick="uiPress('00')">00</div><div class="num-btn" onclick="uiPress('.')">,</div><div class="num-btn orange" onclick="handleEnter()">ENT</div>
         </div>
     </div>
 
     <div class="center-panel">
-        <div class="product-grid" id="product-grid"></div>
+        <div class="grid-container" id="grid-main"></div>
     </div>
 
     <div class="right-panel">
-        <div class="f-btn" onclick="setMode('SEARCH')"><span>F1</span>TUOTE/PLU HAKU</div>
-        <div class="f-btn" onclick="openAdmin()"><span>F2</span>TUOTEHALLINTA</div>
+        <div class="f-btn" onclick="executeSearch()"><span>F1</span>TUOTEHAKU</div>
+        <div class="f-btn" onclick="openAdmin()"><span>F2</span>HALLINTA</div>
         <div class="f-btn" onclick="togglePlussa()"><span>F3</span>K-PLUSSA</div>
-        <div class="f-btn" onclick="lockPOS()"><span>F4</span>MYYJÄ LUKITUS</div>
-        <div class="f-btn" onclick="applyDiscount()"><span>F5</span>ALENNUS %</div>
-        <div class="f-btn" onclick="removeSelected()"><span>F6</span>RIVIN POISTO</div>
+        <div class="f-btn" onclick="setMode('DISCOUNT')"><span>F5</span>ALE %</div>
+        <div class="f-btn" onclick="removeRow()"><span>F6</span>RIVIN POISTO</div>
         <div class="f-btn" onclick="openReturnMenu()"><span>F7</span>PALAUTUS</div>
-        <div class="f-btn" onclick="setPriceMode()"><span>F8</span>HINNAN MUUTOS</div>
-        <div class="f-btn" onclick="sellGiftCard()"><span>F9</span>LAHJAKORTTI MYYNTI</div>
+        <div class="f-btn" onclick="setMode('PRICE_CHANGE')"><span>F8</span>HINNAN MUUTOS</div>
+        <div class="f-btn danger" onclick="voidSale()"><span>F11</span>MITÄTÖI</div>
         <div class="f-btn success" onclick="openPayMenu()"><span>F12</span>MAKSA</div>
     </div>
 </div>
 
-<!-- MODAALIT -->
+<!-- HALLINTA MODAALI -->
 <div id="admin-modal" class="modal">
     <div class="modal-content">
-        <h3>TUOTEHALLINTA</h3>
-        <input type="text" id="adm-id" placeholder="Viivakoodi / PLU">
-        <input type="text" id="adm-name" placeholder="Tuotenimi">
-        <input type="number" id="adm-price" step="0.01" placeholder="Myyntihinta (€)">
-        <input type="number" id="adm-plussa" step="0.01" placeholder="Kanta-asiakashinta (€)">
-        <input type="text" id="adm-cat" placeholder="Tuoteryhmä">
-        <button class="num-btn blue" style="width:100%; margin-top:10px" onclick="saveProduct()">TALLENNA</button>
-        <button class="num-btn orange" style="width:100%; margin-top:5px" onclick="closeModals()">SULJE</button>
-    </div>
-</div>
+        <div class="admin-nav">
+            <button id="nav-products" onclick="switchAdminTab('products')" class="active">TUOTTEET</button>
+            <button id="nav-categories" onclick="switchAdminTab('categories')">TUOTERYHMÄT</button>
+            <button id="nav-sellers" onclick="switchAdminTab('sellers')">MYYJÄT</button>
+        </div>
 
-<div id="return-modal" class="modal">
-    <div class="modal-content">
-        <h2 style="color:var(--danger)">PALAUTUS</h2>
-        <button class="num-btn blue" style="width:100%; margin-bottom:10px" onclick="setMode('RETURN_RECEIPT')">NUMERAALINEN KUITTI</button>
-        <button class="num-btn" style="width:100%; margin-bottom:10px" onclick="setMode('RETURN_PRODUCT')">TUOTEHAKU / VIIVAKOODI</button>
-        <button class="num-btn orange" style="width:100%" onclick="closeModals()">PERUUTA</button>
-    </div>
-</div>
+        <div id="admin-view">
+            <!-- Dynaaminen sisältö -->
+        </div>
 
-<div id="pay-modal" class="modal">
-    <div class="modal-content" style="text-align:center">
-        <h2>MAKSU</h2>
-        <button class="num-btn" style="width:100%; margin-bottom:10px" onclick="setMode('CASH')">KÄTEINEN</button>
-        <button class="num-btn" style="width:100%; margin-bottom:10px" onclick="setMode('GIFT_CARD_PAY')">LAHJAKORTTI</button>
-        <button class="num-btn orange" style="width:100%" onclick="closeModals()">PERUUTA</button>
+        <button class="num-btn orange" style="width:100%; margin-top:20px" onclick="closeModals()">SULJE HALLINTA</button>
     </div>
 </div>
 
 <script>
-    // Tallennuslogiikka
+    // DATA
     let products = JSON.parse(localStorage.getItem('pos_products')) || {
-        "1001": { name: "KESTOPUU 28x95", price: 2.25, plussa: 1.95, cat: "PUUTAVARA" },
-        "2002": { name: "SEMENTTI S30", price: 8.90, plussa: 7.50, cat: "RAKENNUS" }
+        "101": { name: "KESTOPUU 28x95", price: 2.25, cat: "PUUTAVARA" },
+        "201": { name: "SEMENTTI S30", price: 8.90, cat: "LASTIT" }
     };
-    let salesHistory = JSON.parse(localStorage.getItem('pos_sales')) || {};
-    let giftCards = JSON.parse(localStorage.getItem('pos_giftcards')) || {};
-    let lastReceiptNum = parseInt(localStorage.getItem('pos_last_receipt')) || 10000;
+    let categories = JSON.parse(localStorage.getItem('pos_categories')) || ["PUUTAVARA", "LASTIT", "TYÖKALUT"];
+    let sellers = JSON.parse(localStorage.getItem('pos_sellers')) || { "4422": "Matti Meikäläinen", "1234": "Kassatyöntekijä" };
+    let salesHistory = {};
+    let lastReceiptNum = 50000;
 
     let cart = [];
     let input = "";
-    let mode = "LOGIN"; 
-    let currentReceipt = 0;
+    let mode = "SALE";
     let selectedIdx = -1;
-    let isPlussa = false;
-    let qtyInput = 1;
+    let currentQty = 1;
+    let currentSeller = "4422";
+    let adminTab = "products";
 
     function init() {
-        renderGrid();
+        updateSellerDisplay();
+        renderCategories();
         newReceipt();
-        window.addEventListener('keydown', handleKeyboard);
         setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('fi-FI'); }, 1000);
+    }
+
+    function updateSellerDisplay() {
+        document.getElementById('seller-display').innerText = `MYYJÄ: ${currentSeller} (${sellers[currentSeller] || 'Tuntematon'})`;
     }
 
     function newReceipt() {
         lastReceiptNum++;
-        currentReceipt = lastReceiptNum;
-        localStorage.setItem('pos_last_receipt', lastReceiptNum);
-        document.getElementById('receipt-no-display').innerText = "KUITTI: " + currentReceipt;
+        document.getElementById('receipt-no-display').innerText = "KUITTI: " + lastReceiptNum;
         document.getElementById('receipt-date').innerText = new Date().toLocaleDateString('fi-FI');
+        renderCategories();
     }
 
-    function renderGrid() {
-        const grid = document.getElementById('product-grid');
+    // PÄÄVALIKKO (Tuoteryhmät)
+    function renderCategories() {
+        const grid = document.getElementById('grid-main');
         grid.innerHTML = "";
-        Object.keys(products).forEach(key => {
+        categories.forEach(cat => {
             const btn = document.createElement('div');
-            btn.className = 'product-btn';
-            btn.innerHTML = `${products[key].name}<br><b>${products[key].price.toFixed(2)}€</b>`;
-            btn.onclick = () => addToCart(key);
+            btn.className = 'grid-btn category';
+            btn.innerText = cat;
+            btn.onclick = () => renderProducts(cat);
             grid.appendChild(btn);
         });
     }
 
-    // Näppäimistöhallinta ja navigointi
-    function handleKeyboard(e) {
-        if(e.key.startsWith('F')) e.preventDefault();
-        if(e.key >= '0' && e.key <= '9') uiPress(e.key);
-        if(e.key === 'Enter') handleEnter();
-        if(e.key === 'Backspace') { input = input.slice(0, -1); updateDisplay(); }
-        if(e.key === 'ArrowUp') { selectedIdx = Math.max(0, selectedIdx - 1); updateReceipt(); }
-        if(e.key === 'ArrowDown') { selectedIdx = Math.min(cart.length - 1, selectedIdx + 1); updateReceipt(); }
-        if(e.key === 'Escape') closeModals();
-    }
+    function renderProducts(cat) {
+        const grid = document.getElementById('grid-main');
+        grid.innerHTML = "";
+        const back = document.createElement('div');
+        back.className = 'grid-btn orange';
+        back.innerText = "<< TAKAISIN";
+        back.onclick = renderCategories;
+        grid.appendChild(back);
 
-    function uiPress(n) {
-        if(mode === "SALE_ENDED") { resetSale(); newReceipt(); }
-        input += n;
-        updateDisplay();
-    }
-
-    function updateDisplay() {
-        const disp = (mode === "LOGIN") ? document.getElementById('login-display') : document.getElementById('pos-input');
-        if(mode === "LOGIN") disp.innerText = "*".repeat(input.length);
-        else {
-            // Jos yli 5 numeroa, käsitellään viivakoodina, muuten desimaalina
-            disp.innerText = (input.length > 5) ? input : (parseInt(input || 0) / 100).toFixed(2);
-        }
-    }
-
-    function handleEnter() {
-        if(mode === "LOGIN") {
-            if(input === "4422") { mode = "SALE"; document.getElementById('lock-screen').style.display = 'none'; clearInput(); }
-        } 
-        else if(mode === "SALE" || mode === "SEARCH") {
-            if(products[input]) { addToCart(input); clearInput(); mode = "SALE"; }
-            else if(input === "") openPayMenu();
-        }
-        else if(mode === "RETURN_RECEIPT") {
-            const old = salesHistory[input];
-            if(old) { cart = old.map(i => ({...i, price: -Math.abs(i.price)})); updateReceipt(); closeModals(); mode = "SALE"; }
-            clearInput();
-        }
-        else if(mode === "CASH") {
-            completeSale(parseInt(input || 0) / 100);
-        }
-        else if(mode === "GIFT_CARD_PAY") {
-            if(giftCards[input]) {
-                const total = calculateTotal();
-                const pay = Math.min(giftCards[input], total);
-                giftCards[input] -= pay;
-                saveData();
-                alert("Lahjakortilta veloitettu: " + pay.toFixed(2));
-                completeSale(total);
+        Object.keys(products).forEach(id => {
+            if(products[id].cat === cat) {
+                const btn = document.createElement('div');
+                btn.className = 'grid-btn';
+                btn.innerHTML = `${products[id].name}<br>${products[id].price.toFixed(2)}€`;
+                btn.onclick = () => addToCart(id);
+                grid.appendChild(btn);
             }
-            clearInput();
-        }
-        else if(mode === "PRICE") {
-            if(selectedIdx > -1) { cart[selectedIdx].price = parseInt(input)/100; updateReceipt(); }
-            mode = "SALE"; clearInput();
-        }
+        });
     }
 
     function addToCart(id) {
         const p = products[id];
-        const price = isPlussa ? p.plussa : p.price;
-        cart.push({ ...p, price: price, qty: qtyInput, id: id });
-        qtyInput = 1;
+        const lastItem = cart[cart.length - 1];
+        if (lastItem && lastItem.id === id && !lastItem.isChanged) {
+            lastItem.qty += currentQty;
+        } else {
+            cart.push({ ...p, id: id, qty: currentQty, originalPrice: p.price, discountPercent: 0, isChanged: false });
+        }
+        currentQty = 1;
         updateReceipt();
     }
 
     function updateReceipt() {
         const list = document.getElementById('receipt-list');
         list.innerHTML = "";
+        let total = 0;
         cart.forEach((item, i) => {
             const row = document.createElement('div');
             row.className = `receipt-row ${selectedIdx === i ? 'selected' : ''}`;
-            row.innerHTML = `<span>${item.qty}x ${item.name}</span><span>${(item.price * item.qty).toFixed(2)}</span>`;
+            row.innerHTML = `<div class="row-main"><span>${item.qty} x ${item.name}</span><span>${(item.price * item.qty).toFixed(2)}</span></div>`;
             row.onclick = () => { selectedIdx = i; updateReceipt(); };
             list.appendChild(row);
+            total += (item.price * item.qty);
         });
-        document.getElementById('total-display').innerText = calculateTotal().toFixed(2);
+        document.getElementById('total-display').innerText = total.toFixed(2);
     }
 
-    function calculateTotal() { return cart.reduce((s, i) => s + (i.price * i.qty), 0); }
-
-    function completeSale(given) {
-        salesHistory[currentReceipt] = [...cart];
-        saveData();
-        const change = given - calculateTotal();
-        document.getElementById('total-label').innerText = "VAIHTORAHAA";
-        document.getElementById('total-display').innerText = change.toFixed(2);
-        document.getElementById('total-container').classList.add('change-mode');
-        mode = "SALE_ENDED";
-        clearInput();
+    // HALLINTA-LOGIIKKA
+    function openAdmin() {
+        document.getElementById('admin-modal').style.display = 'flex';
+        switchAdminTab('products');
     }
 
-    function resetSale() {
-        cart = []; selectedIdx = -1;
-        document.getElementById('total-label').innerText = "YHTEENSÄ";
-        document.getElementById('total-container').classList.remove('change-mode');
-        mode = "SALE";
-        updateReceipt();
+    function switchAdminTab(tab) {
+        adminTab = tab;
+        document.querySelectorAll('.admin-nav button').forEach(b => b.classList.remove('active'));
+        document.getElementById('nav-' + tab).classList.add('active');
+        renderAdminView();
     }
 
-    // Erikoistoiminnot
-    function applyDiscount() {
-        if(selectedIdx > -1) {
-            const pc = prompt("Alennusprosentti:");
-            if(pc) { cart[selectedIdx].price *= (1 - pc/100); updateReceipt(); }
+    function renderAdminView() {
+        const view = document.getElementById('admin-view');
+        if(adminTab === 'products') {
+            let options = categories.map(c => `<option value="${c}">${c}</option>`).join("");
+            view.innerHTML = `
+                <div class="admin-form">
+                    <input type="text" id="p-id" placeholder="PLU/ID">
+                    <input type="text" id="p-name" placeholder="Tuotenimi">
+                    <input type="number" id="p-price" step="0.01" placeholder="Hinta">
+                    <select id="p-cat">${options}</select>
+                    <button class="num-btn blue" onclick="addEditProduct()">LISÄÄ / PÄIVITÄ</button>
+                </div>
+                <table class="admin-list">
+                    <tr><th>ID</th><th>Nimi</th><th>Hinta</th><th>Ryhmä</th><th>Toiminnot</th></tr>
+                    ${Object.keys(products).map(id => `
+                        <tr>
+                            <td>${id}</td><td>${products[id].name}</td><td>${products[id].price}</td><td>${products[id].cat}</td>
+                            <td><button class="small-btn del-btn" onclick="deleteProduct('${id}')">POISTA</button></td>
+                        </tr>`).join("")}
+                </table>`;
+        } else if(adminTab === 'categories') {
+            view.innerHTML = `
+                <div class="admin-form">
+                    <input type="text" id="c-name" placeholder="Uusi tuoteryhmä">
+                    <button class="num-btn blue" onclick="addCategory()">LISÄÄ</button>
+                </div>
+                <table class="admin-list">
+                    <tr><th>Nimi</th><th>Toiminnot</th></tr>
+                    ${categories.map(c => `<tr><td>${c}</td><td><button class="small-btn del-btn" onclick="deleteCategory('${c}')">POISTA</button></td></tr>`).join("")}
+                </table>`;
+        } else if(adminTab === 'sellers') {
+            view.innerHTML = `
+                <div class="admin-form">
+                    <input type="text" id="s-id" placeholder="Myyjänumero">
+                    <input type="text" id="s-name" placeholder="Nimi">
+                    <button class="num-btn blue" onclick="addSeller()">LISÄÄ</button>
+                </div>
+                <table class="admin-list">
+                    <tr><th>ID</th><th>Nimi</th><th>Toiminnot</th></tr>
+                    ${Object.keys(sellers).map(id => `<tr><td>${id}</td><td>${sellers[id]}</td><td><button class="small-btn del-btn" onclick="deleteSeller('${id}')">POISTA</button></td></tr>`).join("")}
+                </table>`;
         }
     }
 
-    function sellGiftCard() {
-        const val = prompt("Lahjakortin arvo (€):");
-        if(val) {
-            const id = Math.floor(Math.random() * 899999 + 100000).toString();
-            giftCards[id] = parseFloat(val);
-            saveData();
-            cart.push({ name: "LAHJAKORTTI " + id, price: parseFloat(val), qty: 1, id: 'GC' });
-            updateReceipt();
-            alert("Uusi lahjakortti: " + id);
-        }
-    }
-
-    function openAdmin() { document.getElementById('admin-modal').style.display = 'flex'; }
-    function saveProduct() {
-        const id = document.getElementById('adm-id').value;
+    // DATA-FUNKTIOT
+    function addEditProduct() {
+        const id = document.getElementById('p-id').value;
+        if(!id) return;
         products[id] = {
-            name: document.getElementById('adm-name').value,
-            price: parseFloat(document.getElementById('adm-price').value),
-            plussa: parseFloat(document.getElementById('adm-plussa').value),
-            cat: document.getElementById('adm-cat').value
+            name: document.getElementById('p-name').value,
+            price: parseFloat(document.getElementById('p-price').value),
+            cat: document.getElementById('p-cat').value
         };
-        saveData(); renderGrid(); closeModals();
+        saveAndRefresh();
+    }
+    function deleteProduct(id) { delete products[id]; saveAndRefresh(); }
+    
+    function addCategory() {
+        const name = document.getElementById('c-name').value;
+        if(name && !categories.includes(name)) categories.push(name.toUpperCase());
+        saveAndRefresh();
+    }
+    function deleteCategory(name) { 
+        categories = categories.filter(c => c !== name);
+        saveAndRefresh();
     }
 
-    function saveData() {
+    function addSeller() {
+        const id = document.getElementById('s-id').value;
+        const name = document.getElementById('s-name').value;
+        if(id && name) sellers[id] = name;
+        saveAndRefresh();
+    }
+    function deleteSeller(id) { delete sellers[id]; saveAndRefresh(); }
+
+    function saveAndRefresh() {
         localStorage.setItem('pos_products', JSON.stringify(products));
-        localStorage.setItem('pos_sales', JSON.stringify(salesHistory));
-        localStorage.setItem('pos_giftcards', JSON.stringify(giftCards));
+        localStorage.setItem('pos_categories', JSON.stringify(categories));
+        localStorage.setItem('pos_sellers', JSON.stringify(sellers));
+        renderAdminView();
+        renderCategories();
+        updateSellerDisplay();
     }
 
-    function togglePlussa() { isPlussa = !isPlussa; alert(isPlussa ? "PLUSSA AKTIIVINEN" : "PLUSSA POISTETTU"); }
-    function openReturnMenu() { document.getElementById('return-modal').style.display = 'flex'; }
-    function openPayMenu() { if(cart.length > 0) document.getElementById('pay-modal').style.display = 'flex'; }
-    function setMode(m) { mode = m; document.getElementById('mode-label').innerText = m; closeModals(); }
-    function setPriceMode() { setMode('PRICE'); }
-    function setQty() { qtyInput = parseInt(input) || 1; clearInput(); }
-    function clearInput() { input = ""; updateDisplay(); }
-    function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
-    function lockPOS() { mode = "LOGIN"; document.getElementById('lock-screen').style.display = 'flex'; clearInput(); }
-    function removeSelected() { if(selectedIdx > -1) { cart.splice(selectedIdx, 1); selectedIdx = -1; updateReceipt(); } }
+    // PERUSTOIMINNOT
+    function handleEnter() {
+        if(mode === "SALE") {
+            if(products[input]) { addToCart(input); clearInput(); }
+            else if(sellers[input]) { currentSeller = input; updateSellerDisplay(); clearInput(); }
+            else if(input === "") openPayMenu();
+        }
+        else if(mode === "PRICE_CHANGE" && selectedIdx > -1) {
+            cart[selectedIdx].price = parseFloat(input)/100; cart[selectedIdx].isChanged = true;
+            setMode('SALE'); clearInput(); updateReceipt();
+        }
+        else if(mode === "DISCOUNT" && selectedIdx > -1) {
+            let d = parseInt(input); cart[selectedIdx].price *= (1 - d/100);
+            setMode('SALE'); clearInput(); updateReceipt();
+        }
+    }
 
-    init();
+    function openPayMenu() { alert("Maksu suoritettu!"); cart=[]; updateReceipt(); newReceipt(); }
+    function uiPress(n) { input += n; updateDisplay(); }
+    function updateDisplay() { document.getElementById('pos-input').innerText = (input.length > 4) ? input : (parseInt(input || 0) / 100).toFixed(2); }
+    function clearInput() { input = ""; updateDisplay(); }
+    function setMode(m) { mode = m; document.getElementById('mode-label').innerText = m; }
+    function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
+    function voidSale() { cart = []; updateReceipt(); newReceipt(); }
+    function setQty() { currentQty = parseInt(input) || 1; clearInput(); }
+    function removeRow() { if(selectedIdx > -1) { cart.splice(selectedIdx, 1); selectedIdx = -1; updateReceipt(); } }
+    function executeSearch() { if(products[input]) { addToCart(input); clearInput(); } }
 </script>
 </body>
 </html>
