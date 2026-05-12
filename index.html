@@ -2,7 +2,7 @@
 <html lang="fi">
 <head>
     <meta charset="UTF-8">
-    <title>K-Rauta POS - Product Search Enabled</title>
+    <title>K-Rauta POS - Professional</title>
     <style>
         :root {
             --k-orange: #ff6600; --k-blue: #004593; --bg-grey: #d1d1d1;
@@ -10,51 +10,75 @@
         }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg-grey); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
         
-        /* Layout Rakenteet */
-        header { background: var(--k-blue); color: white; padding: 5px 15px; display: flex; justify-content: space-between; align-items: center; height: 40px; border-bottom: 2px solid var(--k-orange); }
-        .main-container { display: flex; flex: 1; gap: 5px; padding: 5px; height: calc(100vh - 85px); }
+        /* YLÄPALKKI */
+        header { background: var(--k-blue); color: white; padding: 5px 15px; display: flex; justify-content: space-between; align-items: center; height: 40px; font-weight: bold; }
         
-        /* Vasen Paneeli: Kuitti ja Numpad */
-        .left-panel { width: 400px; display: flex; flex-direction: column; }
+        .main-container { display: flex; flex: 1; gap: 5px; padding: 5px; height: calc(100vh - 75px); }
+
+        /* VASEN PANEELI */
+        .left-panel { width: 380px; display: flex; flex-direction: column; }
         .receipt-area { flex: 1; background: white; border: 1px solid var(--border-color); display: flex; flex-direction: column; overflow: hidden; }
-        .receipt-content { flex: 1; overflow-y: auto; font-family: monospace; padding: 5px; }
-        .receipt-row { display: flex; justify-content: space-between; padding: 8px; cursor: pointer; border-bottom: 1px solid #eee; }
-        .receipt-row.selected { background: #fff3e6; border: 1px solid var(--k-orange); }
+        .receipt-header { background: #444; color: white; padding: 8px; text-align: center; font-weight: bold; }
+        .receipt-content { flex: 1; overflow-y: auto; font-family: 'Consolas', monospace; padding: 5px; font-size: 0.9rem; }
+        .receipt-row { display: flex; justify-content: space-between; padding: 4px 8px; cursor: pointer; }
+        .receipt-row.selected { background: #fff3e6; outline: 1px solid var(--k-orange); }
         
-        .input-display { background: #222; color: #0f0; padding: 10px; text-align: right; font-size: 2rem; font-family: monospace; margin: 5px 0; min-height: 45px; }
+        .totals-block { background: #f0f0f0; padding: 10px; border-top: 1px solid #ccc; }
+        .total-row { display: flex; justify-content: space-between; font-size: 2.2rem; font-weight: bold; color: var(--k-blue); }
+
+        .input-display { background: #1a1a1a; color: #0f0; padding: 10px; text-align: right; font-size: 2rem; font-family: monospace; margin: 5px 0; height: 45px; display: flex; justify-content: flex-end; align-items: center; }
+
+        /* NUMPAD */
         .numpad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; background: #bbb; padding: 5px; }
-        .num-btn { height: 60px; background: #fefefe; border: 1px solid #777; font-size: 1.4rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .num-btn.orange { background: var(--k-orange); color: white; }
+        .num-btn { height: 65px; background: #fefefe; border: 1px solid #777; font-size: 1.5rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 2px; }
         .num-btn.blue { background: var(--k-blue); color: white; }
+        .num-btn.orange { background: var(--k-orange); color: white; }
 
-        /* Tuotehaku Modaali */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; }
-        .modal-content { background: white; padding: 0; width: 700px; border: 4px solid var(--k-blue); display: flex; flex-direction: column; max-height: 80vh; }
-        .modal-header { background: var(--k-blue); color: white; padding: 15px; font-weight: bold; display: flex; justify-content: space-between; }
-        .search-table { width: 100%; border-collapse: collapse; }
-        .search-table th { background: #eee; padding: 10px; text-align: left; border-bottom: 2px solid #ccc; }
-        .search-table td { padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; }
-        .search-table tr:hover { background: #f9f9f9; }
+        /* KESKIPANEELI */
+        .center-panel { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+        .folder-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+        .folder-btn { background: #eee; border: 1px solid #888; border-bottom: 4px solid var(--k-blue); padding: 15px 5px; font-weight: bold; text-align: center; font-size: 0.85rem; }
+        .product-grid { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(5, 1fr); gap: 5px; }
+        .product-btn { background: white; border: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; font-weight: bold; cursor: pointer; font-size: 0.9rem; }
 
+        /* OIKEA PANEELI[cite: 2] */
         .right-panel { width: 180px; display: grid; grid-template-rows: repeat(12, 1fr); gap: 4px; }
         .f-btn { background: #eee; border: 1px solid #777; font-size: 0.8rem; font-weight: bold; padding-left: 10px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; }
-        .f-btn span { color: var(--k-blue); }
+        .f-btn span { color: var(--k-blue); font-size: 0.9rem; }
+        .f-btn.danger { background: var(--danger); color: white; }
+        .f-btn.danger span { color: white; }
+        .f-btn.success { background: var(--success); color: white; }
+        .f-btn.success span { color: white; }
+
+        /* ALAPALKKI[cite: 2] */
+        footer { height: 35px; background: #333; color: #ccc; display: flex; align-items: center; padding: 0 15px; font-size: 0.8rem; justify-content: space-between; }
+
+        /* MODAALIT */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; }
+        .modal-content { background: white; width: 600px; border: 4px solid var(--k-blue); }
     </style>
 </head>
-<body onkeydown="handleGlobalKeys(event)">
+<body>
 
 <header>
     <div>K-RAUTA POS - MYYMÄLÄ 101</div>
+    <div>KÄYTTÄJÄ: 4422 - MIKKO M.</div>
     <div id="clock">19:23:43</div>
 </header>
 
 <div class="main-container">
+    <!-- VASEN[cite: 2] -->
     <div class="left-panel">
         <div class="receipt-area">
-            <div style="background:#444; color:white; padding:5px; text-align:center;">VOIMASSA OLEVA TAPAHTUMA</div>
+            <div class="receipt-header">VOIMASSA OLEVA TAPAHTUMA</div>
             <div class="receipt-content" id="receipt-list"></div>
-            <div style="background:#f0f0f0; padding:10px; border-top: 2px solid var(--k-blue);">
-                <div style="display:flex; justify-content:space-between;"><span>YHTEENSÄ</span><span id="total-display" style="font-size:2rem; font-weight:bold; color:var(--k-blue);">0.00</span></div>
+            <div class="totals-block">
+                <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:#666;">
+                    <span>ALV 24% sis.</span> <span id="tax-val">0.00</span>
+                </div>
+                <div class="total-row">
+                    <span>YHTEENSÄ</span> <span id="total-val">0.00</span>
+                </div>
             </div>
         </div>
         <div class="input-display" id="pos-input">0</div>
@@ -66,115 +90,149 @@
         </div>
     </div>
 
-    <div class="center-panel" style="flex:1;">
-        <!-- Pikanäppäimet keskellä kuten kuvassa[cite: 1] -->
-        <div class="product-grid" id="fast-grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:5px; padding-top:55px;"></div>
+    <!-- KESKI[cite: 2] -->
+    <div class="center-panel">
+        <div class="folder-row">
+            <div class="folder-btn">PUUTAVARA (F1)</div>
+            <div class="folder-btn">RAKENNUS (F2)</div>
+            <div class="folder-btn">SISUSTUS (F3)</div>
+            <div class="folder-btn">PIHA (F4)</div>
+        </div>
+        <div class="product-grid" id="product-grid">
+            <!-- Täytetään JS:llä jotta 4x5 ruudukko säilyy[cite: 2] -->
+        </div>
     </div>
 
+    <!-- OIKEA[cite: 2] -->
     <div class="right-panel">
         <div class="f-btn" onclick="openSearch()"><span>F1</span>TUOTEHAKU</div>
         <div class="f-btn"><span>F2</span>PLU-LISTA</div>
-        <div class="f-btn"><span>F3</span>K-PLUSSA</div>
-        <div class="f-btn" onclick="removeItem()"><span>F6</span>RIVIN POISTO</div>
+        <div class="f-btn" onclick="togglePlussa()"><span>F3</span>K-PLUSSA</div>
+        <div class="f-btn"><span>F4</span>TILIASIAKAS</div>
+        <div class="f-btn" onclick="applyDiscount()"><span>F5</span>ALE %</div>
+        <div class="f-btn" onclick="removeSelected()"><span>F6</span>RIVIN POISTO</div>
+        <div class="f-btn"><span>F7</span>VÄLISUMMA</div>
         <div class="f-btn" onclick="changePrice()"><span>F8</span>HINNAN MUUTOS</div>
-        <div class="f-btn pay" onclick="alert('Maksuvalikko')"><span>F12</span>MAKSA</div>
+        <div class="f-btn"><span>F9</span>LAATIKKO</div>
+        <div class="f-btn"><span>F10</span>KESKEYTÄ</div>
+        <div class="f-btn danger" onclick="cancelTransaction()"><span>F11</span>PERUUTA</div>
+        <div class="f-btn success" onclick="openPayMenu()"><span>F12</span>MAKSA</div>
     </div>
 </div>
 
-<!-- TUOTEHAKU-IKKUNA (F1) -->
+<footer>
+    <div>TERMINAALI: 04 &nbsp;&nbsp; VERSIO: 5.82.1</div>
+    <div>YHTEYS: OK (ONLINE)</div>
+</footer>
+
+<!-- MAKSUMENU JA HAKU (Toiminnalliset osat) -->
+<div id="pay-modal" class="modal">
+    <div class="modal-content" style="padding:20px;">
+        <h2 style="color:var(--k-blue)">VALITSE MAKSUTAPA</h2>
+        <button class="num-btn" style="width:100%; margin-bottom:10px" onclick="pay('KÄTEINEN')">F1 - KÄTEINEN</button>
+        <button class="num-btn" style="width:100%; margin-bottom:10px" onclick="pay('KORTTI')">F2 - KORTTI</button>
+        <button class="num-btn orange" style="width:100%" onclick="closeModals()">PERUUTA</button>
+    </div>
+</div>
+
 <div id="search-modal" class="modal">
     <div class="modal-content">
-        <div class="modal-header">
-            <span>F1 - TUOTEHAKU</span>
-            <span onclick="closeSearch()" style="cursor:pointer;">X</span>
-        </div>
-        <div style="padding:15px; background:#f0f0f0;">
-            <input type="text" id="search-query" placeholder="Syötä tuotteen nimi tai koodi..." style="width:100%; padding:10px; font-size:1.2rem;" oninput="filterSearch()">
-        </div>
-        <div style="overflow-y:auto; flex:1;">
-            <table class="search-table">
-                <thead>
-                    <tr><th>KOODI</th><th>TUOTE</th><th>RYHMÄ</th><th>HINTA</th><th>PLUSSA</th></tr>
-                </thead>
-                <tbody id="search-results"></tbody>
-            </table>
-        </div>
-        <div style="padding:10px; background:#eee; text-align:right;">
-            <button onclick="closeSearch()" style="padding:10px 20px;">SULJE</button>
-        </div>
+        <div style="background:var(--k-blue); color:white; padding:10px; font-weight:bold;">F1 - TUOTEHAKU</div>
+        <input type="text" id="search-input" placeholder="Hae tuotetta..." style="width:96%; margin:2%; padding:10px; font-size:1.2rem;" oninput="filterSearch()">
+        <div id="search-results" style="max-height:300px; overflow-y:auto;"></div>
+        <button class="num-btn orange" style="width:100%" onclick="closeModals()">SULJE</button>
     </div>
 </div>
 
 <script>
-    // Laajennettu tuotetietokanta
     const products = [
-        { id: "101", name: "KESTOPUU 28x95", price: 2.25, cat: "PUUTAVARA", plussaPrice: 1.95, autoDiscount: 0 },
-        { id: "202", name: "SEMENTTI S30 25KG", price: 8.90, cat: "RAKENNUS", plussaPrice: 7.50, autoDiscount: 0.10 },
-        { id: "303", name: "K-RAUTA KASSI", price: 0.25, cat: "PIHA", plussaPrice: null, autoDiscount: 0 },
-        { id: "404", name: "RUUVIPAKKI 500KPL", price: 15.90, cat: "TYÖKALUT", plussaPrice: 12.90, autoDiscount: 0 },
-        { id: "505", name: "MAALI TEHO 9L", price: 89.00, cat: "SISUSTUS", plussaPrice: 75.00, autoDiscount: 0 }
+        { id: "101", name: "KESTOPUU 28x95", price: 2.25, plussa: 1.95, autoDisc: 0 },
+        { id: "202", name: "SEMENTTI S30 25KG", price: 8.90, plussa: 7.90, autoDisc: 0.10 },
+        { id: "303", name: "K-RAUTA KASSI", price: 0.25, plussa: 0.25, autoDisc: 0 },
+        { id: "404", name: "KULJETUSPALVELU", price: 55.00, plussa: 55.00, autoDisc: 0 }
     ];
 
     let cart = [];
-    let selectedIndex = -1;
     let input = "";
     let qty = 1;
+    let selectedIdx = -1;
+    let isPlussa = false;
 
-    function handleGlobalKeys(e) {
-        if(e.key === "F1") { e.preventDefault(); openSearch(); }
-        if(e.key === "Escape") closeSearch();
-    }
-
-    function openSearch() { 
-        document.getElementById('search-modal').style.display = 'flex'; 
-        filterSearch();
-        document.getElementById('search-query').focus();
-    }
-    
-    function closeSearch() { document.getElementById('search-modal').style.display = 'none'; }
-
-    function filterSearch() {
-        const query = document.getElementById('search-query').value.toLowerCase();
-        const results = document.getElementById('search-results');
-        results.innerHTML = "";
-        
-        products.filter(p => p.name.toLowerCase().includes(query) || p.id.includes(query))
-        .forEach(p => {
-            let tr = document.createElement('tr');
-            tr.innerHTML = `<td>${p.id}</td><td>${p.name}</td><td>${p.cat}</td><td>${p.price.toFixed(2)}€</td><td>${p.plussaPrice ? p.plussaPrice.toFixed(2)+'€' : '-'}</td>`;
-            tr.onclick = () => { addToCart(p); closeSearch(); };
-            results.appendChild(tr);
-        });
+    function initGrid() {
+        const grid = document.getElementById('product-grid');
+        grid.innerHTML = "";
+        for(let i=0; i<20; i++) {
+            const btn = document.createElement('div');
+            btn.className = 'product-btn';
+            if(products[i]) {
+                btn.innerHTML = `${products[i].name}<br>${products[i].price.toFixed(2)}€`;
+                btn.onclick = () => add(products[i]);
+            } else {
+                btn.innerHTML = "---";
+                btn.style.color = "#ccc";
+            }
+            grid.appendChild(btn);
+        }
     }
 
     function press(n) { input += n; document.getElementById('pos-input').innerText = input; }
     function clearInput() { input = ""; qty = 1; document.getElementById('pos-input').innerText = "0"; }
-    function setQty() { if(input) { qty = parseFloat(input); input = ""; document.getElementById('pos-input').innerText = `MÄÄRÄ: ${qty}`; } }
+    function setQty() { if(input) { qty = parseFloat(input); input = ""; document.getElementById('pos-input').innerText = `KPL: ${qty}`; } }
 
-    function addToCart(p) {
-        let finalPrice = p.price;
-        if(p.autoDiscount > 0) finalPrice *= (1 - p.autoDiscount);
-        cart.push({ ...p, currentPrice: finalPrice, qty: qty });
-        qty = 1;
-        updateReceipt();
+    function add(p) {
+        let price = isPlussa ? p.plussa : p.price;
+        if(p.autoDisc) price *= (1 - p.autoDisc);
+        cart.push({ ...p, finalPrice: price, qty: qty });
+        qty = 1; update();
     }
 
-    function updateReceipt() {
+    function update() {
         const list = document.getElementById('receipt-list');
         list.innerHTML = "";
         let total = 0;
         cart.forEach((item, i) => {
-            let row = document.createElement('div');
-            row.className = `receipt-row ${selectedIndex === i ? 'selected' : ''}`;
-            row.onclick = () => { selectedIndex = i; updateReceipt(); };
-            row.innerHTML = `<span>${item.qty} x ${item.name}</span><span>${(item.qty * item.currentPrice).toFixed(2)}</span>`;
+            const row = document.createElement('div');
+            row.className = `receipt-row ${selectedIdx === i ? 'selected' : ''}`;
+            row.onclick = () => { selectedIdx = i; update(); };
+            row.innerHTML = `<span>${item.qty} x ${item.name}</span><span>${(item.qty * item.finalPrice).toFixed(2)}</span>`;
             list.appendChild(row);
-            total += item.qty * item.currentPrice;
+            total += item.qty * item.finalPrice;
         });
-        document.getElementById('total-display').innerText = total.toFixed(2);
+        document.getElementById('total-val').innerText = total.toFixed(2);
+        document.getElementById('tax-val').innerText = (total * 0.1935).toFixed(2); // Alv laskenta esimerkin mukaan
+        list.scrollTop = list.scrollHeight;
     }
 
-    function removeItem() { if(selectedIndex > -1) { cart.splice(selectedIndex, 1); selectedIndex = -1; updateReceipt(); } }
+    function handleEnter() {
+        const p = products.find(x => x.id === input);
+        if(p) add(p);
+        clearInput();
+    }
+
+    function removeSelected() { if(selectedIdx > -1) { cart.splice(selectedIdx, 1); selectedIdx = -1; update(); } }
+    function changePrice() { if(selectedIdx > -1 && input) { cart[selectedIdx].finalPrice = parseFloat(input); clearInput(); update(); } }
+    function applyDiscount() { if(selectedIdx > -1 && input) { cart[selectedIdx].finalPrice *= (1 - parseFloat(input)/100); clearInput(); update(); } }
+    
+    function togglePlussa() { isPlussa = !isPlussa; alert(isPlussa ? "Plussa-kortti luettu" : "Plussa poistettu"); }
+    function cancelTransaction() { if(confirm("Peruutetaanko kauppa?")) { cart = []; update(); clearInput(); } }
+
+    function openPayMenu() { document.getElementById('pay-modal').style.display = 'flex'; }
+    function openSearch() { document.getElementById('search-modal').style.display = 'flex'; document.getElementById('search-input').focus(); }
+    function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
+
+    function pay(method) {
+        let total = parseFloat(document.getElementById('total-val').innerText);
+        if(method === 'KÄTEINEN') {
+            let given = input ? parseFloat(input) : total;
+            alert(`Yhteensä: ${total}€\nAnnettu: ${given}€\nVaihtoraha: ${(given - total).toFixed(2)}€`);
+        } else {
+            alert("Maksupääte: Käsitellään...");
+        }
+        cart = []; update(); closeModals(); clearInput();
+    }
+
+    initGrid();
+    setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('fi-FI'); }, 1000);
 </script>
 </body>
 </html>
