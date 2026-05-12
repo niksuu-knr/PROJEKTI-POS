@@ -2,7 +2,7 @@
 <html lang="fi">
 <head>
     <meta charset="UTF-8">
-    <title>K-Rauta POS - Professional</title>
+    <title>K-Rauta POS - Cash Flow Fix</title>
     <style>
         :root {
             --k-orange: #ff6600; --k-blue: #004593; --bg-grey: #d1d1d1;
@@ -10,229 +10,177 @@
         }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg-grey); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
         
-        /* YLÄPALKKI */
         header { background: var(--k-blue); color: white; padding: 5px 15px; display: flex; justify-content: space-between; align-items: center; height: 40px; font-weight: bold; }
-        
         .main-container { display: flex; flex: 1; gap: 5px; padding: 5px; height: calc(100vh - 75px); }
 
-        /* VASEN PANEELI */
+        /* Vasen Paneeli */
         .left-panel { width: 380px; display: flex; flex-direction: column; }
         .receipt-area { flex: 1; background: white; border: 1px solid var(--border-color); display: flex; flex-direction: column; overflow: hidden; }
         .receipt-header { background: #444; color: white; padding: 8px; text-align: center; font-weight: bold; }
         .receipt-content { flex: 1; overflow-y: auto; font-family: 'Consolas', monospace; padding: 5px; font-size: 0.9rem; }
-        .receipt-row { display: flex; justify-content: space-between; padding: 4px 8px; cursor: pointer; }
+        .receipt-row { display: flex; justify-content: space-between; padding: 4px 8px; }
         .receipt-row.selected { background: #fff3e6; outline: 1px solid var(--k-orange); }
-        
-        .totals-block { background: #f0f0f0; padding: 10px; border-top: 1px solid #ccc; }
-        .total-row { display: flex; justify-content: space-between; font-size: 2.2rem; font-weight: bold; color: var(--k-blue); }
+        .total-row { display: flex; justify-content: space-between; font-size: 2.2rem; font-weight: bold; color: var(--k-blue); padding: 10px; background: #f0f0f0; border-top: 1px solid #ccc; }
 
-        .input-display { background: #1a1a1a; color: #0f0; padding: 10px; text-align: right; font-size: 2rem; font-family: monospace; margin: 5px 0; height: 45px; display: flex; justify-content: flex-end; align-items: center; }
+        .input-display { background: #1a1a1a; color: #0f0; padding: 10px; text-align: right; font-size: 2rem; font-family: monospace; margin: 5px 0; height: 45px; display: flex; justify-content: space-between; align-items: center; }
+        #payment-status-label { font-size: 0.9rem; color: #ff0; }
 
-        /* NUMPAD */
         .numpad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; background: #bbb; padding: 5px; }
-        .num-btn { height: 65px; background: #fefefe; border: 1px solid #777; font-size: 1.5rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 2px; }
+        .num-btn { height: 65px; background: #fefefe; border: 1px solid #777; font-size: 1.5rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .num-btn.blue { background: var(--k-blue); color: white; }
         .num-btn.orange { background: var(--k-orange); color: white; }
 
-        /* KESKIPANEELI */
-        .center-panel { flex: 1; display: flex; flex-direction: column; gap: 5px; }
-        .folder-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
-        .folder-btn { background: #eee; border: 1px solid #888; border-bottom: 4px solid var(--k-blue); padding: 15px 5px; font-weight: bold; text-align: center; font-size: 0.85rem; }
-        .product-grid { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(5, 1fr); gap: 5px; }
-        .product-btn { background: white; border: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; font-weight: bold; cursor: pointer; font-size: 0.9rem; }
-
-        /* OIKEA PANEELI[cite: 2] */
+        /* Keski & Oikea */
+        .center-panel { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(5, 1fr); gap: 5px; padding-top: 55px; }
+        .product-btn { background: white; border: 1px solid var(--border-color); display: flex; justify-content: center; align-items: center; text-align: center; font-weight: bold; cursor: pointer; }
+        
         .right-panel { width: 180px; display: grid; grid-template-rows: repeat(12, 1fr); gap: 4px; }
         .f-btn { background: #eee; border: 1px solid #777; font-size: 0.8rem; font-weight: bold; padding-left: 10px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; }
         .f-btn span { color: var(--k-blue); font-size: 0.9rem; }
-        .f-btn.danger { background: var(--danger); color: white; }
-        .f-btn.danger span { color: white; }
         .f-btn.success { background: var(--success); color: white; }
         .f-btn.success span { color: white; }
 
-        /* ALAPALKKI[cite: 2] */
-        footer { height: 35px; background: #333; color: #ccc; display: flex; align-items: center; padding: 0 15px; font-size: 0.8rem; justify-content: space-between; }
-
-        /* MODAALIT */
+        /* Modaalit */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; }
-        .modal-content { background: white; width: 600px; border: 4px solid var(--k-blue); }
+        .terminal-box { width: 300px; background: #333; border-radius: 15px; padding: 20px; color: white; text-align: center; }
+        .screen { background: #87af87; color: #1a2e1a; height: 100px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-family: monospace; font-weight: bold; margin-bottom: 15px; }
     </style>
 </head>
 <body>
 
 <header>
     <div>K-RAUTA POS - MYYMÄLÄ 101</div>
-    <div>KÄYTTÄJÄ: 4422 - MIKKO M.</div>
     <div id="clock">19:23:43</div>
 </header>
 
 <div class="main-container">
-    <!-- VASEN[cite: 2] -->
     <div class="left-panel">
         <div class="receipt-area">
             <div class="receipt-header">VOIMASSA OLEVA TAPAHTUMA</div>
             <div class="receipt-content" id="receipt-list"></div>
-            <div class="totals-block">
-                <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:#666;">
-                    <span>ALV 24% sis.</span> <span id="tax-val">0.00</span>
-                </div>
-                <div class="total-row">
-                    <span>YHTEENSÄ</span> <span id="total-val">0.00</span>
-                </div>
-            </div>
+            <div class="total-row"><span>YHTEENSÄ</span> <span id="total-val">0.00</span></div>
         </div>
-        <div class="input-display" id="pos-input">0</div>
+        <div class="input-display">
+            <span id="payment-status-label">MYYNTI</span>
+            <span id="pos-input">0</span>
+        </div>
         <div class="numpad">
-            <div class="num-btn" onclick="press('7')">7</div><div class="num-btn" onclick="press('8')">8</div><div class="num-btn" onclick="press('9')">9</div><div class="num-btn blue" onclick="setQty()">KPL</div>
-            <div class="num-btn" onclick="press('4')">4</div><div class="num-btn" onclick="press('5')">5</div><div class="num-btn" onclick="press('6')">6</div><div class="num-btn blue" onclick="openSearch()">HAE</div>
+            <div class="num-btn" onclick="press('7')">7</div><div class="num-btn" onclick="press('8')">8</div><div class="num-btn" onclick="press('9')">9</div><div class="num-btn blue">KPL</div>
+            <div class="num-btn" onclick="press('4')">4</div><div class="num-btn" onclick="press('5')">5</div><div class="num-btn" onclick="press('6')">6</div><div class="num-btn blue">HAE</div>
             <div class="num-btn" onclick="press('1')">1</div><div class="num-btn" onclick="press('2')">2</div><div class="num-btn" onclick="press('3')">3</div><div class="num-btn orange" onclick="clearInput()">CLR</div>
-            <div class="num-btn" onclick="press('0')">0</div><div class="num-btn" onclick="press('00')">00</div><div class="num-btn" onclick="press('.')">,</div><div class="num-btn orange" onclick="handleEnter()">ENT</div>
+            <div class="num-btn" onclick="press('0')">0</div><div class="num-btn" onclick="press('00')">00</div><div class="num-btn">,</div><div class="num-btn orange" onclick="handleEnter()">ENT</div>
         </div>
     </div>
 
-    <!-- KESKI[cite: 2] -->
-    <div class="center-panel">
-        <div class="folder-row">
-            <div class="folder-btn">PUUTAVARA (F1)</div>
-            <div class="folder-btn">RAKENNUS (F2)</div>
-            <div class="folder-btn">SISUSTUS (F3)</div>
-            <div class="folder-btn">PIHA (F4)</div>
-        </div>
-        <div class="product-grid" id="product-grid">
-            <!-- Täytetään JS:llä jotta 4x5 ruudukko säilyy[cite: 2] -->
-        </div>
-    </div>
+    <div class="center-panel" id="product-grid"></div>
 
-    <!-- OIKEA[cite: 2] -->
     <div class="right-panel">
-        <div class="f-btn" onclick="openSearch()"><span>F1</span>TUOTEHAKU</div>
-        <div class="f-btn"><span>F2</span>PLU-LISTA</div>
-        <div class="f-btn" onclick="togglePlussa()"><span>F3</span>K-PLUSSA</div>
-        <div class="f-btn"><span>F4</span>TILIASIAKAS</div>
-        <div class="f-btn" onclick="applyDiscount()"><span>F5</span>ALE %</div>
-        <div class="f-btn" onclick="removeSelected()"><span>F6</span>RIVIN POISTO</div>
-        <div class="f-btn"><span>F7</span>VÄLISUMMA</div>
-        <div class="f-btn" onclick="changePrice()"><span>F8</span>HINNAN MUUTOS</div>
-        <div class="f-btn"><span>F9</span>LAATIKKO</div>
-        <div class="f-btn"><span>F10</span>KESKEYTÄ</div>
-        <div class="f-btn danger" onclick="cancelTransaction()"><span>F11</span>PERUUTA</div>
+        <div class="f-btn"><span>F1</span>TUOTEHAKU</div>
+        <div class="f-btn"><span>F3</span>K-PLUSSA</div>
+        <div class="f-btn" onclick="removeItem()"><span>F6</span>RIVIN POISTO</div>
         <div class="f-btn success" onclick="openPayMenu()"><span>F12</span>MAKSA</div>
     </div>
 </div>
 
-<footer>
-    <div>TERMINAALI: 04 &nbsp;&nbsp; VERSIO: 5.82.1</div>
-    <div>YHTEYS: OK (ONLINE)</div>
-</footer>
-
-<!-- MAKSUMENU JA HAKU (Toiminnalliset osat) -->
-<div id="pay-modal" class="modal">
-    <div class="modal-content" style="padding:20px;">
-        <h2 style="color:var(--k-blue)">VALITSE MAKSUTAPA</h2>
-        <button class="num-btn" style="width:100%; margin-bottom:10px" onclick="pay('KÄTEINEN')">F1 - KÄTEINEN</button>
-        <button class="num-btn" style="width:100%; margin-bottom:10px" onclick="pay('KORTTI')">F2 - KORTTI</button>
+<!-- Maksutapavalikko -->
+<div id="pay-menu" class="modal">
+    <div style="background:white; padding:20px; border:4px solid var(--k-blue); width:350px;">
+        <h2 style="text-align:center; color:var(--k-blue);">VALITSE MAKSU</h2>
+        <button class="num-btn" style="width:100%; margin-bottom:10px" onclick="setMode('CASH')">F1 - KÄTEINEN</button>
+        <button class="num-btn" style="width:100%; margin-bottom:10px" onclick="startCard()">F2 - KORTTI</button>
         <button class="num-btn orange" style="width:100%" onclick="closeModals()">PERUUTA</button>
     </div>
 </div>
 
-<div id="search-modal" class="modal">
-    <div class="modal-content">
-        <div style="background:var(--k-blue); color:white; padding:10px; font-weight:bold;">F1 - TUOTEHAKU</div>
-        <input type="text" id="search-input" placeholder="Hae tuotetta..." style="width:96%; margin:2%; padding:10px; font-size:1.2rem;" oninput="filterSearch()">
-        <div id="search-results" style="max-height:300px; overflow-y:auto;"></div>
-        <button class="num-btn orange" style="width:100%" onclick="closeModals()">SULJE</button>
+<!-- Maksupääte-ikkuna -->
+<div id="card-modal" class="modal">
+    <div class="terminal-box">
+        <div class="screen" id="term-screen">ODOTTAA KORTTIA...</div>
+        <p id="term-amt">0.00€</p>
     </div>
 </div>
 
 <script>
-    const products = [
-        { id: "101", name: "KESTOPUU 28x95", price: 2.25, plussa: 1.95, autoDisc: 0 },
-        { id: "202", name: "SEMENTTI S30 25KG", price: 8.90, plussa: 7.90, autoDisc: 0.10 },
-        { id: "303", name: "K-RAUTA KASSI", price: 0.25, plussa: 0.25, autoDisc: 0 },
-        { id: "404", name: "KULJETUSPALVELU", price: 55.00, plussa: 55.00, autoDisc: 0 }
-    ];
-
-    let cart = [];
+    let cart = [{name: "KESTOPUU 28x95", price: 2.25}, {name: "SEMENTTI S30", price: 8.90}]; // Esimerkkituotteet[cite: 2]
     let input = "";
-    let qty = 1;
-    let selectedIdx = -1;
-    let isPlussa = false;
+    let mode = "SALE"; // SALE tai CASH[cite: 2]
 
-    function initGrid() {
+    function init() {
         const grid = document.getElementById('product-grid');
-        grid.innerHTML = "";
         for(let i=0; i<20; i++) {
             const btn = document.createElement('div');
             btn.className = 'product-btn';
-            if(products[i]) {
-                btn.innerHTML = `${products[i].name}<br>${products[i].price.toFixed(2)}€`;
-                btn.onclick = () => add(products[i]);
-            } else {
-                btn.innerHTML = "---";
-                btn.style.color = "#ccc";
-            }
+            btn.innerHTML = i < 2 ? `${cart[i].name}<br>${cart[i].price}€` : "---";
             grid.appendChild(btn);
         }
+        update();
     }
 
     function press(n) { input += n; document.getElementById('pos-input').innerText = input; }
-    function clearInput() { input = ""; qty = 1; document.getElementById('pos-input').innerText = "0"; }
-    function setQty() { if(input) { qty = parseFloat(input); input = ""; document.getElementById('pos-input').innerText = `KPL: ${qty}`; } }
-
-    function add(p) {
-        let price = isPlussa ? p.plussa : p.price;
-        if(p.autoDisc) price *= (1 - p.autoDisc);
-        cart.push({ ...p, finalPrice: price, qty: qty });
-        qty = 1; update();
-    }
+    function clearInput() { input = ""; document.getElementById('pos-input').innerText = "0"; }
 
     function update() {
         const list = document.getElementById('receipt-list');
         list.innerHTML = "";
         let total = 0;
-        cart.forEach((item, i) => {
-            const row = document.createElement('div');
-            row.className = `receipt-row ${selectedIdx === i ? 'selected' : ''}`;
-            row.onclick = () => { selectedIdx = i; update(); };
-            row.innerHTML = `<span>${item.qty} x ${item.name}</span><span>${(item.qty * item.finalPrice).toFixed(2)}</span>`;
-            list.appendChild(row);
-            total += item.qty * item.finalPrice;
+        cart.forEach(item => {
+            list.innerHTML += `<div class="receipt-row"><span>1 x ${item.name}</span><span>${item.price.toFixed(2)}</span></div>`;
+            total += item.price;
         });
         document.getElementById('total-val').innerText = total.toFixed(2);
-        document.getElementById('tax-val').innerText = (total * 0.1935).toFixed(2); // Alv laskenta esimerkin mukaan
-        list.scrollTop = list.scrollHeight;
+    }
+
+    function openPayMenu() { document.getElementById('pay-menu').style.display = 'flex'; }
+    function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
+
+    // Vaihtaa tilan käteismaksulle ja palaa päänäkymään[cite: 2]
+    function setMode(newMode) {
+        mode = newMode;
+        if(mode === 'CASH') {
+            document.getElementById('payment-status-label').innerText = "ANNETTU SUMMA";
+            document.getElementById('payment-status-label').style.color = "red";
+        }
+        closeModals();
     }
 
     function handleEnter() {
-        const p = products.find(x => x.id === input);
-        if(p) add(p);
-        clearInput();
-    }
-
-    function removeSelected() { if(selectedIdx > -1) { cart.splice(selectedIdx, 1); selectedIdx = -1; update(); } }
-    function changePrice() { if(selectedIdx > -1 && input) { cart[selectedIdx].finalPrice = parseFloat(input); clearInput(); update(); } }
-    function applyDiscount() { if(selectedIdx > -1 && input) { cart[selectedIdx].finalPrice *= (1 - parseFloat(input)/100); clearInput(); update(); } }
-    
-    function togglePlussa() { isPlussa = !isPlussa; alert(isPlussa ? "Plussa-kortti luettu" : "Plussa poistettu"); }
-    function cancelTransaction() { if(confirm("Peruutetaanko kauppa?")) { cart = []; update(); clearInput(); } }
-
-    function openPayMenu() { document.getElementById('pay-modal').style.display = 'flex'; }
-    function openSearch() { document.getElementById('search-modal').style.display = 'flex'; document.getElementById('search-input').focus(); }
-    function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
-
-    function pay(method) {
-        let total = parseFloat(document.getElementById('total-val').innerText);
-        if(method === 'KÄTEINEN') {
-            let given = input ? parseFloat(input) : total;
-            alert(`Yhteensä: ${total}€\nAnnettu: ${given}€\nVaihtoraha: ${(given - total).toFixed(2)}€`);
+        if(mode === 'CASH') {
+            const total = parseFloat(document.getElementById('total-val').innerText);
+            const given = parseFloat(input) || total;
+            alert(`KAUPPA VALMIS\nYhteensä: ${total}€\nAnnettu: ${given}€\nVaihtoraha: ${(given - total).toFixed(2)}€`);
+            resetAll();
         } else {
-            alert("Maksupääte: Käsitellään...");
+            // Normaali tuotekoodin syöttö[cite: 2]
+            clearInput();
         }
-        cart = []; update(); closeModals(); clearInput();
     }
 
-    initGrid();
-    setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('fi-FI'); }, 1000);
+    function startCard() {
+        closeModals();
+        document.getElementById('card-modal').style.display = 'flex';
+        document.getElementById('term-amt').innerText = document.getElementById('total-val').innerText + "€";
+        
+        setTimeout(() => {
+            if(Math.random() > 0.3) {
+                document.getElementById('term-screen').innerText = "HYVÄKSYTTY";
+                document.getElementById('term-screen').style.background = "#28a745";
+                setTimeout(() => resetAll(), 1500);
+            } else {
+                document.getElementById('term-screen').innerText = "VIRHE - KOKEILE UUDELLEEN";
+                document.getElementById('term-screen').style.background = "#cc0000";
+                setTimeout(() => startCard(), 2000);
+            }
+        }, 2000);
+    }
+
+    function resetAll() {
+        cart = []; update(); mode = "SALE";
+        document.getElementById('payment-status-label').innerText = "MYYNTI";
+        document.getElementById('payment-status-label').style.color = "#ff0";
+        closeModals(); clearInput();
+    }
+
+    init();
 </script>
 </body>
 </html>
