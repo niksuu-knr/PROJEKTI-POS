@@ -2,122 +2,225 @@
 <html lang="fi">
 <head>
     <meta charset="UTF-8">
-    <title>K-Rauta Professional POS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ammattikassa</title>
     <style>
         :root {
             --k-orange: #ff6600;
             --k-blue: #004593;
-            --action-grey: #e0e0e0;
-            --danger: #d9534f;
-            --success: #5cb85c;
-            --warning: #f0ad4e;
+            --bg-grey: #d1d1d1;
+            --action-grey: #e6e6e6;
+            --border-color: #888;
+            --danger: #cc0000;
+            --success: #28a745;
+            --warning: #ffc107;
+            --display-bg: #222;
         }
 
         body {
-            font-family: 'Segoe UI', Helvetica, sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
             margin: 0;
-            display: grid;
-            grid-template-rows: 50px 1fr 40px;
+            padding: 0;
+            background-color: var(--bg-grey);
             height: 100vh;
-            background: #ccc;
+            display: flex;
+            flex-direction: column;
             overflow: hidden;
+            user-select: none;
         }
 
-        /* Yläpalkki */
+        /* YLÄPALKKI */
         header {
             background: var(--k-blue);
             color: white;
+            padding: 5px 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 15px;
+            font-weight: bold;
+            border-bottom: 2px solid var(--k-orange);
+            height: 40px;
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            gap: 5px;
+            padding: 5px;
+            height: calc(100vh - 85px);
+        }
+
+        /* VASEN PANEELI: Kuitti ja Numpad */
+        .left-panel {
+            width: 380px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .receipt-area {
+            flex: 1;
+            background: white;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .receipt-header {
+            background: #444;
+            color: white;
+            padding: 8px;
+            font-size: 0.9rem;
+            text-align: center;
             font-weight: bold;
         }
 
-        /* Pääalue */
-        main {
-            display: grid;
-            grid-template-columns: 350px 1fr 220px; /* Kuitti | Tuotteet | Toiminnot */
-            gap: 5px;
-            padding: 5px;
+        .receipt-content {
+            flex: 1;
+            padding: 10px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            overflow-y: auto;
+            font-size: 0.85rem;
         }
 
-        /* KUITTIALUE (Vasen) */
-        .receipt-container {
-            background: white;
-            display: flex;
-            flex-direction: column;
-            border: 1px solid #999;
-        }
-        .receipt-list {
-            flex-grow: 1;
-            padding: 5px;
-            font-family: 'Courier New', monospace;
-            overflow-y: auto;
-            background: #fff;
-        }
         .receipt-row {
             display: flex;
             justify-content: space-between;
-            border-bottom: 1px dotted #ccc;
-            padding: 4px 0;
-            font-size: 0.9rem;
+            margin-bottom: 4px;
         }
-        .totals-area {
-            background: #eee;
+
+        .totals-block {
+            background: #f0f0f0;
             padding: 10px;
             border-top: 2px solid var(--k-blue);
         }
 
-        /* TUOTERUUDUKKO (Keskellä) */
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--k-blue);
+        }
+
+        .input-display {
+            background: var(--display-bg);
+            color: #0f0;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 1.8rem;
+            text-align: right;
+            border: 1px solid #000;
+            min-height: 40px;
+        }
+
+        /* NUMERONÄPPÄIMISTÖ */
+        .numpad {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 4px;
+            background: #bbb;
+            padding: 5px;
+            border: 1px solid #999;
+        }
+
+        .num-btn {
+            height: 65px;
+            background: #fefefe;
+            border: 1px solid #777;
+            font-size: 1.4rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+
+        .num-btn:active { background: #ddd; }
+        .num-btn.orange { background: var(--k-orange); color: white; }
+        .num-btn.blue { background: var(--k-blue); color: white; }
+
+        /* KESKIPANEELI: Tuote- ja kansioruudukko */
+        .center-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .folder-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+        }
+
+        .folder-btn {
+            padding: 15px;
+            background: #eee;
+            border: 1px solid var(--border-color);
+            border-bottom: 4px solid var(--k-blue);
+            font-weight: bold;
+            font-size: 0.8rem;
+            text-align: center;
+            cursor: pointer;
+        }
+
         .product-grid {
+            flex: 1;
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             grid-template-rows: repeat(5, 1fr);
             gap: 5px;
         }
+
         .product-btn {
-            background: #fff;
-            border: 1px solid #999;
+            background: white;
+            border: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
+            padding: 10px;
             font-weight: bold;
-            font-size: 0.8rem;
-            cursor: pointer;
+            font-size: 0.85rem;
             text-align: center;
-            padding: 5px;
-        }
-        .product-btn:active { background: var(--k-orange); color: white; }
-        .product-btn.folder { background: #f9f9f9; border-bottom: 4px solid var(--k-blue); }
-
-        /* TOIMINTONÄPPÄIMISTÖ (Oikea laita) */
-        .action-grid {
-            display: grid;
-            grid-template-rows: repeat(10, 1fr);
-            gap: 5px;
-        }
-        .action-btn {
-            background: var(--action-grey);
-            border: 1px solid #888;
-            font-weight: bold;
-            font-size: 0.75rem;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-transform: uppercase;
         }
-        .btn-plussa { background: var(--k-blue); color: white; }
-        .btn-pay { background: var(--success); color: white; font-size: 1rem; }
-        .btn-cancel { background: var(--danger); color: white; }
-        .btn-subtotal { background: var(--warning); color: black; }
 
-        /* Alapalkki */
+        .product-btn:active { background: #f0f0f0; }
+
+        /* OIKEA PANEELI: F-Näppäimet[cite: 1, 2] */
+        .right-panel {
+            width: 180px;
+            display: grid;
+            grid-template-rows: repeat(12, 1fr);
+            gap: 4px;
+        }
+
+        .f-btn {
+            background: var(--action-grey);
+            border: 1px solid #777;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-left: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .f-btn span { color: var(--k-blue); font-size: 0.85rem; margin-bottom: 2px; }
+        .f-btn.pay { background: var(--success); color: white; }
+        .f-btn.pay span { color: white; }
+        .f-btn.cancel { background: var(--danger); color: white; }
+        .f-btn.cancel span { color: white; }
+
+        /* ALAPALKKI */
         footer {
-            background: #444;
-            color: #ddd;
+            height: 35px;
+            background: #333;
+            color: #ccc;
             display: flex;
             align-items: center;
             padding: 0 15px;
@@ -129,94 +232,150 @@
 <body>
 
 <header>
-    <div>K-RAUTA POS v4.2</div>
-    <div>MYYJÄ: 123 - Antti A.</div>
-    <div id="clock">12:45:01</div>
+    <div>K-RAUTA POS - MYYMÄLÄ 101</div>
+    <div style="font-size: 0.9rem;">KÄYTTÄJÄ: 4422 - MIKKO M.</div>
+    <div id="clock">00:00:00</div>
 </header>
 
-<main>
-    <!-- Vasen: Kuitti -->
-    <div class="receipt-container">
-        <div style="background: #ddd; padding: 5px; font-weight: bold; text-align: center;">MYYNTITAPAHTUMA</div>
-        <div class="receipt-list" id="receipt-list">
-            <!-- Tuotteet listataan tässä -->
+<div class="main-container">
+    
+    <!-- VASEN PANEELI[cite: 2] -->
+    <div class="left-panel">
+        <div class="receipt-area">
+            <div class="receipt-header">VOIMASSA OLEVA TAPAHTUMA</div>
+            <div class="receipt-content" id="receipt-list"></div>
+            <div class="totals-block">
+                <div style="display:flex; justify-content: space-between; font-size: 0.8rem; color: #666;">
+                    <span>ALV 24% sis.</span> <span id="tax-amount">0.00</span>
+                </div>
+                <div class="total-row">
+                    <span>YHTEENSÄ</span> <span id="total-val">0.00</span>
+                </div>
+            </div>
         </div>
-        <div class="totals-area">
-            <div style="display: flex; justify-content: space-between; font-size: 0.8rem;">
-                <span>ALV 0%</span> <span id="tax-free">0.00</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; font-size: 1.6rem; font-weight: bold; color: var(--k-blue);">
-                <span>YHTEENSÄ</span> <span id="total">0.00</span>
-            </div>
+
+        <!-- Input-näyttö numeronäppäimistölle[cite: 2] -->
+        <div class="input-display" id="pos-input">0</div>
+
+        <div class="numpad">
+            <div class="num-btn" onclick="pressNum('7')">7</div>
+            <div class="num-btn" onclick="pressNum('8')">8</div>
+            <div class="num-btn" onclick="pressNum('9')">9</div>
+            <div class="num-btn blue">KPL</div>
+            
+            <div class="num-btn" onclick="pressNum('4')">4</div>
+            <div class="num-btn" onclick="pressNum('5')">5</div>
+            <div class="num-btn" onclick="pressNum('6')">6</div>
+            <div class="num-btn blue">HAE</div>
+            
+            <div class="num-btn" onclick="pressNum('1')">1</div>
+            <div class="num-btn" onclick="pressNum('2')">2</div>
+            <div class="num-btn" onclick="pressNum('3')">3</div>
+            <div class="num-btn orange" onclick="pressNum('CLR')">CLR</div>
+            
+            <div class="num-btn" onclick="pressNum('0')">0</div>
+            <div class="num-btn" onclick="pressNum('00')">00</div>
+            <div class="num-btn" onclick="pressNum(',')">,</div>
+            <div class="num-btn orange">ENT</div>
         </div>
     </div>
 
-    <!-- Keskellä: Tuoteruudukko -->
-    <div class="product-grid">
-        <!-- Kansiot ylhäällä -->
-        <button class="product-btn folder">PUUTAVARA</button>
-        <button class="product-btn folder">RUUVIT / KIINNITYS</button>
-        <button class="product-btn folder">MAALIT</button>
-        <button class="product-btn folder">PUUTARHA</button>
-        
-        <!-- Pika-artikkelit -->
-        <button class="product-btn" onclick="add('Sementti 25kg', 8.50)">SEMENTTI S30<br>8.50€</button>
-        <button class="product-btn" onclick="add('Kestopuu 28x95', 2.10)">KESTOPUU m<br>2.10€</button>
-        <button class="product-btn" onclick="add('Lapiot / Työkalut', 24.90)">YLEISLAPIO<br>24.90€</button>
-        <button class="product-btn" onclick="add('Toimitusmaksu', 45.00)">RAHTI / KULJETUS<br>45.00€</button>
-        
-        <!-- Tyhjiä paikkoja -->
-        <div class="product-btn" style="border: 1px dashed #ccc; opacity: 0.5;">EI MÄÄRITETTY</div>
-        <div class="product-btn" style="border: 1px dashed #ccc; opacity: 0.5;">EI MÄÄRITETTY</div>
-        <div class="product-btn" style="border: 1px dashed #ccc; opacity: 0.5;">EI MÄÄRITETTY</div>
-        <div class="product-btn" style="border: 1px dashed #ccc; opacity: 0.5;">EI MÄÄRITETTY</div>
+    <!-- KESKIPANEELI[cite: 2] -->
+    <div class="center-panel">
+        <div class="folder-row">
+            <div class="folder-btn">PUUTAVARA (F1)</div>
+            <div class="folder-btn">RAKENNUS (F2)</div>
+            <div class="folder-btn">SISUSTUS (F3)</div>
+            <div class="folder-btn">PIHA (F4)</div>
+        </div>
+        <div class="product-grid">
+            <div class="product-btn" onclick="addItem('KESTOPUU 28x95', 2.25)">KESTOPUU 28X95<br>2.25€ / m</div>
+            <div class="product-btn" onclick="addItem('SEMENTTI S30 25KG', 8.90)">SEMENTTI S30<br>8.90€</div>
+            <div class="product-btn" onclick="addItem('K-RAUTA KASSI', 0.25)">K-RAUTA KASSI<br>0.25€</div>
+            <div class="product-btn" onclick="addItem('RAHTIMAKSU', 55.00)">KULJETUSPALVELU<br>55.00€</div>
+            <!-- Tyhjät ruudut rautakaupan tyyliin[cite: 1, 2] -->
+            <div class="product-btn" style="color:#ccc">---</div><div class="product-btn" style="color:#ccc">---</div>
+            <div class="product-btn" style="color:#ccc">---</div><div class="product-btn" style="color:#ccc">---</div>
+            <div class="product-btn" style="color:#ccc">---</div><div class="product-btn" style="color:#ccc">---</div>
+            <div class="product-btn" style="color:#ccc">---</div><div class="product-btn" style="color:#ccc">---</div>
+            <div class="product-btn" style="color:#ccc">---</div><div class="product-btn" style="color:#ccc">---</div>
+            <div class="product-btn" style="color:#ccc">---</div><div class="product-btn" style="color:#ccc">---</div>
+        </div>
     </div>
 
-    <!-- Oikea: Toimintonäppäimet -->
-    <div class="action-grid">
-        <button class="action-btn btn-plussa">F1 PLU-HAKU</button>
-        <button class="action-btn">F2 KANTA-ASIAKAS</button>
-        <button class="action-btn">F3 TILIASIAKAS</button>
-        <button class="action-btn">F4 MUUTA MÄÄRÄÄ</button>
-        <button class="action-btn">F5 ALENNUS %</button>
-        <button class="action-btn">F6 HINNAN MUUTOS</button>
-        <button class="action-btn btn-subtotal">F7 VÄLISUMMA</button>
-        <button class="action-btn">F8 AVAA LAATIKKO</button>
-        <button class="action-btn btn-cancel">F9 PERUUTA</button>
-        <button class="action-btn btn-pay">F12 MAKSA</button>
+    <!-- OIKEA PANEELI[cite: 2] -->
+    <div class="right-panel">
+        <div class="f-btn"><span>F1</span>TUOTEHAKU</div>
+        <div class="f-btn"><span>F2</span>PLU-LISTA</div>
+        <div class="f-btn"><span>F3</span>K-PLUSSA</div>
+        <div class="f-btn"><span>F4</span>TILIASIAKAS</div>
+        <div class="f-btn"><span>F5</span>ALE %</div>
+        <div class="f-btn"><span>F6</span>RIVIN POISTO</div>
+        <div class="f-btn"><span>F7</span>VÄLISUMMA</div>
+        <div class="f-btn"><span>F8</span>HINNAN MUUTOS</div>
+        <div class="f-btn"><span>F9</span>LAATIKKO</div>
+        <div class="f-btn"><span>F10</span>KESKEYTÄ</div>
+        <div class="f-btn cancel"><span>F11</span>PERUUTA</div>
+        <div class="f-btn pay"><span>F12</span>MAKSA</div>
     </div>
-</main>
+</div>
 
 <footer>
-    <span>KONE: TERMINAL-04</span>
-    <span>VARASTO: 001 (PÄÄVARASTO)</span>
-    <span>STATUS: KIRJAUTUNUT</span>
+    <span>TERMINAALI: 04</span>
+    <span>VERSIO: 5.82.1</span>
+    <span style="margin-left: auto;">YHTEYS: OK (ONLINE)</span>
 </footer>
 
 <script>
-    let total = 0;
+    let currentTotal = 0;
+    let inputVal = "0";
 
-    function add(name, price) {
+    // Kellon päivitys[cite: 2]
+    function updateClock() {
+        document.getElementById('clock').innerText = new Date().toLocaleTimeString('fi-FI');
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Tuotteen lisääminen kuitille[cite: 2]
+    function addItem(name, price) {
         const list = document.getElementById('receipt-list');
         const row = document.createElement('div');
         row.className = 'receipt-row';
-        row.innerHTML = `<span>1 x ${name}</span> <span>${price.toFixed(2)}</span>`;
+        row.innerHTML = `<span>1 x ${name}</span><span>${price.toFixed(2)}</span>`;
         list.appendChild(row);
-        list.scrollTop = list.scrollHeight; // Automaattinen rullaus alas
+        list.scrollTop = list.scrollHeight;
 
-        total += price;
-        updateDisplay();
+        currentTotal += price;
+        updateTotals();
     }
 
-    function updateDisplay() {
-        document.getElementById('total').innerText = total.toFixed(2) + " €";
-        document.getElementById('tax-free').innerText = (total / 1.24).toFixed(2);
+    function updateTotals() {
+        document.getElementById('total-val').innerText = currentTotal.toFixed(2);
+        document.getElementById('tax-amount').innerText = (currentTotal * 0.24).toFixed(2);
     }
 
-    // Kellon päivitys
-    setInterval(() => {
-        document.getElementById('clock').innerText = new Date().toLocaleTimeString('fi-FI');
-    }, 1000);
+    // Numeronäppäimistön logiikka[cite: 2]
+    function pressNum(char) {
+        const display = document.getElementById('pos-input');
+        if (char === 'CLR') {
+            inputVal = "0";
+        } else if (char === '00') {
+            if (inputVal !== "0") inputVal += "00";
+        } else {
+            if (inputVal === "0") inputVal = char;
+            else inputVal += char;
+        }
+        display.innerText = inputVal;
+    }
+
+    // F-näppäinten estäminen ja kuuntelu[cite: 2]
+    window.addEventListener('keydown', (e) => {
+        if (e.key.startsWith('F')) {
+            e.preventDefault();
+            console.log("Toiminto: " + e.key);
+        }
+    });
 </script>
 
 </body>
