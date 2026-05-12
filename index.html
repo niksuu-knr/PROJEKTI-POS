@@ -13,64 +13,61 @@
         header { background: var(--k-blue); color: white; padding: 5px 15px; display: flex; justify-content: space-between; align-items: center; height: 40px; font-weight: bold; }
         .main-container { display: flex; flex: 1; gap: 5px; padding: 5px; height: calc(100vh - 75px); }
 
-        /* Vasen paneeli */
+        /* Kuitin ulkoasu ja navigointi */
         .left-panel { width: 380px; display: flex; flex-direction: column; }
         .receipt-area { flex: 1; background: white; border: 1px solid var(--border-color); display: flex; flex-direction: column; overflow: hidden; }
-        .receipt-header { background: #444; color: white; padding: 8px; text-align: center; font-weight: bold; }
+        .receipt-info { background: #eee; padding: 5px; font-size: 0.8rem; border-bottom: 1px solid #ccc; display: flex; justify-content: space-between; }
         .receipt-content { flex: 1; overflow-y: auto; font-family: 'Consolas', monospace; padding: 5px; font-size: 0.9rem; }
-        .receipt-row { display: flex; justify-content: space-between; padding: 4px 8px; border-bottom: 1px solid #eee; }
-        .receipt-row.selected { background: #fff3e6; outline: 1px solid var(--k-orange); }
+        .receipt-row { display: flex; justify-content: space-between; padding: 6px 8px; border-bottom: 1px solid #eee; cursor: pointer; }
+        .receipt-row.selected { background: var(--k-orange); color: white; }
         
         .total-row { display: flex; justify-content: space-between; font-size: 2.2rem; font-weight: bold; color: var(--k-blue); padding: 10px; background: #f0f0f0; border-top: 1px solid #ccc; }
         .total-row.change-mode { color: var(--danger); background: #fff3f3; }
 
         .input-display { background: #1a1a1a; color: #0f0; padding: 10px; text-align: right; font-size: 2rem; font-family: monospace; margin: 5px 0; height: 45px; display: flex; justify-content: space-between; align-items: center; border: 2px inset #555; }
-        #mode-label { font-size: 0.8rem; color: #ff0; }
+        #mode-label { font-size: 0.8rem; color: #ff0; text-transform: uppercase; }
 
         .numpad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; background: #bbb; padding: 5px; }
-        .num-btn { height: 65px; background: #fefefe; border: 1px solid #777; font-size: 1.5rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .num-btn { height: 55px; background: #fefefe; border: 1px solid #777; font-size: 1.3rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .num-btn.blue { background: var(--k-blue); color: white; }
         .num-btn.orange { background: var(--k-orange); color: white; }
-        .num-btn:active { background: #ccc; }
 
-        /* Keskipaneeli */
-        .center-panel { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: auto repeat(5, 1fr); gap: 5px; }
-        .folder-btn { background: #eee; border: 1px solid #888; border-bottom: 4px solid var(--k-blue); padding: 10px; font-weight: bold; text-align: center; font-size: 0.8rem; }
-        .product-btn { background: white; border: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; font-weight: bold; cursor: pointer; font-size: 0.85rem; }
+        .center-panel { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+        .product-grid { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(5, 1fr); gap: 5px; }
+        .product-btn { background: white; border: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; font-weight: bold; cursor: pointer; font-size: 0.8rem; padding: 5px; }
 
-        /* Oikea paneeli */
         .right-panel { width: 180px; display: grid; grid-template-rows: repeat(12, 1fr); gap: 4px; }
-        .f-btn { background: #eee; border: 1px solid #777; font-size: 0.8rem; font-weight: bold; padding-left: 10px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; }
-        .f-btn span { color: var(--k-blue); font-size: 0.9rem; }
-        .f-btn.success { background: var(--success); color: white; }
-        .f-btn.success span { color: white; }
+        .f-btn { background: #eee; border: 1px solid #777; font-size: 0.75rem; font-weight: bold; padding-left: 10px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; }
+        .f-btn span { color: var(--k-blue); font-size: 0.85rem; }
 
-        /* Lukitus */
-        #lock-screen { position: fixed; top: 40px; left: 0; width: 100%; height: calc(100% - 40px); background: rgba(0,0,0,0.95); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
-        
         .modal { display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; }
-        .terminal-box { width: 320px; background: #333; border-radius: 10px; padding: 20px; color: white; border: 4px solid #555; }
-        .term-screen { background: #87af87; color: #1a2e1a; height: 100px; display: flex; align-items: center; justify-content: center; font-family: monospace; font-weight: bold; margin-bottom: 15px; border-radius: 5px; border: 3px inset #666; }
+        .modal-content { background: white; padding: 20px; border: 4px solid var(--k-blue); width: 450px; max-height: 90vh; overflow-y: auto; }
+        .modal-content input, .modal-content select { width: 95%; padding: 8px; margin: 5px 0; font-size: 1rem; }
+        
+        #lock-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #111; z-index: 4000; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
     </style>
 </head>
 <body>
 
 <header>
-    <div>K-RAUTA POS - MYYMÄLÄ 101</div>
+    <div>KASSAOHJELMA</div>
     <div id="seller-info">MYYJÄ: EI KIRJAUTUNUT</div>
     <div id="clock">00:00:00</div>
 </header>
 
 <div id="lock-screen">
     <h1 style="color: var(--k-orange);">KASSA LUKITTU</h1>
-    <p>SYÖTÄ MYYJÄNUMERO JA PAINA ENTER (KOKEILE: 4422)</p>
-    <div id="login-display" style="font-size: 3rem; background: #222; padding: 20px; min-width: 240px; text-align: center; border: 2px solid var(--k-orange); font-family: monospace;"></div>
+    <p>SYÖTÄ MYYJÄNUMERO (4422)</p>
+    <div id="login-display" style="font-size: 3rem; border: 2px solid var(--k-orange); padding: 10px 40px; margin: 20px;"></div>
 </div>
 
 <div class="main-container">
     <div class="left-panel">
         <div class="receipt-area">
-            <div class="receipt-header">VOIMASSA OLEVA TAPAHTUMA</div>
+            <div class="receipt-info">
+                <span id="receipt-no-display">KUITTI: -</span>
+                <span id="receipt-date"></span>
+            </div>
             <div class="receipt-content" id="receipt-list"></div>
             <div class="total-row" id="total-container">
                 <span id="total-label">YHTEENSÄ</span> 
@@ -82,241 +79,259 @@
             <span id="pos-input">0</span>
         </div>
         <div class="numpad">
-            <div class="num-btn" onclick="press('7')">7</div><div class="num-btn" onclick="press('8')">8</div><div class="num-btn" onclick="press('9')">9</div><div class="num-btn blue">KPL</div>
-            <div class="num-btn" onclick="press('4')">4</div><div class="num-btn" onclick="press('5')">5</div><div class="num-btn" onclick="press('6')">6</div><div class="num-btn blue">HAE</div>
-            <div class="num-btn" onclick="press('1')">1</div><div class="num-btn" onclick="press('2')">2</div><div class="num-btn" onclick="press('3')">3</div><div class="num-btn orange" onclick="clearInput()">CLR</div>
-            <div class="num-btn" onclick="press('0')">0</div><div class="num-btn" onclick="press('00')">00</div><div class="num-btn" onclick="press('.')">,</div><div class="num-btn orange" onclick="handleEnter()">ENT</div>
+            <div class="num-btn" onclick="uiPress('7')">7</div><div class="num-btn" onclick="uiPress('8')">8</div><div class="num-btn" onclick="uiPress('9')">9</div><div class="num-btn blue" onclick="setQty()">KPL</div>
+            <div class="num-btn" onclick="uiPress('4')">4</div><div class="num-btn" onclick="uiPress('5')">5</div><div class="num-btn" onclick="uiPress('6')">6</div><div class="num-btn blue" onclick="setMode('SEARCH')">HAE</div>
+            <div class="num-btn" onclick="uiPress('1')">1</div><div class="num-btn" onclick="uiPress('2')">2</div><div class="num-btn" onclick="uiPress('3')">3</div><div class="num-btn orange" onclick="clearInput()">CLR</div>
+            <div class="num-btn" onclick="uiPress('0')">0</div><div class="num-btn" onclick="uiPress('00')">00</div><div class="num-btn" onclick="uiPress('.')">,</div><div class="num-btn orange" onclick="handleEnter()">ENT</div>
         </div>
     </div>
 
     <div class="center-panel">
-        <div class="folder-btn">PUUTAVARA</div><div class="folder-btn">RAKENNUS</div><div class="folder-btn">SISUSTUS</div><div class="folder-btn">PIHA</div>
-        <div id="product-grid" style="display: contents;"></div>
+        <div class="product-grid" id="product-grid"></div>
     </div>
 
     <div class="right-panel">
-        <div class="f-btn"><span>F1</span>TUOTEHAKU</div>
-        <div class="f-btn"><span>F2</span>PLU-LISTA</div>
-        <div class="f-btn"><span>F3</span>K-PLUSSA</div>
-        <div class="f-btn" onclick="lockPOS()"><span>F4</span>MYYJÄ (LUKITSE)</div>
+        <div class="f-btn" onclick="setMode('SEARCH')"><span>F1</span>TUOTE/PLU HAKU</div>
+        <div class="f-btn" onclick="openAdmin()"><span>F2</span>TUOTEHALLINTA</div>
+        <div class="f-btn" onclick="togglePlussa()"><span>F3</span>K-PLUSSA</div>
+        <div class="f-btn" onclick="lockPOS()"><span>F4</span>MYYJÄ LUKITUS</div>
+        <div class="f-btn" onclick="applyDiscount()"><span>F5</span>ALENNUS %</div>
         <div class="f-btn" onclick="removeSelected()"><span>F6</span>RIVIN POISTO</div>
+        <div class="f-btn" onclick="openReturnMenu()"><span>F7</span>PALAUTUS</div>
         <div class="f-btn" onclick="setPriceMode()"><span>F8</span>HINNAN MUUTOS</div>
+        <div class="f-btn" onclick="sellGiftCard()"><span>F9</span>LAHJAKORTTI MYYNTI</div>
         <div class="f-btn success" onclick="openPayMenu()"><span>F12</span>MAKSA</div>
     </div>
 </div>
 
-<!-- Modaalit[cite: 2] -->
-<div id="pay-modal" class="modal">
-    <div style="background:white; padding:20px; border:4px solid var(--k-blue); width:350px; text-align: center;">
-        <h2>MAKSU</h2>
-        <button class="num-btn" style="width:100%; margin-bottom:10px" onclick="setCashMode()">F1 - KÄTEINEN</button>
-        <button class="num-btn" style="width:100%; margin-bottom:10px" onclick="startCardSimulation()">F2 - KORTTI</button>
+<!-- MODAALIT -->
+<div id="admin-modal" class="modal">
+    <div class="modal-content">
+        <h3>TUOTEHALLINTA</h3>
+        <input type="text" id="adm-id" placeholder="Viivakoodi / PLU">
+        <input type="text" id="adm-name" placeholder="Tuotenimi">
+        <input type="number" id="adm-price" step="0.01" placeholder="Myyntihinta (€)">
+        <input type="number" id="adm-plussa" step="0.01" placeholder="Kanta-asiakashinta (€)">
+        <input type="text" id="adm-cat" placeholder="Tuoteryhmä">
+        <button class="num-btn blue" style="width:100%; margin-top:10px" onclick="saveProduct()">TALLENNA</button>
+        <button class="num-btn orange" style="width:100%; margin-top:5px" onclick="closeModals()">SULJE</button>
+    </div>
+</div>
+
+<div id="return-modal" class="modal">
+    <div class="modal-content">
+        <h2 style="color:var(--danger)">PALAUTUS</h2>
+        <button class="num-btn blue" style="width:100%; margin-bottom:10px" onclick="setMode('RETURN_RECEIPT')">NUMERAALINEN KUITTI</button>
+        <button class="num-btn" style="width:100%; margin-bottom:10px" onclick="setMode('RETURN_PRODUCT')">TUOTEHAKU / VIIVAKOODI</button>
         <button class="num-btn orange" style="width:100%" onclick="closeModals()">PERUUTA</button>
     </div>
 </div>
 
-<div id="card-modal" class="modal">
-    <div class="terminal-box">
-        <div class="term-screen" id="term-status">LUE KORTTI...</div>
-        <h3 id="term-amount" style="text-align:center;">0.00 €</h3>
+<div id="pay-modal" class="modal">
+    <div class="modal-content" style="text-align:center">
+        <h2>MAKSU</h2>
+        <button class="num-btn" style="width:100%; margin-bottom:10px" onclick="setMode('CASH')">KÄTEINEN</button>
+        <button class="num-btn" style="width:100%; margin-bottom:10px" onclick="setMode('GIFT_CARD_PAY')">LAHJAKORTTI</button>
+        <button class="num-btn orange" style="width:100%" onclick="closeModals()">PERUUTA</button>
     </div>
 </div>
 
 <script>
+    // Tallennuslogiikka
+    let products = JSON.parse(localStorage.getItem('pos_products')) || {
+        "1001": { name: "KESTOPUU 28x95", price: 2.25, plussa: 1.95, cat: "PUUTAVARA" },
+        "2002": { name: "SEMENTTI S30", price: 8.90, plussa: 7.50, cat: "RAKENNUS" }
+    };
+    let salesHistory = JSON.parse(localStorage.getItem('pos_sales')) || {};
+    let giftCards = JSON.parse(localStorage.getItem('pos_giftcards')) || {};
+    let lastReceiptNum = parseInt(localStorage.getItem('pos_last_receipt')) || 10000;
+
     let cart = [];
     let input = "";
     let mode = "LOGIN"; 
+    let currentReceipt = 0;
     let selectedIdx = -1;
-    let currentSeller = "";
-
-    const products = {
-        "101": { name: "KESTOPUU 28x95", price: 2.25 },
-        "202": { name: "SEMENTTI S30", price: 8.90 },
-        "303": { name: "K-RAUTA KASSI", price: 0.25 },
-        "6411234567890": { name: "RUUVIPAKKI PRO", price: 49.90 } // Esimerkki viivakoodista
-    };
+    let isPlussa = false;
+    let qtyInput = 1;
 
     function init() {
+        renderGrid();
+        newReceipt();
+        window.addEventListener('keydown', handleKeyboard);
+        setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('fi-FI'); }, 1000);
+    }
+
+    function newReceipt() {
+        lastReceiptNum++;
+        currentReceipt = lastReceiptNum;
+        localStorage.setItem('pos_last_receipt', lastReceiptNum);
+        document.getElementById('receipt-no-display').innerText = "KUITTI: " + currentReceipt;
+        document.getElementById('receipt-date').innerText = new Date().toLocaleDateString('fi-FI');
+    }
+
+    function renderGrid() {
         const grid = document.getElementById('product-grid');
-        Object.keys(products).forEach((key, i) => {
-            if(i < 20) {
-                const btn = document.createElement('div');
-                btn.className = 'product-btn';
-                btn.innerHTML = `${products[key].name}<br>${products[key].price.toFixed(2)}€<br><small>${key}</small>`;
-                btn.onclick = () => addToCart(key);
-                grid.appendChild(btn);
-            }
+        grid.innerHTML = "";
+        Object.keys(products).forEach(key => {
+            const btn = document.createElement('div');
+            btn.className = 'product-btn';
+            btn.innerHTML = `${products[key].name}<br><b>${products[key].price.toFixed(2)}€</b>`;
+            btn.onclick = () => addToCart(key);
+            grid.appendChild(btn);
         });
     }
 
-    // NÄPPÄIMISTÖTUKI JA VIIVAKOODINLUKU
-    window.addEventListener('keydown', (e) => {
-        // Estetään F-näppäinten selaintoiminnot (esim. F1 ohje, F12 konsoli)[cite: 2]
+    // Näppäimistöhallinta ja navigointi
+    function handleKeyboard(e) {
         if(e.key.startsWith('F')) e.preventDefault();
+        if(e.key >= '0' && e.key <= '9') uiPress(e.key);
+        if(e.key === 'Enter') handleEnter();
+        if(e.key === 'Backspace') { input = input.slice(0, -1); updateDisplay(); }
+        if(e.key === 'ArrowUp') { selectedIdx = Math.max(0, selectedIdx - 1); updateReceipt(); }
+        if(e.key === 'ArrowDown') { selectedIdx = Math.min(cart.length - 1, selectedIdx + 1); updateReceipt(); }
+        if(e.key === 'Escape') closeModals();
+    }
 
-        if (e.key >= '0' && e.key <= '9') press(e.key);
-        else if (e.key === ',' || e.key === '.') press('.');
-        else if (e.key === 'Enter') handleEnter();
-        else if (e.key === 'Backspace') { input = input.slice(0, -1); updateDisplay(); }
-        else if (e.key === 'Escape') closeModals();
-        
-        // F-pikanäppäimet[cite: 2]
-        if (mode === "SALE") {
-            if (e.key === 'F4') lockPOS();
-            if (e.key === 'F6') removeSelected();
-            if (e.key === 'F8') setPriceMode();
-            if (e.key === 'F12') openPayMenu();
-        } else if (mode === "PAY_SELECT") {
-            if (e.key === 'F1') setCashMode();
-            if (e.key === 'F2') startCardSimulation();
-        }
-    });
-
-    function press(n) {
-        if(mode === "SALE_ENDED") resetToNormal(); // Palauttaa vaihtorahanäytöstä myyntiin[cite: 1]
+    function uiPress(n) {
+        if(mode === "SALE_ENDED") { resetSale(); newReceipt(); }
         input += n;
         updateDisplay();
     }
 
     function updateDisplay() {
-        if(mode === "LOGIN") {
-            document.getElementById('login-display').innerText = "*".repeat(input.length);
-        } else {
-            document.getElementById('pos-input').innerText = formatInput(input);
+        const disp = (mode === "LOGIN") ? document.getElementById('login-display') : document.getElementById('pos-input');
+        if(mode === "LOGIN") disp.innerText = "*".repeat(input.length);
+        else {
+            // Jos yli 5 numeroa, käsitellään viivakoodina, muuten desimaalina
+            disp.innerText = (input.length > 5) ? input : (parseInt(input || 0) / 100).toFixed(2);
         }
     }
 
-    function formatInput(str) {
-        if(!str) return "0";
-        if(str.length > 8) return str; // Jos on pitkä viivakoodi, näytetään se raakana[cite: 1]
-        return (parseInt(str) / 100).toLocaleString('fi-FI', {minimumFractionDigits: 2});
-    }
-
-    function clearInput() { input = ""; updateDisplay(); }
-
     function handleEnter() {
         if(mode === "LOGIN") {
-            if(input === "4422") { // Esimerkki myyjänumerosta[cite: 2]
-                currentSeller = input;
-                document.getElementById('seller-info').innerText = "MYYJÄ: " + currentSeller;
-                document.getElementById('lock-screen').style.display = "none";
-                mode = "SALE";
-                clearInput();
-            } else {
-                alert("Väärä myyjänumero!");
-                clearInput();
-            }
+            if(input === "4422") { mode = "SALE"; document.getElementById('lock-screen').style.display = 'none'; clearInput(); }
         } 
-        else if(mode === "SALE") {
-            // Tarkistetaan onko syöte viivakoodi tai PLU[cite: 1]
-            if(products[input]) {
-                addToCart(input);
-                clearInput();
-            } else if(input === "") {
-                openPayMenu(); // Tyhjä enter avaa maksuvalikon[cite: 2]
-            }
-        } 
+        else if(mode === "SALE" || mode === "SEARCH") {
+            if(products[input]) { addToCart(input); clearInput(); mode = "SALE"; }
+            else if(input === "") openPayMenu();
+        }
+        else if(mode === "RETURN_RECEIPT") {
+            const old = salesHistory[input];
+            if(old) { cart = old.map(i => ({...i, price: -Math.abs(i.price)})); updateReceipt(); closeModals(); mode = "SALE"; }
+            clearInput();
+        }
         else if(mode === "CASH") {
-            const total = parseFloat(document.getElementById('total-display').innerText);
-            const given = parseInt(input) / 100;
-            const change = given - total;
-            showChange(change);
+            completeSale(parseInt(input || 0) / 100);
+        }
+        else if(mode === "GIFT_CARD_PAY") {
+            if(giftCards[input]) {
+                const total = calculateTotal();
+                const pay = Math.min(giftCards[input], total);
+                giftCards[input] -= pay;
+                saveData();
+                alert("Lahjakortilta veloitettu: " + pay.toFixed(2));
+                completeSale(total);
+            }
+            clearInput();
+        }
+        else if(mode === "PRICE") {
+            if(selectedIdx > -1) { cart[selectedIdx].price = parseInt(input)/100; updateReceipt(); }
+            mode = "SALE"; clearInput();
         }
     }
 
     function addToCart(id) {
-        if(mode === "SALE_ENDED") resetToNormal();
-        cart.push({...products[id]});
+        const p = products[id];
+        const price = isPlussa ? p.plussa : p.price;
+        cart.push({ ...p, price: price, qty: qtyInput, id: id });
+        qtyInput = 1;
         updateReceipt();
     }
 
     function updateReceipt() {
         const list = document.getElementById('receipt-list');
         list.innerHTML = "";
-        let total = 0;
         cart.forEach((item, i) => {
             const row = document.createElement('div');
             row.className = `receipt-row ${selectedIdx === i ? 'selected' : ''}`;
+            row.innerHTML = `<span>${item.qty}x ${item.name}</span><span>${(item.price * item.qty).toFixed(2)}</span>`;
             row.onclick = () => { selectedIdx = i; updateReceipt(); };
-            row.innerHTML = `<span>1 x ${item.name}</span><span>${item.price.toFixed(2)}</span>`;
             list.appendChild(row);
-            total += item.price;
         });
-        document.getElementById('total-display').innerText = total.toFixed(2);
+        document.getElementById('total-display').innerText = calculateTotal().toFixed(2);
     }
 
-    function showChange(change) {
-        const container = document.getElementById('total-container');
-        container.classList.add('change-mode');
+    function calculateTotal() { return cart.reduce((s, i) => s + (i.price * i.qty), 0); }
+
+    function completeSale(given) {
+        salesHistory[currentReceipt] = [...cart];
+        saveData();
+        const change = given - calculateTotal();
         document.getElementById('total-label').innerText = "VAIHTORAHAA";
         document.getElementById('total-display').innerText = change.toFixed(2);
-        
-        cart = [];
+        document.getElementById('total-container').classList.add('change-mode');
         mode = "SALE_ENDED";
-        document.getElementById('mode-label').innerText = "KAUPPA VALMIS";
         clearInput();
     }
 
-    function resetToNormal() {
-        const container = document.getElementById('total-container');
-        container.classList.remove('change-mode');
+    function resetSale() {
+        cart = []; selectedIdx = -1;
         document.getElementById('total-label').innerText = "YHTEENSÄ";
-        document.getElementById('mode-label').innerText = "MYYNTI";
+        document.getElementById('total-container').classList.remove('change-mode');
         mode = "SALE";
         updateReceipt();
     }
 
-    function lockPOS() {
-        mode = "LOGIN";
-        document.getElementById('lock-screen').style.display = "flex";
-        document.getElementById('seller-info').innerText = "MYYJÄ: EI KIRJAUTUNUT";
-        clearInput();
-    }
-
-    function openPayMenu() { 
-        if(cart.length > 0) {
-            mode = "PAY_SELECT";
-            document.getElementById('pay-modal').style.display = 'flex';
+    // Erikoistoiminnot
+    function applyDiscount() {
+        if(selectedIdx > -1) {
+            const pc = prompt("Alennusprosentti:");
+            if(pc) { cart[selectedIdx].price *= (1 - pc/100); updateReceipt(); }
         }
     }
 
-    function setCashMode() { 
-        mode = "CASH"; 
-        document.getElementById('mode-label').innerText = "ANNETTU SUMMA"; 
-        closeModals(); 
+    function sellGiftCard() {
+        const val = prompt("Lahjakortin arvo (€):");
+        if(val) {
+            const id = Math.floor(Math.random() * 899999 + 100000).toString();
+            giftCards[id] = parseFloat(val);
+            saveData();
+            cart.push({ name: "LAHJAKORTTI " + id, price: parseFloat(val), qty: 1, id: 'GC' });
+            updateReceipt();
+            alert("Uusi lahjakortti: " + id);
+        }
     }
 
-    function startCardSimulation() {
-        closeModals();
-        document.getElementById('card-modal').style.display = 'flex';
-        document.getElementById('term-amount').innerText = document.getElementById('total-display').innerText + " €";
-        
-        setTimeout(() => {
-            if(Math.random() > 0.3) {
-                document.getElementById('term-status').innerText = "HYVÄKSYTTY";
-                setTimeout(() => { showChange(0); closeModals(); }, 1500);
-            } else {
-                document.getElementById('term-status').innerText = "VIRHE - YRITÄ UUDELLEEN";
-                setTimeout(() => startCardSimulation(), 2000);
-            }
-        }, 2000);
+    function openAdmin() { document.getElementById('admin-modal').style.display = 'flex'; }
+    function saveProduct() {
+        const id = document.getElementById('adm-id').value;
+        products[id] = {
+            name: document.getElementById('adm-name').value,
+            price: parseFloat(document.getElementById('adm-price').value),
+            plussa: parseFloat(document.getElementById('adm-plussa').value),
+            cat: document.getElementById('adm-cat').value
+        };
+        saveData(); renderGrid(); closeModals();
     }
 
-    function closeModals() { 
-        document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); 
-        if(mode === "PAY_SELECT") mode = "SALE";
+    function saveData() {
+        localStorage.setItem('pos_products', JSON.stringify(products));
+        localStorage.setItem('pos_sales', JSON.stringify(salesHistory));
+        localStorage.setItem('pos_giftcards', JSON.stringify(giftCards));
     }
 
+    function togglePlussa() { isPlussa = !isPlussa; alert(isPlussa ? "PLUSSA AKTIIVINEN" : "PLUSSA POISTETTU"); }
+    function openReturnMenu() { document.getElementById('return-modal').style.display = 'flex'; }
+    function openPayMenu() { if(cart.length > 0) document.getElementById('pay-modal').style.display = 'flex'; }
+    function setMode(m) { mode = m; document.getElementById('mode-label').innerText = m; closeModals(); }
+    function setPriceMode() { setMode('PRICE'); }
+    function setQty() { qtyInput = parseInt(input) || 1; clearInput(); }
+    function clearInput() { input = ""; updateDisplay(); }
+    function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
+    function lockPOS() { mode = "LOGIN"; document.getElementById('lock-screen').style.display = 'flex'; clearInput(); }
     function removeSelected() { if(selectedIdx > -1) { cart.splice(selectedIdx, 1); selectedIdx = -1; updateReceipt(); } }
 
-    function setPriceMode() {
-        if(selectedIdx === -1) return;
-        mode = "PRICE";
-        document.getElementById('mode-label').innerText = "HINNAN MUUTOS";
-    }
-
     init();
-    setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('fi-FI'); }, 1000);
 </script>
 </body>
 </html>
