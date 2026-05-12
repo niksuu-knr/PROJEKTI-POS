@@ -2,7 +2,7 @@
 <html lang="fi">
 <head>
     <meta charset="UTF-8">
-    <title>K-Rauta POS v5.2 Ultimate</title>
+    <title>K-Rauta POS v5.3 Ultimate Official</title>
     <style>
         :root {
             --k-orange: #ff6600; --k-blue: #004593; --bg-grey: #d1d1d1;
@@ -12,46 +12,56 @@
         header { background: var(--k-blue); color: white; padding: 5px 15px; display: flex; justify-content: space-between; align-items: center; height: 40px; font-weight: bold; }
         .main-container { display: flex; flex: 1; gap: 5px; padding: 5px; height: calc(100vh - 75px); }
 
+        /* VASEN PANEELI: KUITTI JA NUMPAD */
         .left-panel { width: 420px; display: flex; flex-direction: column; }
         .receipt-area { flex: 1; background: white; border: 1px solid var(--border-color); display: flex; flex-direction: column; overflow: hidden; }
-        .receipt-content { flex: 1; overflow-y: auto; font-family: 'Consolas', monospace; padding: 10px; font-size: 0.85rem; }
+        .receipt-info { background: #eee; padding: 5px; font-size: 0.8rem; border-bottom: 1px solid #ccc; display: flex; justify-content: space-between; }
+        .receipt-content { flex: 1; overflow-y: auto; font-family: 'Consolas', monospace; padding: 5px; font-size: 0.85rem; }
         
         .receipt-row { padding: 8px; border-bottom: 1px solid #eee; cursor: pointer; }
         .receipt-row.selected { background: #fff3e0; outline: 2px solid var(--k-orange); }
+        .receipt-row.voided { text-decoration: line-through; color: #aaa; }
         .row-main { display: flex; justify-content: space-between; font-weight: bold; }
-        
-        .total-section { background: #f0f0f0; border-top: 2px solid #ccc; padding: 10px; }
-        .total-row { display: flex; justify-content: space-between; font-size: 2.2rem; font-weight: bold; color: var(--k-blue); }
-        .rounding-row { display: flex; justify-content: space-between; font-size: 0.85rem; color: #666; font-style: italic; }
+        .row-meta { font-size: 0.75rem; color: var(--k-orange); font-weight: bold; margin-left: 10px; }
 
+        .total-row { display: flex; justify-content: space-between; font-size: 2.2rem; font-weight: bold; color: var(--k-blue); padding: 10px; background: #f0f0f0; border-top: 2px solid #ccc; }
+        
         .input-display { background: #1a1a1a; color: #0f0; padding: 10px; text-align: right; font-size: 2rem; font-family: monospace; margin: 5px 0; height: 50px; display: flex; justify-content: space-between; align-items: center; border: 2px inset #555; }
         #mode-label { font-size: 0.85rem; color: #ff0; text-transform: uppercase; }
 
         .numpad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; background: #bbb; padding: 5px; }
-        .num-btn { height: 55px; background: #fefefe; border: 1px solid #777; font-size: 1.4rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .num-btn { height: 60px; background: #fefefe; border: 1px solid #777; font-size: 1.4rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .num-btn.blue { background: var(--k-blue); color: white; }
         .num-btn.orange { background: var(--k-orange); color: white; }
 
+        /* KESKIPANEELI: TUOTTEET */
         .center-panel { flex: 1; display: flex; flex-direction: column; gap: 5px; }
-        .grid-container { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
-        .grid-btn { background: white; border: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: center; align-items: center; font-weight: bold; cursor: pointer; }
+        .grid-container { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(5, 1fr); gap: 5px; }
+        .grid-btn { background: white; border: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; font-weight: bold; cursor: pointer; padding: 5px; }
+        .grid-btn.category { background: #f8f8f8; border-left: 6px solid var(--k-blue); }
 
+        /* OIKEA PANEELI: TOIMINTONÄPPÄIMET (SIJAINNIT PALAUTETTU) */
         .right-panel { width: 190px; display: grid; grid-template-rows: repeat(12, 1fr); gap: 4px; }
         .f-btn { background: #eee; border: 1px solid #777; font-size: 0.8rem; font-weight: bold; padding-left: 10px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; }
+        .f-btn span { color: var(--k-blue); font-size: 0.9rem; }
+        .f-btn.danger { color: white; background: var(--danger); }
+        .f-btn.success { color: white; background: var(--success); }
 
-        /* Maksumodaalit */
+        /* MODAALIT */
         .modal { display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; }
-        .modal-content { background: white; padding: 25px; border: 5px solid var(--k-blue); width: 450px; text-align: center; }
+        .modal-content { background: white; padding: 25px; border: 5px solid var(--k-blue); width: 500px; text-align: center; }
         
-        .terminal-box { background: #222; color: #0f0; padding: 30px; border-radius: 10px; font-family: monospace; text-align: center; border: 4px solid #444; }
-        .progress-container { background: #444; height: 10px; margin-top: 20px; border-radius: 5px; overflow: hidden; }
-        .progress-bar { background: var(--success); width: 0%; height: 100%; transition: width 0.3s; }
+        /* TERMINAALISIMULAATIO */
+        .terminal-box { background: #222; color: #0f0; padding: 30px; border-radius: 10px; font-family: monospace; border: 4px solid #444; }
+        .progress-bar { background: #444; height: 12px; margin-top: 20px; border-radius: 6px; overflow: hidden; }
+        .progress-fill { background: var(--success); width: 0%; height: 100%; transition: width 0.3s; }
     </style>
 </head>
 <body onload="init()">
 
 <header>
-    <div>K-RAUTA POS v5.2</div>
+    <div>K-RAUTA POS v5.3 Ultimate</div>
+    <div id="member-tag" style="background: #0f0; color: #000; padding: 2px 10px; border-radius: 4px; display: none;">JÄSEN AKTIIVINEN</div>
     <div id="seller-display">MYYJÄ: 4422</div>
     <div id="clock">00:00:00</div>
 </header>
@@ -59,11 +69,12 @@
 <div class="main-container">
     <div class="left-panel">
         <div class="receipt-area">
-            <div class="receipt-content" id="receipt-list"></div>
-            <div class="total-section">
-                <div class="rounding-row" id="rounding-info" style="visibility:hidden">Pyöristys: <span id="round-val">0.00</span></div>
-                <div class="total-row"><span>YHTEENSÄ</span><span id="total-display">0.00</span></div>
+            <div class="receipt-info">
+                <span id="receipt-no-display">KUITTI: -</span>
+                <span id="cust-display">ASIAKAS: Käteinen</span>
             </div>
+            <div class="receipt-content" id="receipt-list"></div>
+            <div class="total-row"><span>YHTEENSÄ</span><span id="total-display">0.00</span></div>
         </div>
         <div class="input-display"><span id="mode-label">MYYNTI</span><span id="pos-input">0.00</span></div>
         <div class="numpad">
@@ -74,67 +85,63 @@
         </div>
     </div>
 
-    <div class="center-panel">
-        <div id="grid-main" class="grid-container"></div>
-    </div>
+    <div class="center-panel"><div id="grid-main" class="grid-container"></div></div>
 
     <div class="right-panel">
+        <div class="f-btn" onclick="executeSearch()"><span>F1</span>TUOTEHAKU</div>
         <div class="f-btn" onclick="openAdmin()"><span>F2</span>HALLINTA</div>
-        <div class="f-btn" onclick="setMode('MEMBER_ID')"><span>F3</span>JÄSEN</div>
+        <div class="f-btn" onclick="setMode('MEMBER_ID')"><span>F3</span>JÄSENNUMERO</div>
+        <div class="f-btn" onclick="setMode('SELLER_ID')"><span>F4</span>MYYJÄ</div>
         <div class="f-btn" onclick="setMode('DISCOUNT')"><span>F5</span>ALENNUS %</div>
-        <div class="f-btn" onclick="removeRow()"><span>F6</span>POISTA</div>
-        <div class="f-btn" onclick="setMode('PRICE_CHANGE')"><span>F8</span>MUUTA HINTA</div>
-        <div class="f-btn success" style="grid-row: span 2;" onclick="openPayMenu()"><span>F12</span>MAKSA</div>
+        <div class="f-btn" onclick="removeRow()"><span>F6</span>POISTA RIVI</div>
+        <div class="f-btn" onclick="setMode('RETURN_RECEIPT')"><span>F7</span>PALAUTUS</div>
+        <div class="f-btn" onclick="setMode('PRICE_CHANGE')"><span>F8</span>HINNAN MUUTOS</div>
+        <div class="f-btn" onclick="sellGiftCard()"><span>F9</span>LAHJAKORTTI</div>
+        <div class="f-btn" style="visibility:hidden"></div>
+        <div class="f-btn danger" onclick="voidSale()"><span>F11</span>MITÄTÖI</div>
+        <div class="f-btn success" onclick="openPayMenu()"><span>F12</span>MAKSA</div>
     </div>
 </div>
 
-<!-- MAKSUN VALINTA -->
+<!-- MAKSUMODAALIT -->
 <div id="payment-modal" class="modal"><div class="modal-content">
     <h3>VALITSE MAKSUTAPA</h3>
-    <h1 id="pay-sum-display">0.00 €</h1>
-    <button class="num-btn blue" style="width:100%; margin-bottom:10px; height:80px" onclick="startCardPayment()">KORTTIMAKSU</button>
-    <button class="num-btn blue" style="width:100%; margin-bottom:10px; height:80px" onclick="startCashPayment()">KÄTEISMAKSU</button>
+    <h1 id="pay-sum-card">0.00 €</h1>
+    <h1 id="pay-sum-cash" style="color:var(--k-orange)">KÄTEINEN: 0.00 €</h1>
+    <button class="num-btn blue" style="width:100%; margin-bottom:10px; height:70px" onclick="startCardSim()">KORTTIMAKSU</button>
+    <button class="num-btn blue" style="width:100%; margin-bottom:10px; height:70px" onclick="startCashPay()">KÄTEISMAKSU</button>
     <button class="num-btn" style="width:100%" onclick="closeModals()">PERUUTA</button>
 </div></div>
 
-<!-- KÄTEISMAKSU SYÖTTÖ -->
 <div id="cash-modal" class="modal"><div class="modal-content">
-    <h3>KÄTEISMAKSU (Pyöristetty)</h3>
+    <h3>SYÖTÄ KÄTEINEN</h3>
     <h1 id="cash-needed" style="color:var(--k-orange)">0.00 €</h1>
     <div class="input-display" style="background:#eee; color:#000; border:1px solid #000; justify-content:center"><span id="cash-given-display">0.00</span></div>
-    <div id="change-display" style="font-size: 2rem; font-weight: bold; margin-top: 15px; color: var(--success)">VAIHTORAHAA: 0.00 €</div>
-    <p>Syötä saatu summa ja paina ENT</p>
+    <div id="change-display" style="font-size: 1.8rem; font-weight: bold; margin-top: 15px; color: var(--success)">VAIHTORAHAA: 0.00 €</div>
 </div></div>
 
-<!-- KORTTIMAKSU TERMINAALI -->
-<div id="card-modal" class="modal"><div class="modal-content terminal-box">
-    <div id="terminal-status">ODOTTAA KORTTIA...</div>
-    <div id="terminal-sum" style="font-size: 2rem; margin: 20px 0;">0.00 €</div>
-    <div class="progress-container"><div id="terminal-bar" class="progress-bar"></div></div>
+<div id="card-sim-modal" class="modal"><div class="modal-content terminal-box">
+    <div id="term-status">ODOTTAA KORTTIA...</div>
+    <div id="term-sum" style="font-size: 2.2rem; margin: 20px 0;">0.00 €</div>
+    <div class="progress-bar"><div id="term-fill" class="progress-fill"></div></div>
 </div></div>
 
 <script>
-    let products = JSON.parse(localStorage.getItem('k_pos_p')) || {"101":{name:"KESTOPUU", price:2.25, memberPrice:1.80, cat:"PUUTAVARA"}, "202":{name:"RUUVIT 5x50", price:19.90, memberPrice:15.00, cat:"TARVIKKEET"}};
-    let cart = [];
-    let input = "";
-    let mode = "SALE";
-    let selectedIdx = -1;
-    let rcptNo = 90001;
+    let products = JSON.parse(localStorage.getItem('k_p')) || {"101":{name:"KESTOPUU 28x95", price:2.25, memberPrice:1.80, cat:"PUUTAVARA"}, "202":{name:"RUUVIT 5x50 500kpl", price:29.90, memberPrice:24.00, cat:"TYÖKALUT"}};
+    let cart = []; let input = ""; let mode = "SALE"; let selectedIdx = -1; let rcptNo = 90001;
 
     function init() {
         renderCategories();
         setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('fi-FI'); }, 1000);
     }
 
-    /* VIIVAKOODIN LUKIJA TUKI */
-    let lastKey = 0;
-    let barcode = "";
+    /* VIIVAKOODILUKIJA */
+    let lastKey = 0; let barcode = "";
     window.addEventListener('keydown', e => {
-        if(document.activeElement.tagName === 'INPUT') return;
         const now = Date.now();
-        if(now - lastKey < 30) {
+        if(now - lastKey < 35) {
             if(e.key === 'Enter') { if(products[barcode]) { addToCart(barcode); barcode = ""; } }
-            else { barcode += e.key; }
+            else if(e.key.length === 1) { barcode += e.key; }
         } else {
             if(e.key === 'Enter') handleEnter();
             else if(!isNaN(e.key) || e.key === '.') uiPress(e.key);
@@ -144,7 +151,9 @@
     });
 
     function addToCart(id) {
-        cart.push({...products[id], id: id, qty: 1, activePrice: products[id].price, voided: false});
+        const p = products[id];
+        const price = (document.getElementById('member-tag').style.display === "block") ? p.memberPrice : p.price;
+        cart.push({...p, id: id, qty: 1, activePrice: price, originalPrice: price, voided: false, note: ""});
         updateReceipt();
     }
 
@@ -152,69 +161,77 @@
         const list = document.getElementById('receipt-list'); list.innerHTML = "";
         let total = 0;
         cart.forEach((item, i) => {
-            if(item.voided) return;
             const row = document.createElement('div');
-            row.className = `receipt-row ${selectedIdx === i ? 'selected' : ''}`;
-            row.innerHTML = `<div class="row-main"><span>${item.qty}x ${item.name}</span><span>${(item.activePrice * item.qty).toFixed(2)}€</span></div>`;
+            row.className = `receipt-row ${selectedIdx === i ? 'selected' : ''} ${item.voided ? 'voided' : ''}`;
+            row.innerHTML = `<div class="row-main"><span>${item.qty} x ${item.name}</span><span>${(item.activePrice * item.qty).toFixed(2)}€</span></div>
+                             ${item.note ? `<div class="row-meta">${item.note}</div>` : ''}`;
             row.onclick = () => { selectedIdx = i; updateReceipt(); };
             list.appendChild(row);
-            total += (item.activePrice * item.qty);
+            if(!item.voided) total += (item.activePrice * item.qty);
         });
         document.getElementById('total-display').innerText = total.toFixed(2);
     }
 
-    /* MAKSUTOIMINNOT */
+    /* MAKSU-LOGIIKKA */
     function openPayMenu() {
         if(cart.length === 0) return;
         const total = parseFloat(document.getElementById('total-display').innerText);
-        document.getElementById('pay-sum-display').innerText = total.toFixed(2) + " €";
+        const cashTotal = (Math.round(total * 20) / 20).toFixed(2);
+        document.getElementById('pay-sum-card').innerText = total.toFixed(2) + " €";
+        document.getElementById('pay-sum-cash').innerText = "KÄTEINEN: " + cashTotal + " €";
         document.getElementById('payment-modal').style.display = "flex";
     }
 
-    function startCardPayment() {
+    function startCardSim() {
         document.getElementById('payment-modal').style.display = "none";
-        document.getElementById('card-modal').style.display = "flex";
-        const sum = document.getElementById('total-display').innerText;
-        document.getElementById('terminal-sum').innerText = sum + " €";
-        
+        document.getElementById('card-sim-modal').style.display = "flex";
+        document.getElementById('term-sum').innerText = document.getElementById('total-display').innerText + " €";
         let p = 0;
-        const bar = document.getElementById('terminal-bar');
-        const status = document.getElementById('terminal-status');
         const iv = setInterval(() => {
-            p += 25; bar.style.width = p + "%";
-            if(p==25) status.innerText = "KÄSITELLÄÄN...";
-            if(p==75) status.innerText = "VARMENNETAAN...";
-            if(p>=100) { clearInterval(iv); status.innerText = "HYVÄKSYTTY"; setTimeout(() => finalize('KORTTI'), 1000); }
-        }, 600);
+            p += 20; document.getElementById('term-fill').style.width = p + "%";
+            if(p === 40) document.getElementById('term-status').innerText = "KÄSITELLÄÄN...";
+            if(p === 80) document.getElementById('term-status').innerText = "VARMENNETAAN...";
+            if(p >= 100) { clearInterval(iv); document.getElementById('term-status').innerText = "HYVÄKSYTTY"; setTimeout(() => finalize('KORTTI'), 1000); }
+        }, 500);
     }
 
-    function startCashPayment() {
+    function startCashPay() {
         const total = parseFloat(document.getElementById('total-display').innerText);
-        const rounded = Math.round(total * 20) / 20;
+        const rounded = (Math.round(total * 20) / 20).toFixed(2);
         document.getElementById('payment-modal').style.display = "none";
         document.getElementById('cash-modal').style.display = "flex";
-        document.getElementById('cash-needed').innerText = rounded.toFixed(2) + " €";
-        setMode("CASH_INPUT");
-        clearInput();
+        document.getElementById('cash-needed').innerText = rounded + " €";
+        setMode("CASH_INPUT"); clearInput();
     }
 
     function handleEnter() {
-        if(mode === "SALE" && products[input]) { addToCart(input); clearInput(); }
-        else if(mode === "CASH_INPUT") {
+        if(mode === "SALE") {
+            if(products[input]) { addToCart(input); clearInput(); }
+            else if(input === "") openPayMenu();
+        } else if(mode === "CASH_INPUT") {
             const needed = parseFloat(document.getElementById('cash-needed').innerText);
             const given = parseFloat(input) / 100;
             const change = given - needed;
             document.getElementById('change-display').innerText = "VAIHTORAHAA: " + change.toFixed(2) + " €";
             if(change >= 0) setTimeout(() => finalize('KÄTEINEN'), 1500);
+        } else if(mode === "PRICE_CHANGE" && selectedIdx > -1) {
+            cart[selectedIdx].activePrice = parseFloat(input) / 100;
+            cart[selectedIdx].note = "HINNANMUUTOS";
+            setMode('SALE'); clearInput(); updateReceipt();
+        } else if(mode === "DISCOUNT" && selectedIdx > -1) {
+            cart[selectedIdx].activePrice *= (1 - parseInt(input)/100);
+            cart[selectedIdx].note = `ALENNUS -${input}%`;
+            setMode('SALE'); clearInput(); updateReceipt();
         }
     }
 
     function finalize(method) {
-        alert("MYYNTI VALMIS: " + method);
+        alert("MAKSU HYVÄKSYTTY: " + method);
         cart = []; updateReceipt(); closeModals();
+        document.getElementById('member-tag').style.display = "none";
     }
 
-    /* APUTOIMINNOT */
+    /* APUFUNKTIOT */
     function uiPress(n) { input += n; updateDisplay(); }
     function updateDisplay() { 
         let val = (parseInt(input || 0) / 100).toFixed(2);
@@ -224,22 +241,26 @@
     function clearInput() { input = ""; updateDisplay(); }
     function setMode(m) { mode = m; document.getElementById('mode-label').innerText = m; }
     function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display="none"); setMode('SALE'); }
+    function removeRow() { if(selectedIdx > -1) { cart[selectedIdx].voided = true; updateReceipt(); } }
+    function voidSale() { if(confirm("Mitätöidäänkö?")) { cart = []; updateReceipt(); } }
 
     function renderCategories() {
         const g = document.getElementById('grid-main'); g.innerHTML = "";
-        ["PUUTAVARA", "TARVIKKEET"].forEach(c => {
-            const b = document.createElement('div'); b.className = 'grid-btn'; b.innerText = c;
-            b.onclick = () => {
-                g.innerHTML = "";
-                Object.keys(products).forEach(id => {
-                    if(products[id].cat === c) {
-                        const pb = document.createElement('div'); pb.className = 'grid-btn';
-                        pb.innerHTML = `${products[id].name}<br>${products[id].price}€`;
-                        pb.onclick = () => addToCart(id); g.appendChild(pb);
-                    }
-                });
-            };
-            g.appendChild(b);
+        const cats = ["PUUTAVARA", "TYÖKALUT"];
+        cats.forEach(c => {
+            const b = document.createElement('div'); b.className = 'grid-btn category'; b.innerText = c;
+            b.onclick = () => renderProducts(c); g.appendChild(b);
+        });
+    }
+
+    function renderProducts(c) {
+        const g = document.getElementById('grid-main'); g.innerHTML = "";
+        Object.keys(products).forEach(id => {
+            if(products[id].cat === c) {
+                const b = document.createElement('div'); b.className = 'grid-btn';
+                b.innerHTML = `${products[id].name}<br>${products[id].price}€`;
+                b.onclick = () => addToCart(id); g.appendChild(b);
+            }
         });
     }
 </script>
