@@ -2,91 +2,120 @@
 <html lang="fi">
 <head>
     <meta charset="UTF-8">
-    <title>Bauhaus-tyylinen Kassa</title>
+    <title>K-Rauta</title>
     <style>
-        :root { --bauhaus-red: #d30008; --dark-grey: #333; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; display: grid; grid-template-rows: 60px 1fr 80px; height: 100vh; }
-        
-        /* Yläpalkki / Haku */
-        header { background: var(--bauhaus-red); color: white; display: flex; align-items: center; padding: 0 20px; gap: 20px; }
-        #search-input { flex-grow: 1; padding: 12px; border-radius: 4px; border: none; font-size: 1.1rem; }
+        :root { --k-orange: #ff6600; --k-blue: #004593; --k-grey: #f2f2f2; }
+        body { font-family: 'Arial', sans-serif; margin: 0; display: grid; grid-template-rows: auto 1fr auto; height: 100vh; background: var(--k-grey); }
+
+        /* Yläpalkki */
+        header { background: white; border-bottom: 3px solid var(--k-orange); padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .plussa-box { background: var(--k-blue); color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold; }
 
         /* Keskiosa */
-        main { display: grid; grid-template-columns: 1fr 350px; overflow: hidden; }
-        
-        /* Tuotevalikko (Bauhausissa usein välilehdet tai grid kuvilla) */
-        .product-area { padding: 20px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
-        .item-card { border: 1px solid #ccc; padding: 10px; text-align: center; background: #fff; cursor: pointer; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .item-card img { max-width: 80px; height: 80px; object-fit: contain; }
-        .item-card:hover { border-color: var(--bauhaus-red); }
+        main { display: grid; grid-template-columns: 250px 1fr 350px; overflow: hidden; }
 
-        /* Ostoskori / Kuitti */
-        .receipt { background: #f9f9f9; border-left: 2px solid #ddd; display: flex; flex-direction: column; }
-        .receipt-header { padding: 15px; background: #eee; font-weight: bold; border-bottom: 1px solid #ccc; }
-        .receipt-items { flex-grow: 1; padding: 10px; font-family: monospace; }
-        
-        /* Alapalkki / Toiminnot */
-        footer { background: var(--dark-grey); color: white; display: flex; justify-content: space-around; align-items: center; }
-        .action-btn { background: #555; border: none; color: white; padding: 15px 25px; cursor: pointer; font-weight: bold; border-radius: 4px; }
-        .pay-btn { background: #28a745; font-size: 1.2rem; padding: 15px 40px; }
+        /* Sivupalkki (Osastot) */
+        .sidebar { background: #fff; padding: 10px; border-right: 1px solid #ddd; }
+        .dept-btn { width: 100%; padding: 12px; margin-bottom: 5px; text-align: left; background: #fff; border: 1px solid #ccc; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        .dept-btn:hover { background: var(--k-orange); color: white; border-color: var(--k-orange); }
+
+        /* Tuote-alue */
+        .product-grid { padding: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; overflow-y: auto; }
+        .product-card { background: white; border: 1px solid #ddd; padding: 15px; border-radius: 4px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .price-tag { color: var(--k-orange); font-size: 1.2rem; font-weight: bold; }
+        .alv-info { font-size: 0.8rem; color: #666; }
+
+        /* Kuittiosio */
+        .cart-section { background: white; border-left: 1px solid #ddd; display: flex; flex-direction: column; }
+        .cart-header { background: #444; color: white; padding: 10px; text-align: center; }
+        .cart-items { flex-grow: 1; padding: 10px; overflow-y: auto; font-family: 'Courier New', monospace; font-size: 0.9rem; }
+        .total-box { padding: 20px; background: #eee; border-top: 2px solid var(--k-orange); }
+
+        /* Alapalkki */
+        footer { background: white; border-top: 1px solid #ddd; padding: 10px; display: flex; gap: 10px; justify-content: flex-end; }
+        .btn { padding: 15px 30px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        .btn-pay { background: var(--k-orange); color: white; }
+        .btn-pro { background: var(--k-blue); color: white; }
     </style>
 </head>
 <body>
 
-    <header>
-        <div style="font-size: 1.5rem; font-weight: bold;">BAUHAUS POS</div>
-        <input type="text" id="search-input" placeholder="Hae tuotenimellä, EAN-koodilla tai osastolla...">
-    </header>
+<header>
+    <div style="color: var(--k-blue); font-size: 1.8rem; font-weight: 900;">K-RAUTA</div>
+    <div class="plussa-box">K-PLUSSA: Tunnistettu (1234...)</div>
+</header>
 
-    <main>
-        <div class="product-area">
-            <!-- Esimerkkituotteita kuvilla -->
-            <div class="item-card" onclick="add('Ruuvipaketti 50kpl', 12.90)">
-                <img src="https://via.placeholder.com/80?text=Ruuvi" alt="Tuote"><br>
-                <span>Ruuvipaketti</span><br><strong>12,90€</strong>
+<main>
+    <div class="sidebar">
+        <button class="dept-btn">RAKENNEMATERIAALIT</button>
+        <button class="dept-btn">SÄHKÖ JA VALAISTUS</button>
+        <button class="dept-btn">TYÖKALUT</button>
+        <button class="dept-btn">PIHA JA PUUTARHA</button>
+        <button class="dept-btn">SISUSTUS</button>
+    </div>
+
+    <div class="product-grid">
+        <div class="product-card" onclick="addToCart('Kestopuu 28x95', 2.45)">
+            <strong>Kestopuu 28x95</strong><br>
+            <span class="price-tag">2,45 € / m</span><br>
+            <span class="alv-info">(sis. ALV 24%)</span>
+        </div>
+        <div class="product-card" onclick="addToCart('FXA Akkuporakone', 89.00)">
+            <strong>FXA Akkuporakone</strong><br>
+            <span class="price-tag">89,00 €</span><br>
+            <span class="alv-info">(sis. ALV 24%)</span>
+        </div>
+        <div class="product-card" onclick="addToCart('Sini-Maali 10L', 125.00)">
+            <strong>Sini-Maali 10L</strong><br>
+            <span class="price-tag">125,00 €</span><br>
+            <span class="alv-info">(sis. ALV 24%)</span>
+        </div>
+    </div>
+
+    <div class="cart-section">
+        <div class="cart-header">MYYNTITAPAHTUMA</div>
+        <div class="cart-items" id="cart-items">
+            <!-- Tuotteet tulevat tähän -->
+        </div>
+        <div class="total-box">
+            <div style="display: flex; justify-content: space-between;">
+                <span>ALV 0%</span> <span id="tax-free">0.00</span>€
             </div>
-            <div class="item-card" onclick="add('Porakone Makita', 159.00)">
-                <img src="https://via.placeholder.com/80?text=Kone" alt="Tuote"><br>
-                <span>Porakone</span><br><strong>159,00€</strong>
-            </div>
-            <div class="item-card" onclick="add('Sementti 25kg', 7.50)">
-                <img src="https://via.placeholder.com/80?text=Säkki" alt="Tuote"><br>
-                <span>Sementti</span><br><strong>7,50€</strong>
+            <div style="display: flex; justify-content: space-between; font-size: 1.5rem; font-weight: bold; margin-top: 10px;">
+                <span>YHTEENSÄ</span> <span id="total-price">0.00</span>€
             </div>
         </div>
+    </div>
+</main>
 
-        <div class="receipt">
-            <div class="receipt-header">NYKYINEN OSTOSKORI</div>
-            <div class="receipt-items" id="items">
-                <!-- Tuotteet listataan tässä -->
-            </div>
-            <div style="padding: 20px; border-top: 2px solid #333; font-size: 1.4rem;">
-                Yhteensä: <span id="total">0.00</span>€
-            </div>
-        </div>
-    </main>
+<footer>
+    <button class="btn btn-pro">LASKUTA TILIÄ</button>
+    <button class="btn" style="background: #ddd;">KESKEYTÄ</button>
+    <button class="btn btn-pay">MAKSA KORTILLA</button>
+</footer>
 
-    <footer>
-        <button class="action-btn">PERUUTA</button>
-        <button class="action-btn">ALE %</button>
-        <button class="action-btn">KULJETUS</button>
-        <button class="action-btn pay-btn">MAKSA</button>
-    </footer>
+<script>
+    let total = 0;
+    function addToCart(name, price) {
+        const cart = document.getElementById('cart-items');
+        const item = document.createElement('div');
+        item.style.display = 'flex';
+        item.style.justifyContent = 'space-between';
+        item.style.marginBottom = '8px';
+        item.innerHTML = `<span>${name}</span> <span>${price.toFixed(2)}€</span>`;
+        cart.appendChild(item);
 
-    <script>
-        let total = 0;
-        function add(name, price) {
-            const list = document.getElementById('items');
-            const row = document.createElement('div');
-            row.style.display = 'flex';
-            row.style.justifyContent = 'space-between';
-            row.style.marginBottom = '5px';
-            row.innerHTML = `<span>${name}</span> <span>${price.toFixed(2)}€</span>`;
-            list.appendChild(row);
+        total += price;
+        updateTotals();
+    }
 
-            total += price;
-            document.getElementById('total').innerText = total.toFixed(2);
-        }
-    </script>
+    function updateTotals() {
+        document.getElementById('total-price').innerText = total.toFixed(2);
+        // Lasketaan alv-ton hinta (esimerkkinä 24%)
+        const taxFree = total / 1.24;
+        document.getElementById('tax-free').innerText = taxFree.toFixed(2);
+    }
+</script>
+
 </body>
 </html>
