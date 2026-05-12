@@ -2,65 +2,90 @@
 <html lang="fi">
 <head>
     <meta charset="UTF-8">
-    <title>Kassaohjelma Demo</title>
+    <title>Bauhaus-tyylinen Kassa</title>
     <style>
-        body { font-family: sans-serif; display: grid; grid-template-columns: 200px 1fr 300px; height: 100vh; margin: 0; background: #f4f4f4; }
+        :root { --bauhaus-red: #d30008; --dark-grey: #333; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; display: grid; grid-template-rows: 60px 1fr 80px; height: 100vh; }
         
-        /* Kategoriat */
-        nav { background: #003399; color: white; padding: 10px; }
-        nav button { width: 100%; padding: 15px; margin-bottom: 5px; cursor: pointer; background: #0044cc; border: 1px solid #ffffff33; color: white; font-weight: bold; }
+        /* Yläpalkki / Haku */
+        header { background: var(--bauhaus-red); color: white; display: flex; align-items: center; padding: 0 20px; gap: 20px; }
+        #search-input { flex-grow: 1; padding: 12px; border-radius: 4px; border: none; font-size: 1.1rem; }
 
-        /* Tuoteruudukko */
-        main { padding: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); grid-gap: 10px; align-content: start; }
-        .product-btn { height: 100px; background: white; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        .product-btn:active { background: #e0e0e0; transform: scale(0.95); }
+        /* Keskiosa */
+        main { display: grid; grid-template-columns: 1fr 350px; overflow: hidden; }
+        
+        /* Tuotevalikko (Bauhausissa usein välilehdet tai grid kuvilla) */
+        .product-area { padding: 20px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
+        .item-card { border: 1px solid #ccc; padding: 10px; text-align: center; background: #fff; cursor: pointer; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .item-card img { max-width: 80px; height: 80px; object-fit: contain; }
+        .item-card:hover { border-color: var(--bauhaus-red); }
 
-        /* Ostoskori */
-        aside { background: white; border-left: 2px solid #ccc; display: flex; flex-direction: column; }
-        .cart-list { flex-grow: 1; padding: 10px; overflow-y: auto; }
-        .total-area { padding: 20px; background: #eee; font-size: 1.5rem; font-weight: bold; text-align: center; }
-        .checkout-btn { background: #28a745; color: white; border: none; padding: 20px; font-size: 1.2rem; cursor: pointer; }
+        /* Ostoskori / Kuitti */
+        .receipt { background: #f9f9f9; border-left: 2px solid #ddd; display: flex; flex-direction: column; }
+        .receipt-header { padding: 15px; background: #eee; font-weight: bold; border-bottom: 1px solid #ccc; }
+        .receipt-items { flex-grow: 1; padding: 10px; font-family: monospace; }
+        
+        /* Alapalkki / Toiminnot */
+        footer { background: var(--dark-grey); color: white; display: flex; justify-content: space-around; align-items: center; }
+        .action-btn { background: #555; border: none; color: white; padding: 15px 25px; cursor: pointer; font-weight: bold; border-radius: 4px; }
+        .pay-btn { background: #28a745; font-size: 1.2rem; padding: 15px 40px; }
     </style>
 </head>
 <body>
 
-    <nav>
-        <h3>Kategoriat</h3>
-        <button>PATJAT</button>
-        <button>PEITOT</button>
-        <button>TYYNYT</button>
-        <button>PUUTARHA</button>
-    </nav>
+    <header>
+        <div style="font-size: 1.5rem; font-weight: bold;">BAUHAUS POS</div>
+        <input type="text" id="search-input" placeholder="Hae tuotenimellä, EAN-koodilla tai osastolla...">
+    </header>
 
-    <main id="product-grid">
-        <!-- Tuotteet generoidaan tässä tai haetaan JS:llä -->
-        <button class="product-btn" onclick="addToCart('GOLD F30', 450)">GOLD F30<br>450€</button>
-        <button class="product-btn" onclick="addToCart('PLUS S20', 299)">PLUS S20<br>299€</button>
-        <button class="product-btn" onclick="addToCart('BASIC B10', 120)">BASIC B10<br>120€</button>
-        <button class="product-btn" onclick="addToCart('Tyyny LOKKA', 15)">LOKKA<br>15€</button>
+    <main>
+        <div class="product-area">
+            <!-- Esimerkkituotteita kuvilla -->
+            <div class="item-card" onclick="add('Ruuvipaketti 50kpl', 12.90)">
+                <img src="https://via.placeholder.com/80?text=Ruuvi" alt="Tuote"><br>
+                <span>Ruuvipaketti</span><br><strong>12,90€</strong>
+            </div>
+            <div class="item-card" onclick="add('Porakone Makita', 159.00)">
+                <img src="https://via.placeholder.com/80?text=Kone" alt="Tuote"><br>
+                <span>Porakone</span><br><strong>159,00€</strong>
+            </div>
+            <div class="item-card" onclick="add('Sementti 25kg', 7.50)">
+                <img src="https://via.placeholder.com/80?text=Säkki" alt="Tuote"><br>
+                <span>Sementti</span><br><strong>7,50€</strong>
+            </div>
+        </div>
+
+        <div class="receipt">
+            <div class="receipt-header">NYKYINEN OSTOSKORI</div>
+            <div class="receipt-items" id="items">
+                <!-- Tuotteet listataan tässä -->
+            </div>
+            <div style="padding: 20px; border-top: 2px solid #333; font-size: 1.4rem;">
+                Yhteensä: <span id="total">0.00</span>€
+            </div>
+        </div>
     </main>
 
-    <aside>
-        <div class="cart-list" id="cart">
-            <h4>Ostoskori</h4>
-            <hr>
-        </div>
-        <div class="total-area">
-            Yhteensä: <span id="total">0</span>€
-        </div>
-        <button class="checkout-btn">MAKSA (F12)</button>
-    </aside>
+    <footer>
+        <button class="action-btn">PERUUTA</button>
+        <button class="action-btn">ALE %</button>
+        <button class="action-btn">KULJETUS</button>
+        <button class="action-btn pay-btn">MAKSA</button>
+    </footer>
 
     <script>
         let total = 0;
-        function addToCart(name, price) {
-            const cart = document.getElementById('cart');
-            const item = document.createElement('p');
-            item.innerHTML = `<strong>${name}</strong> - ${price}€`;
-            cart.appendChild(item);
-            
+        function add(name, price) {
+            const list = document.getElementById('items');
+            const row = document.createElement('div');
+            row.style.display = 'flex';
+            row.style.justifyContent = 'space-between';
+            row.style.marginBottom = '5px';
+            row.innerHTML = `<span>${name}</span> <span>${price.toFixed(2)}€</span>`;
+            list.appendChild(row);
+
             total += price;
-            document.getElementById('total').innerText = total;
+            document.getElementById('total').innerText = total.toFixed(2);
         }
     </script>
 </body>
