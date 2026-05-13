@@ -2,7 +2,7 @@
 <html lang="fi">
 <head>
     <meta charset="UTF-8">
-    <title>K-RAUTA POS v32.0 - FULL MGMT</title>
+    <title>K-RAUTA POS v34.0 - FULL COMMANDER</title>
     <style>
         :root { --k-orange: #ff6600; --k-blue: #004593; --bg-grey: #d1d1d1; --danger: #cc0000; --success: #28a745; --terminal-green: #0f0; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg-grey); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
@@ -10,47 +10,46 @@
         header { background: var(--k-blue); color: white; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; height: 60px; border-bottom: 4px solid var(--k-orange); }
         header.return-mode { background: var(--danger); }
         
-        .main-container { display: flex; flex: 1; gap: 8px; padding: 8px; height: calc(100vh - 68px); overflow: hidden; }
+        .main-container { display: flex; flex: 1; gap: 8px; padding: 8px; height: calc(100vh - 68px); }
         .left-panel { width: 480px; display: flex; flex-direction: column; gap: 8px; }
         .receipt-area { flex: 1; background: white; border: 2px solid #666; display: flex; flex-direction: column; overflow: hidden; border-radius: 4px; }
-        .receipt-content { flex: 1; overflow-y: auto; font-family: 'Consolas', monospace; padding: 15px; font-size: 1rem; }
+        .receipt-content { flex: 1; overflow-y: auto; font-family: 'Consolas', monospace; padding: 15px; font-size: 1.1rem; }
         .receipt-row { padding: 8px 5px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; cursor: pointer; }
         .receipt-row.selected { background: var(--k-blue) !important; color: white; }
         
         .total-container { background: #eee; border-top: 3px solid #999; padding: 15px; }
         .total-row { display: flex; justify-content: space-between; font-size: 2.8rem; font-weight: bold; color: var(--k-blue); }
 
-        .input-display { background: #000; color: var(--terminal-green); padding: 10px 20px; text-align: right; font-size: 3.2rem; font-family: 'Courier New', monospace; border: 5px inset #444; min-height: 70px; }
+        .input-display { background: #000; color: var(--terminal-green); padding: 10px 20px; text-align: right; font-size: 3.2rem; font-family: 'Courier New', monospace; border: 5px inset #444; min-height: 80px; }
 
         .center-panel { flex: 1; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
-        .product-display { flex: 1; background: #bbb; border: 2px solid #888; padding: 10px; display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); grid-auto-rows: 100px; gap: 10px; overflow-y: auto; }
-        .category-bar { height: 75px; background: #999; display: flex; gap: 5px; padding: 5px; overflow-x: auto; border-top: 2px solid #777; }
+        .product-display { flex: 1; background: #bbb; border: 2px solid #888; padding: 10px; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); grid-auto-rows: 110px; gap: 10px; overflow-y: auto; }
+        .category-bar { height: 80px; background: #999; display: flex; gap: 5px; padding: 5px; overflow-x: auto; border-top: 2px solid #777; flex-shrink: 0; }
         
         .grid-item { background: white; border: 1px solid #666; border-bottom: 5px solid var(--k-blue); font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 5px; }
-        .cat-item { min-width: 120px; background: var(--k-blue); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; text-align: center; border: 1px solid #333; flex-shrink: 0; }
+        .cat-item { min-width: 130px; background: var(--k-blue); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; text-align: center; border: 1px solid #333; flex-shrink: 0; }
         .cat-item.active { background: var(--k-orange); }
 
         .right-panel { width: 170px; display: grid; grid-template-rows: repeat(12, 1fr); gap: 4px; }
-        .f-btn { background: #fdfdfd; border: 2px solid #777; font-size: 0.8rem; font-weight: bold; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; text-transform: uppercase; }
-        .f-btn span { color: var(--k-blue); font-size: 1.1rem; }
+        .f-btn { background: #fdfdfd; border: 2px solid #777; font-size: 0.85rem; font-weight: bold; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; text-transform: uppercase; }
+        .f-btn span { color: var(--k-blue); font-size: 1.2rem; }
         .f-btn.pay { background: var(--success); color: white; }
-        .f-btn.gift { background: #fffde7; border: 2px solid #fbc02d; }
+        .f-btn.active-return { background: var(--danger); color: white; }
 
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 5000; align-items: center; justify-content: center; }
-        .modal-content { background: white; width: 95%; max-width: 1100px; height: 90vh; padding: 25px; border: 10px solid var(--k-blue); overflow-y: auto; position: relative; }
+        .modal-content { background: white; width: 95%; max-width: 1100px; height: 85vh; padding: 25px; border: 10px solid var(--k-blue); overflow-y: auto; }
         
-        .admin-nav { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #ccc; padding-bottom: 10px; flex-wrap: wrap; }
-        .admin-nav button { padding: 12px 18px; cursor: pointer; font-weight: bold; background: #eee; border: 1px solid #999; }
-        .admin-nav button.active-nav { background: var(--k-orange); color: white; border-color: var(--k-orange); }
+        .admin-nav { display: flex; gap: 5px; margin-bottom: 20px; border-bottom: 3px solid var(--k-blue); padding-bottom: 10px; flex-wrap: wrap; }
+        .admin-nav button { padding: 10px 15px; cursor: pointer; font-weight: bold; border: 1px solid #ccc; background: #eee; }
+        .admin-nav button.active { background: var(--k-orange); color: white; border-color: var(--k-orange); }
         
-        .admin-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .admin-table th, .admin-table td { border: 1px solid #ccc; padding: 12px; text-align: left; }
-        .admin-table tr:hover { background: #f9f9f9; }
+        .admin-table { width: 100%; border-collapse: collapse; }
+        .admin-table th, .admin-table td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+        .admin-table tr:nth-child(even) { background: #f2f2f2; }
 
         .login-screen { position: fixed; inset: 0; background: var(--k-blue); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
-        .btn-small { padding: 5px 10px; cursor: pointer; margin-right: 5px; }
-        .btn-del { background: var(--danger); color: white; border: none; }
-        .btn-edit { background: var(--k-blue); color: white; border: none; }
+        .pay-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .pay-btn { height: 100px; font-size: 1.5rem; font-weight: bold; cursor: pointer; border: none; color: white; }
     </style>
 </head>
 <body onload="init()">
@@ -58,12 +57,12 @@
 <div id="login-screen" class="login-screen">
     <div style="font-size: 6rem; font-weight: 900;">K-RAUTA</div>
     <div style="background:white; color:black; padding:20px 60px; font-size:4rem; border:10px solid var(--k-orange); margin: 20px; font-family: monospace;" id="login-input-ui">****</div>
-    <p>SYÖTÄ MYYJÄNUMERO</p>
+    <p>SYÖTÄ MYYJÄNUMERO (1234)</p>
 </div>
 
 <header id="main-header">
     <div id="h-receipt">KUITTI: #10001</div>
-    <div id="h-mode" style="background:white; color:black; padding:5px 15px; font-weight:bold;">MYYNTI</div>
+    <div id="h-mode" style="background:white; color:black; padding:4px 12px; font-weight:bold;">MYYNTI</div>
     <div id="h-member">JÄSEN: EI</div>
     <div id="h-seller">MYYJÄ: -</div>
     <div id="clock">00:00:00</div>
@@ -94,8 +93,8 @@
         <div class="f-btn" onclick="handleFKey('F5')"><span>F5</span>ALE %</div>
         <div class="f-btn" onclick="handleFKey('F6')"><span>F6</span>POISTA</div>
         <div class="f-btn" id="btn-return" onclick="toggleReturnMode()"><span>F7</span>PALAUTUS</div>
-        <div class="f-btn gift" onclick="sellGiftCardAuto()"><span>F8</span>LAHJAKORTTI</div>
-        <div class="f-btn" style="opacity:0.2;"><span>F9</span>-</div>
+        <div class="f-btn" style="background:#fffde7; border:2px solid #fbc02d;" onclick="sellGiftCardAuto()"><span>F8</span>LAHJAKORTTI</div>
+        <div class="f-btn" onclick="priceOverride()"><span>F9</span>HINTA</div>
         <div class="f-btn" style="opacity:0.2;"><span>F10</span>-</div>
         <div class="f-btn" onclick="handleFKey('F11')"><span>F11</span>MITÄTÖI</div>
         <div class="f-btn pay" onclick="openPayment()"><span>F12 / +</span>MAKSA</div>
@@ -103,21 +102,14 @@
 </div>
 
 <div id="main-modal" class="modal">
-    <div class="modal-content">
-        <div id="modal-body"></div>
-        <button onclick="closeModals()" style="margin-top:20px; width:100%; padding:15px; background:#666; color:white; font-weight:bold; border:none; cursor:pointer;">SULJE HALLINTA</button>
-    </div>
+    <div class="modal-content" id="modal-content"></div>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('krauta_v32_db')) || {
-        products: [
-            {id: "101", name: "VASARA", price: 19.90, mPrice: 15.00, cat: "TYÖKALUT"},
-            {id: "102", name: "RUUVIT 500kpl", price: 29.90, mPrice: 22.00, cat: "RAKENNUS"},
-            {id: "103", name: "SISÄMAALI 10L", price: 89.00, mPrice: 65.00, cat: "MAALIT"}
-        ],
-        categories: ["TYÖKALUT", "RAKENNUS", "MAALIT"],
-        sellers: [{id: "4422", name: "Matti K."}, {id: "1234", name: "Admin"}],
+    let db = JSON.parse(localStorage.getItem('krauta_v34_db')) || {
+        products: [{id: "101", name: "VASARA", price: 20.00, mPrice: 15.00, cat: "TYÖKALUT"}],
+        categories: ["TYÖKALUT", "MAALIT", "RAKENNUS"],
+        sellers: [{id: "1234", name: "Admin User"}, {id: "4422", name: "Matti K."}],
         members: [{id: "100", name: "Teppo Testaaja", type: "Kulta"}],
         sales: [],
         giftcards: [],
@@ -125,211 +117,154 @@
         nextGiftCardID: 5001
     };
 
-    let cart = [], input = "", mode = "LOGIN", currentSeller = null;
-    let isReturnMode = false, currentCat = "TYÖKALUT", currentMember = null, selectedIdx = -1;
+    let cart = [], input = "", multiplier = 1, mode = "LOGIN";
+    let isReturnMode = false, currentSeller = null, currentCat = "TYÖKALUT", currentMember = null, selectedIdx = -1;
 
-    function save() { localStorage.setItem('krauta_v32_db', JSON.stringify(db)); }
+    function save() { localStorage.setItem('krauta_v34_db', JSON.stringify(db)); }
     function init() {
-        if(db.categories.length > 0 && !db.categories.includes(currentCat)) currentCat = db.categories[0];
         renderCategories(); renderProducts(); renderNumpad();
         setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('fi-FI'); }, 1000);
+        updateReceipt();
     }
 
     function logout() { location.reload(); }
 
-    function toggleReturnMode() {
-        isReturnMode = !isReturnMode;
-        document.getElementById('main-header').className = isReturnMode ? "return-mode" : "";
-        document.getElementById('h-mode').innerText = isReturnMode ? "PALAUTUS" : "MYYNTI";
-        document.getElementById('btn-return').classList.toggle('active-return');
-        updateReceipt();
-    }
-
-    function sellGiftCardAuto() {
-        let val = parseFloat(prompt("Lahjakortin arvo (€):"));
-        if(!isNaN(val) && val > 0) {
-            let code = db.nextGiftCardID.toString();
-            let price = isReturnMode ? -Math.abs(val) : Math.abs(val);
-            cart.push({id: "GC", name: "LAHJAKORTTI #" + code, price: price, qty: 1, gcCode: code});
-            db.nextGiftCardID++;
-            save(); updateReceipt();
-        }
-    }
-
-    function openAdmin() {
-        mode = "ADMIN";
-        adminView('PRODUCTS');
-        document.getElementById('main-modal').style.display = "flex";
-    }
-
-    function adminView(view) {
-        let h = `<div class="admin-nav">
-            <button class="${view==='PRODUCTS'?'active-nav':''}" onclick="adminView('PRODUCTS')">TUOTTEET</button>
-            <button class="${view==='CATEGORIES'?'active-nav':''}" onclick="adminView('CATEGORIES')">KATEGORIAT</button>
-            <button class="${view==='SALES'?'active-nav':''}" onclick="adminView('SALES')">MYYNTI</button>
-            <button class="${view==='GIFTCARDS'?'active-nav':''}" onclick="adminView('GIFTCARDS')">LAHJAKORTIT</button>
-        </div><div id="admin-sub-content">`;
-
-        if(view === 'PRODUCTS') {
-            h += `<h3>TUOTTEET <button onclick="addProduct()">+ LISÄÄ TUOTE</button></h3><table class="admin-table">
-                <tr><th>ID</th><th>NIMI</th><th>HINTA</th><th>KATEGORIA</th><th>TOIMINNOT</th></tr>
-                ${db.products.map((p, idx) => `<tr><td>${p.id}</td><td>${p.name}</td><td>${p.price}€</td><td>${p.cat}</td>
-                <td><button class="btn-small btn-del" onclick="deleteProduct(${idx})">POISTA</button></td></tr>`).join('')}</table>`;
-        } 
-        else if(view === 'CATEGORIES') {
-            h += `<h3>TUOTERYHMÄT <button onclick="addCategory()">+ LISÄÄ KATEGORIA</button></h3><table class="admin-table">
-                <tr><th>RYHMÄN NIMI</th><th>TUOTTEITA</th><th>TOIMINNOT</th></tr>
-                ${db.categories.map((c, idx) => {
-                    let count = db.products.filter(p => p.cat === c).length;
-                    return `<tr><td><b>${c}</b></td><td>${count} kpl</td>
-                    <td><button class="btn-small btn-edit" onclick="editCategory(${idx})">MUOKKAA</button>
-                    <button class="btn-small btn-del" onclick="deleteCategory(${idx})">POISTA</button></td></tr>`;
-                }).join('')}</table>`;
-        }
-        else if(view === 'SALES') {
-            h += `<h3>MYYNTIHISTORIA</h3><table class="admin-table">
-                <tr><th>ID</th><th>AIKA</th><th>SUMMA</th><th>TAPA</th></tr>
-                ${db.sales.slice().reverse().map(s => `<tr><td>#${s.id}</td><td>${new Date(s.time).toLocaleString()}</td><td>${s.total.toFixed(2)}€</td><td>${s.method}</td></tr>`).join('')}</table>`;
-        }
-        else if(view === 'GIFTCARDS') {
-            h += `<h3>LAHJAKORTIT</h3><table class="admin-table">
-                <tr><th>KOODI</th><th>SALDO</th><th>LUOTU</th></tr>
-                ${db.giftcards.map(g => `<tr><td>${g.code}</td><td>${g.balance.toFixed(2)}€</td><td>${new Date(g.created).toLocaleDateString()}</td></tr>`).join('')}</table>`;
-        }
-        
-        h += `</div>`;
-        document.getElementById('modal-body').innerHTML = h;
-    }
-
-    // KATEGORIA-TOIMINNOT
-    function addCategory() {
-        let name = prompt("Uuden kategorian nimi:");
-        if(name && !db.categories.includes(name.toUpperCase())) {
-            db.categories.push(name.toUpperCase());
-            save(); adminView('CATEGORIES'); renderCategories();
-        }
-    }
-
-    function editCategory(idx) {
-        let oldName = db.categories[idx];
-        let newName = prompt("Uusi nimi kategorialle " + oldName + ":", oldName);
-        if(newName && newName.toUpperCase() !== oldName) {
-            newName = newName.toUpperCase();
-            // Päivitetään myös kaikki tuotteet tähän kategoriaan
-            db.products.forEach(p => { if(p.cat === oldName) p.cat = newName; });
-            db.categories[idx] = newName;
-            if(currentCat === oldName) currentCat = newName;
-            save(); adminView('CATEGORIES'); renderCategories(); renderProducts();
-        }
-    }
-
-    function deleteCategory(idx) {
-        let name = db.categories[idx];
-        let count = db.products.filter(p => p.cat === name).length;
-        if(count > 0) {
-            alert("Kategoriaa ei voi poistaa, koska siinä on " + count + " tuotetta. Siirrä tai poista tuotteet ensin.");
-            return;
-        }
-        if(confirm("Poistetaanko kategoria: " + name + "?")) {
-            db.categories.splice(idx, 1);
-            if(currentCat === name) currentCat = db.categories[0] || "";
-            save(); adminView('CATEGORIES'); renderCategories(); renderProducts();
-        }
-    }
-
-    function deleteProduct(idx) {
-        if(confirm("Poistetaanko tuote?")) {
-            db.products.splice(idx, 1);
-            save(); adminView('PRODUCTS'); renderProducts();
-        }
-    }
-
-    function addProduct() {
-        let id = prompt("EAN/Koodi:");
-        let name = prompt("Tuotteen nimi:");
-        let price = parseFloat(prompt("Hinta (€):"));
-        let cat = prompt("Kategoria (" + db.categories.join(", ") + "):").toUpperCase();
-        if(id && name && !isNaN(price)) {
-            if(!db.categories.includes(cat)) db.categories.push(cat);
-            db.products.push({id, name, price, mPrice: price * 0.8, cat});
-            save(); adminView('PRODUCTS'); renderCategories(); renderProducts();
-        }
-    }
-
-    // PERUSTOIMINNOT
+    // --- KASSA ---
     function addToCart(p) {
-        let price = currentMember ? p.mPrice : p.price;
-        if(isReturnMode) price = -Math.abs(price);
-        cart.push({...p, price: price, qty: 1});
-        selectedIdx = cart.length - 1; updateReceipt();
+        let finalPrice = currentMember ? p.mPrice : p.price;
+        if(input !== "" && !input.includes('*')) { finalPrice = parseFloat(input.replace(',','.')); input = ""; }
+        if(isReturnMode) finalPrice = -Math.abs(finalPrice);
+        cart.push({...p, price: finalPrice, qty: multiplier});
+        multiplier = 1; selectedIdx = cart.length - 1; updateReceipt(); updateDisplay();
     }
 
     function updateReceipt() {
         let h = ""; let t = 0;
         cart.forEach((i, idx) => {
             h += `<div class="receipt-row ${selectedIdx === idx ? 'selected' : ''}" onclick="selectedIdx=${idx};updateReceipt()">
-                <span>1x ${i.name}</span><span>${i.price.toFixed(2)}€</span></div>`;
-            t += i.price;
+                <span>${i.qty}x ${i.name}</span><span>${(i.price * i.qty).toFixed(2)}€</span></div>`;
+            t += i.price * i.qty;
         });
         document.getElementById('receipt-list').innerHTML = h;
         document.getElementById('total-display').innerText = t.toFixed(2);
-        document.getElementById('h-member').innerText = currentMember ? "JÄSEN: " + currentMember.name : "JÄSEN: EI";
         return t;
+    }
+
+    function toggleReturnMode() {
+        isReturnMode = !isReturnMode;
+        document.getElementById('main-header').className = isReturnMode ? "return-mode" : "";
+        document.getElementById('btn-return').classList.toggle('active-return');
+        updateReceipt();
     }
 
     function openPayment() {
         let t = updateReceipt(); if(t === 0) return;
-        let method = confirm("KORTTIMAKSU (OK) vai KÄTEINEN (Cancel)?") ? "KORTTI" : "KÄTEINEN";
-        db.sales.push({id: db.nextReceipt++, total: t, time: new Date(), method: method});
-        cart.forEach(i => { if(i.gcCode) db.giftcards.push({code: i.gcCode, balance: i.price, created: new Date()}); });
-        save(); cart = []; isReturnMode = false; currentMember = null;
-        document.getElementById('main-header').className = "";
-        updateReceipt();
+        showModal(`
+            <h2 style="text-align:center;">MAKSA: ${t.toFixed(2)} €</h2>
+            <div class="pay-grid">
+                <button class="pay-btn" style="background:var(--success)" onclick="finishSale('KÄTEINEN')">KÄTEINEN</button>
+                <button class="pay-btn" style="background:var(--k-blue)" onclick="finishSale('KORTTI')">KORTTI</button>
+                <button class="pay-btn" style="background:#666" onclick="closeModals()">PERUUTA</button>
+            </div>
+        `);
     }
 
+    function finishSale(method) {
+        db.sales.push({id: db.nextReceipt++, total: updateReceipt(), time: new Date(), method: method, seller: currentSeller.name});
+        save(); cart = []; isReturnMode = false; currentMember = null;
+        document.getElementById('main-header').className = "";
+        closeModals(); updateReceipt();
+    }
+
+    // --- HALLINTA (KAIKKI OSA-ALUEET) ---
+    function openAdmin(tab = 'PROD') {
+        mode = "ADMIN";
+        let h = `
+            <div class="admin-nav">
+                <button class="${tab==='PROD'?'active':''}" onclick="openAdmin('PROD')">TUOTTEET</button>
+                <button class="${tab==='CAT'?'active':''}" onclick="openAdmin('CAT')">KATEGORIAT</button>
+                <button class="${tab==='SELL'?'active':''}" onclick="openAdmin('SELL')">MYYJÄT</button>
+                <button class="${tab==='MEMB'?'active':''}" onclick="openAdmin('MEMB')">JÄSENET</button>
+                <button class="${tab==='REPT'?'active':''}" onclick="openAdmin('REPT')">RAPORTIT</button>
+                <button onclick="closeModals()" style="background:var(--danger); color:white; margin-left:auto;">SULJE</button>
+            </div><div id="admin-body">`;
+
+        if(tab === 'PROD') {
+            h += `<h3>TUOTTEET <button onclick="adminAddProd()">+ LISÄÄ</button></h3><table class="admin-table">
+                <tr><th>ID</th><th>NIMI</th><th>HINTA</th><th>KAT</th><th>POISTA</th></tr>
+                ${db.products.map((p,idx) => `<tr><td>${p.id}</td><td>${p.name}</td><td>${p.price}</td><td>${p.cat}</td>
+                <td><button onclick="db.products.splice(${idx},1);save();openAdmin('PROD')">X</button></td></tr>`).join('')}</table>`;
+        } else if(tab === 'CAT') {
+            h += `<h3>KATEGORIAT <button onclick="adminAddCat()">+ LISÄÄ</button></h3><table class="admin-table">
+                ${db.categories.map((c,idx) => `<tr><td>${c}</td><td><button onclick="db.categories.splice(${idx},1);save();openAdmin('CAT')">POISTA</button></td></tr>`).join('')}</table>`;
+        } else if(tab === 'SELL') {
+            h += `<h3>MYYJÄT <button onclick="adminAddSeller()">+ LISÄÄ</button></h3><table class="admin-table">
+                <tr><th>ID</th><th>NIMI</th><th>POISTA</th></tr>
+                ${db.sellers.map((s,idx) => `<tr><td>${s.id}</td><td>${s.name}</td>
+                <td><button onclick="db.sellers.splice(${idx},1);save();openAdmin('SELL')">X</button></td></tr>`).join('')}</table>`;
+        } else if(tab === 'MEMB') {
+            h += `<h3>JÄSENET <button onclick="adminAddMemb()">+ LISÄÄ</button></h3><table class="admin-table">
+                <tr><th>ID</th><th>NIMI</th><th>TYYPPI</th><th>POISTA</th></tr>
+                ${db.members.map((m,idx) => `<tr><td>${m.id}</td><td>${m.name}</td><td>${m.type}</td>
+                <td><button onclick="db.members.splice(${idx},1);save();openAdmin('MEMB')">X</button></td></tr>`).join('')}</table>`;
+        } else if(tab === 'REPT') {
+            h += `<h3>MYYNTIRAPORTTI</h3><table class="admin-table">
+                ${db.sales.slice().reverse().map(s => `<tr><td>#${s.id}</td><td>${s.total.toFixed(2)}€</td><td>${s.method}</td><td>${s.seller}</td></tr>`).join('')}</table>`;
+        }
+        
+        h += `</div>`;
+        showModal(h);
+    }
+
+    // Hallinnan lisäystoiminnot
+    function adminAddSeller() { let id = prompt("Myyjä nro:"); let n = prompt("Nimi:"); if(id && n) { db.sellers.push({id, name: n}); save(); openAdmin('SELL'); } }
+    function adminAddMemb() { let id = prompt("Jäsen nro:"); let n = prompt("Nimi:"); if(id && n) { db.members.push({id, name: n, type: "Kulta"}); save(); openAdmin('MEMB'); } }
+    function adminAddCat() { let n = prompt("Kategorian nimi:"); if(n) { db.categories.push(n.toUpperCase()); save(); openAdmin('CAT'); renderCategories(); } }
+    function adminAddProd() {
+        let id = prompt("EAN:"); let n = prompt("Nimi:"); let p = parseFloat(prompt("Hinta:")); let c = prompt("Kat:");
+        if(id && n) { db.products.push({id, name: n, price: p, mPrice: p*0.8, cat: c.toUpperCase()}); save(); openAdmin('PROD'); renderProducts(); }
+    }
+
+    // --- APU ---
     function handleEnter() {
-        if (mode === "LOGIN") {
+        if(mode === "LOGIN") {
             let s = db.sellers.find(x => x.id === input);
-            if (s) { mode="SALE"; currentSeller = s; document.getElementById('login-screen').style.display="none"; document.getElementById('h-seller').innerText = "MYYJÄ: " + s.name; }
+            if(s) { mode="SALE"; currentSeller=s; document.getElementById('login-screen').style.display="none"; document.getElementById('h-seller').innerText="MYYJÄ: "+s.name; }
             input = ""; updateDisplay();
         } else {
             let p = db.products.find(x => x.id === input);
-            if (p) addToCart(p);
-            input = ""; updateDisplay();
+            if(p) addToCart(p); input = ""; updateDisplay();
         }
     }
 
     window.addEventListener('keydown', e => {
         if(e.key.startsWith('F')) e.preventDefault();
         if(e.key === 'Enter') handleEnter();
-        if(e.key === 'Backspace') { input = input.slice(0,-1); updateDisplay(); }
+        if(e.key === '*') { multiplier = parseFloat(input) || 1; input = ""; updateDisplay(); }
         if(e.key === '+') openPayment();
-        if(!isNaN(e.key) || e.key === '.') { input += e.key; updateDisplay(); }
+        if(!isNaN(e.key) || e.key === ',') { input += e.key.replace(',','.'); updateDisplay(); }
+        if(e.key === 'Backspace') { input = input.slice(0,-1); updateDisplay(); }
+        if(e.key.startsWith('F')) handleFKey(e.key);
     });
 
-    function renderProducts() {
-        document.getElementById('product-grid').innerHTML = db.products.filter(p => p.cat === currentCat).map(p => 
-            `<div class="grid-item" onclick='addToCart(${JSON.stringify(p)})'>${p.name}<br>${p.price.toFixed(2)}€</div>`).join('');
-    }
-    function renderCategories() {
-        document.getElementById('category-grid').innerHTML = db.categories.map(c => 
-            `<div class="cat-item ${currentCat===c?'active':''}" onclick="currentCat='${c}';renderCategories();renderProducts();">${c}</div>`).join('');
-    }
-    function updateDisplay() { document.getElementById('pos-input-display').innerText = input || "0.00"; }
-    function closeModals() { document.getElementById('main-modal').style.display="none"; mode="SALE"; }
-    function renderNumpad() {
-        let pad = ['7','8','9','4','5','6','1','2','3','0','CLR','ENT'];
-        pad.forEach(k => {
-            let b = document.createElement('button'); b.className = "f-btn"; b.innerText = k;
-            b.onclick = () => { if(k==='ENT') handleEnter(); else if(k==='CLR') { input=""; updateDisplay(); } else { input += k; updateDisplay(); } };
-            document.getElementById('numpad-ui').appendChild(b);
-        });
+    function handleFKey(key) {
+        if(key === 'F3') { let id = prompt("Jäsennro:"); currentMember = db.members.find(x => x.id === id); updateReceipt(); }
+        if(key === 'F6' && selectedIdx > -1) { cart.splice(selectedIdx, 1); selectedIdx = -1; updateReceipt(); }
+        if(key === 'F11') { if(confirm("Mitätöi?")) { cart=[]; updateReceipt(); } }
     }
 
-    function handleFKey(key) {
-        if(key === 'F6' && selectedIdx > -1) { cart.splice(selectedIdx, 1); selectedIdx = -1; updateReceipt(); }
-        if(key === 'F11' && confirm("Mitätöi?")) { cart=[]; updateReceipt(); }
-        if(key === 'F3') { let id = prompt("Jäsennro:"); currentMember = db.members.find(x => x.id === id); updateReceipt(); }
+    function showModal(h) { document.getElementById('modal-content').innerHTML = h; document.getElementById('main-modal').style.display="flex"; }
+    function closeModals() { document.getElementById('main-modal').style.display="none"; mode="SALE"; }
+    function renderProducts() { document.getElementById('product-grid').innerHTML = db.products.filter(p => p.cat === currentCat).map(p => `<div class="grid-item" onclick='addToCart(${JSON.stringify(p)})'>${p.name}<br>${p.price.toFixed(2)}€</div>`).join(''); }
+    function renderCategories() { document.getElementById('category-grid').innerHTML = db.categories.map(c => `<div class="cat-item ${currentCat===c?'active':''}" onclick="currentCat='${c}';renderCategories();renderProducts();">${c}</div>`).join(''); }
+    function updateDisplay() { document.getElementById('pos-input-display').innerText = (multiplier !== 1 ? multiplier + " x " : "") + (input || "0.00"); }
+    function renderNumpad() {
+        let pad = ['7','8','9','CLR','4','5','6','*','1','2','3','ENT','0','00',',','+'];
+        pad.forEach(k => {
+            let b = document.createElement('button'); b.className = "f-btn"; b.innerText = k;
+            b.onclick = () => { if(k==='ENT') handleEnter(); else if(k==='CLR') { input=""; updateDisplay(); } else if(k==='*') { multiplier=parseFloat(input)||1; input=""; updateDisplay(); } else if(k==='+') openPayment(); else { input += k; updateDisplay(); } };
+            document.getElementById('numpad-ui').appendChild(b);
+        });
     }
 </script>
 </body>
