@@ -2,7 +2,7 @@
 <html lang="fi">
 <head>
     <meta charset="UTF-8">
-    <title>K-Rauta POS v6.0 Enterprise Platinum</title>
+    <title>K-Rauta POS v6.1 Enterprise Gold</title>
     <style>
         :root {
             --k-orange: #ff6600; --k-blue: #004593; --bg-grey: #d1d1d1;
@@ -13,10 +13,10 @@
         
         .main-container { display: flex; flex: 1; gap: 5px; padding: 5px; height: calc(100vh - 45px); }
 
-        /* VASEN PANEELI */
+        /* VASEN PANEELI: KUITTI */
         .left-panel { width: 420px; display: flex; flex-direction: column; gap: 5px; }
         .receipt-area { flex: 1; background: white; border: 1px solid var(--border-color); display: flex; flex-direction: column; }
-        .receipt-content { flex: 1; overflow-y: auto; font-family: 'Consolas', monospace; padding: 10px; font-size: 0.95rem; }
+        .receipt-content { flex: 1; overflow-y: auto; font-family: 'Consolas', monospace; padding: 10px; font-size: 1rem; }
         .receipt-row { padding: 8px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; justify-content: space-between; }
         .receipt-row.selected { background: #fff3e0; outline: 2px solid var(--k-orange); font-weight: bold; }
         
@@ -29,7 +29,7 @@
         .num-btn { height: 50px; background: #fefefe; border: 1px solid #777; font-size: 1.2rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .num-btn.orange { background: var(--k-orange); color: white; }
 
-        /* KESKIPANEELI */
+        /* KESKIPANEELI: TUOTTEET JA RYHMÄT */
         .center-panel { flex: 1; display: flex; flex-direction: column; gap: 5px; }
         .product-display { flex: 4; background: #e0e0e0; border: 1px solid #bbb; padding: 10px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); grid-auto-rows: 90px; gap: 10px; }
         .category-bar { flex: 1; background: #bcbcbc; border: 1px solid #999; display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 5px; padding: 5px; }
@@ -38,7 +38,7 @@
         .cat-item { background: var(--k-blue); color: white; border: 1px solid #002e63; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .cat-item.active { background: var(--k-orange); }
 
-        /* OIKEA PANEELI */
+        /* OIKEA PANEELI: TOIMINNOT */
         .right-panel { width: 170px; display: grid; grid-template-rows: repeat(12, 1fr); gap: 3px; }
         .f-btn { background: #eee; border: 1px solid #777; font-size: 0.7rem; font-weight: bold; padding-left: 8px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; }
         .f-btn span { color: var(--k-blue); font-size: 0.8rem; }
@@ -46,7 +46,6 @@
         /* MODAALIT */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center; }
         .modal-content { background: white; width: 550px; padding: 30px; border: 8px solid var(--k-blue); text-align: center; }
-        .terminal-box { background: #111; color: #0f0; padding: 30px; font-family: monospace; }
         .status-msg { font-size: 1.5rem; font-weight: bold; margin: 20px; color: var(--k-blue); }
         .login-screen { position: fixed; inset: 0; background: var(--k-blue); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
     </style>
@@ -60,7 +59,7 @@
 </div>
 
 <header>
-    <div>K-RAUTA POS v6.0 PLATINUM</div>
+    <div>K-RAUTA POS v6.1 GOLD</div>
     <div id="seller-info">MYYJÄ: -</div>
     <div id="clock">00:00:00</div>
 </header>
@@ -93,15 +92,14 @@
         <div class="f-btn" onclick="openAdmin()"><span>F2</span>HALLINTA</div>
         <div class="f-btn"><span>F3</span>JÄSEN</div>
         <div class="f-btn" onclick="location.reload()"><span>F4</span>ULOS</div>
-        <div class="f-btn" onclick="openDiscount()"><span>F5</span>ALE</div>
+        <div class="f-btn"><span>F5</span>ALE</div>
         <div class="f-btn" onclick="removeRow()"><span>F6</span>POISTA RIVI</div>
         <div class="f-btn"><span>F8</span>HINNAN MUUTOS</div>
         <div class="f-btn" onclick="voidSale()"><span>F11</span>MITÄTÖI</div>
-        <div class="f-btn" style="background:var(--success); color:white;" onclick="openPaymentMenu()"><span>F12</span>MAKSA</div>
+        <div class="f-btn" style="background:var(--success); color:white;" onclick="openPaymentMenu()"><span>F12</span>MAKSA (+)</div>
     </div>
 </div>
 
-<!-- INFO MODAALI (KORVAA ALERTIT) -->
 <div id="info-modal" class="modal">
     <div class="modal-content">
         <div id="info-icon" style="font-size: 4rem;">ℹ️</div>
@@ -110,7 +108,6 @@
     </div>
 </div>
 
-<!-- MAKSUVALIKKO -->
 <div id="pay-menu-modal" class="modal">
     <div class="modal-content">
         <h2 id="pay-header">MAKSU: 0.00 €</h2>
@@ -145,7 +142,7 @@
         setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('fi-FI'); }, 1000);
     }
 
-    // NÄPPÄIMISTÖ
+    // NÄPPÄIMISTÖN HALLINTA (LISÄTTY NUMPAD-TUKI)
     window.addEventListener('keydown', e => {
         if(e.key.startsWith('F')) { e.preventDefault(); }
         
@@ -153,18 +150,22 @@
             input = ""; multiplier = 1; closeModals(); updateDisplay(); return; 
         }
 
-        if(e.key === 'ArrowUp') { moveSelection(-1); return; }
-        if(e.key === 'ArrowDown') { moveSelection(1); return; }
-
-        if(e.key === 'Enter') { handleEnter(); return; }
+        // Suorat näppäinkomennot
+        if(e.key === '*') { e.preventDefault(); setMultiplier(); return; } // Numpad * -> KPL
+        if(e.key === '+') { e.preventDefault(); if(mode === "SALE") openPaymentMenu(); return; } // Numpad + -> MAKSA
+        if(e.key === 'ArrowUp') { e.preventDefault(); moveSelection(-1); return; }
+        if(e.key === 'ArrowDown') { e.preventDefault(); moveSelection(1); return; }
+        if(e.key === 'Enter') { e.preventDefault(); handleEnter(); return; }
         if(e.key === 'Backspace') { input = input.slice(0,-1); updateDisplay(); return; }
-        if(!isNaN(e.key)) { input += e.key; updateDisplay(); }
+        
+        // Numerosyöttö
+        if(!isNaN(e.key) && e.key !== ' ') { input += e.key; updateDisplay(); }
+        if(e.key === '.' || e.key === ',') { input += '.'; updateDisplay(); }
 
-        // F-toiminnot
+        // F-pikanäppäimet
         if(mode === "SALE") {
             if(e.key === 'F12') openPaymentMenu();
             if(e.key === 'F6') removeRow();
-            if(e.key === 'F5') openDiscount();
         } else if(mode === "PAY_MENU") {
             if(e.key === 'F1') startCashPay();
             if(e.key === 'F2') startCardPay();
@@ -189,15 +190,13 @@
         updateDisplay();
     }
 
-    // KPL TOIMINTO
     function setMultiplier() {
         multiplier = parseFloat(input || 1);
-        if(multiplier === 0) multiplier = 1;
+        if(multiplier <= 0) multiplier = 1;
         input = "";
         updateDisplay();
     }
 
-    // TUOTEHALLINTA
     function addToCart(p) {
         cart.push({...p, qty: multiplier, price: p.price});
         selectedIdx = cart.length - 1;
@@ -205,10 +204,14 @@
     }
 
     function moveSelection(dir) {
+        if(cart.length === 0) return;
         selectedIdx += dir;
         if(selectedIdx < 0) selectedIdx = 0;
         if(selectedIdx >= cart.length) selectedIdx = cart.length - 1;
         updateReceipt();
+        // Skrollaus näkyviin
+        const activeRow = document.querySelector('.receipt-row.selected');
+        if(activeRow) activeRow.scrollIntoView({ block: 'nearest' });
     }
 
     function updateReceipt() {
@@ -227,7 +230,6 @@
         roundedTotal = (Math.round(total * 20) / 20).toFixed(2);
     }
 
-    // MAKSU-LOGIIKKA
     function openPaymentMenu() {
         if(cart.length === 0) return;
         mode = "PAY_MENU";
@@ -247,7 +249,6 @@
         let change = given - roundedTotal;
         if(change < 0) { showInfo("SUMMA EI RIITÄ", "⚠️"); return; }
         
-        // Vaihtoraha Yhteensä-kenttään
         document.getElementById('total-label').innerText = "VAIHTORAHA";
         document.getElementById('total-display').innerText = "-" + change.toFixed(2);
         document.getElementById('total-row-ui').classList.add('change');
@@ -257,7 +258,7 @@
         setTimeout(() => {
             showInfo("MYYNTI VALMIS", "✅");
             finalizeSale();
-        }, 2000);
+        }, 2500);
     }
 
     function startCardPay() {
@@ -287,7 +288,6 @@
         mode = "SALE";
     }
 
-    // UI APUA
     function showInfo(text, icon) {
         document.getElementById('info-text').innerText = text;
         document.getElementById('info-icon').innerText = icon || "ℹ️";
@@ -350,6 +350,8 @@
             ui.appendChild(b);
         });
     }
+
+    function openAdmin() { showInfo("Hallintapaneeli vaatii pääkäyttäjän oikeudet.", "🔒"); }
 </script>
 </body>
 </html>
