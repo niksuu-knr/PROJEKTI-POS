@@ -2,7 +2,7 @@
 <html lang="fi">
 <head>
     <meta charset="UTF-8">
-    <title>K-RAUTA POS v34.0 - FULL COMMANDER</title>
+    <title>K-RAUTA POS v35.0 - OMNIPOTENT</title>
     <style>
         :root { --k-orange: #ff6600; --k-blue: #004593; --bg-grey: #d1d1d1; --danger: #cc0000; --success: #28a745; --terminal-green: #0f0; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg-grey); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
@@ -10,7 +10,7 @@
         header { background: var(--k-blue); color: white; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; height: 60px; border-bottom: 4px solid var(--k-orange); }
         header.return-mode { background: var(--danger); }
         
-        .main-container { display: flex; flex: 1; gap: 8px; padding: 8px; height: calc(100vh - 68px); }
+        .main-container { display: flex; flex: 1; gap: 8px; padding: 8px; height: calc(100vh - 68px); overflow: hidden; }
         .left-panel { width: 480px; display: flex; flex-direction: column; gap: 8px; }
         .receipt-area { flex: 1; background: white; border: 2px solid #666; display: flex; flex-direction: column; overflow: hidden; border-radius: 4px; }
         .receipt-content { flex: 1; overflow-y: auto; font-family: 'Consolas', monospace; padding: 15px; font-size: 1.1rem; }
@@ -20,7 +20,7 @@
         .total-container { background: #eee; border-top: 3px solid #999; padding: 15px; }
         .total-row { display: flex; justify-content: space-between; font-size: 2.8rem; font-weight: bold; color: var(--k-blue); }
 
-        .input-display { background: #000; color: var(--terminal-green); padding: 10px 20px; text-align: right; font-size: 3.2rem; font-family: 'Courier New', monospace; border: 5px inset #444; min-height: 80px; }
+        .input-display { background: #000; color: var(--terminal-green); padding: 10px 20px; text-align: right; font-size: 3.2rem; font-family: 'Courier New', monospace; border: 5px inset #444; min-height: 85px; }
 
         .center-panel { flex: 1; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
         .product-display { flex: 1; background: #bbb; border: 2px solid #888; padding: 10px; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); grid-auto-rows: 110px; gap: 10px; overflow-y: auto; }
@@ -36,33 +36,34 @@
         .f-btn.pay { background: var(--success); color: white; }
         .f-btn.active-return { background: var(--danger); color: white; }
 
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 5000; align-items: center; justify-content: center; }
-        .modal-content { background: white; width: 95%; max-width: 1100px; height: 85vh; padding: 25px; border: 10px solid var(--k-blue); overflow-y: auto; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 5000; align-items: center; justify-content: center; }
+        .modal-content { background: white; width: 95%; max-width: 1200px; height: 90vh; padding: 25px; border: 10px solid var(--k-blue); overflow-y: auto; }
         
-        .admin-nav { display: flex; gap: 5px; margin-bottom: 20px; border-bottom: 3px solid var(--k-blue); padding-bottom: 10px; flex-wrap: wrap; }
-        .admin-nav button { padding: 10px 15px; cursor: pointer; font-weight: bold; border: 1px solid #ccc; background: #eee; }
+        .admin-nav { display: flex; gap: 5px; margin-bottom: 20px; border-bottom: 4px solid var(--k-blue); padding-bottom: 10px; flex-wrap: wrap; }
+        .admin-nav button { padding: 12px 18px; cursor: pointer; font-weight: bold; background: #eee; border: 1px solid #999; }
         .admin-nav button.active { background: var(--k-orange); color: white; border-color: var(--k-orange); }
         
-        .admin-table { width: 100%; border-collapse: collapse; }
-        .admin-table th, .admin-table td { border: 1px solid #ccc; padding: 10px; text-align: left; }
-        .admin-table tr:nth-child(even) { background: #f2f2f2; }
+        .admin-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .admin-table th, .admin-table td { border: 1px solid #ccc; padding: 12px; text-align: left; }
+        .admin-table th { background: #444; color: white; }
+        .admin-table tr:nth-child(even) { background: #f9f9f9; }
 
         .login-screen { position: fixed; inset: 0; background: var(--k-blue); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
-        .pay-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
-        .pay-btn { height: 100px; font-size: 1.5rem; font-weight: bold; cursor: pointer; border: none; color: white; }
+        .pay-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px; }
+        .pay-btn { height: 120px; font-size: 2rem; font-weight: bold; cursor: pointer; border: none; color: white; border-radius: 8px; }
     </style>
 </head>
 <body onload="init()">
 
 <div id="login-screen" class="login-screen">
-    <div style="font-size: 6rem; font-weight: 900;">K-RAUTA</div>
-    <div style="background:white; color:black; padding:20px 60px; font-size:4rem; border:10px solid var(--k-orange); margin: 20px; font-family: monospace;" id="login-input-ui">****</div>
-    <p>SYÖTÄ MYYJÄNUMERO (1234)</p>
+    <div style="font-size: 7rem; font-weight: 900;">K-RAUTA</div>
+    <div style="background:white; color:black; padding:20px 80px; font-size:5rem; border:10px solid var(--k-orange); margin: 30px; font-family: monospace;" id="login-input-ui">****</div>
+    <p style="font-size: 1.5rem;">SYÖTÄ MYYJÄNUMERO (Admin: 1234)</p>
 </div>
 
 <header id="main-header">
     <div id="h-receipt">KUITTI: #10001</div>
-    <div id="h-mode" style="background:white; color:black; padding:4px 12px; font-weight:bold;">MYYNTI</div>
+    <div id="h-mode" style="background:white; color:black; padding:5px 15px; font-weight:bold; border-radius:4px;">MYYNTI</div>
     <div id="h-member">JÄSEN: EI</div>
     <div id="h-seller">MYYJÄ: -</div>
     <div id="clock">00:00:00</div>
@@ -94,7 +95,7 @@
         <div class="f-btn" onclick="handleFKey('F6')"><span>F6</span>POISTA</div>
         <div class="f-btn" id="btn-return" onclick="toggleReturnMode()"><span>F7</span>PALAUTUS</div>
         <div class="f-btn" style="background:#fffde7; border:2px solid #fbc02d;" onclick="sellGiftCardAuto()"><span>F8</span>LAHJAKORTTI</div>
-        <div class="f-btn" onclick="priceOverride()"><span>F9</span>HINTA</div>
+        <div class="f-btn" onclick="priceOverrideManually()"><span>F9</span>HINTA</div>
         <div class="f-btn" style="opacity:0.2;"><span>F10</span>-</div>
         <div class="f-btn" onclick="handleFKey('F11')"><span>F11</span>MITÄTÖI</div>
         <div class="f-btn pay" onclick="openPayment()"><span>F12 / +</span>MAKSA</div>
@@ -106,10 +107,15 @@
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('krauta_v34_db')) || {
-        products: [{id: "101", name: "VASARA", price: 20.00, mPrice: 15.00, cat: "TYÖKALUT"}],
-        categories: ["TYÖKALUT", "MAALIT", "RAKENNUS"],
-        sellers: [{id: "1234", name: "Admin User"}, {id: "4422", name: "Matti K."}],
+    // TIETOKANNAN ALUSTUS
+    let db = JSON.parse(localStorage.getItem('krauta_v35_db')) || {
+        products: [
+            {id: "101", name: "VASARA", price: 19.90, mPrice: 15.00, cat: "TYÖKALUT"},
+            {id: "102", name: "RUUVIPAKKI", price: 34.50, mPrice: 28.00, cat: "TYÖKALUT"},
+            {id: "201", name: "SISÄMAALI 10L", price: 79.00, mPrice: 55.00, cat: "MAALIT"}
+        ],
+        categories: ["TYÖKALUT", "MAALIT", "RAKENNUS", "PUUTAVARA"],
+        sellers: [{id: "1234", name: "Admin"}, {id: "4422", name: "Matti K."}],
         members: [{id: "100", name: "Teppo Testaaja", type: "Kulta"}],
         sales: [],
         giftcards: [],
@@ -120,7 +126,8 @@
     let cart = [], input = "", multiplier = 1, mode = "LOGIN";
     let isReturnMode = false, currentSeller = null, currentCat = "TYÖKALUT", currentMember = null, selectedIdx = -1;
 
-    function save() { localStorage.setItem('krauta_v34_db', JSON.stringify(db)); }
+    function save() { localStorage.setItem('krauta_v35_db', JSON.stringify(db)); }
+    
     function init() {
         renderCategories(); renderProducts(); renderNumpad();
         setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('fi-FI'); }, 1000);
@@ -129,54 +136,96 @@
 
     function logout() { location.reload(); }
 
-    // --- KASSA ---
+    // --- KASSATOIMINNOT ---
+
     function addToCart(p) {
         let finalPrice = currentMember ? p.mPrice : p.price;
-        if(input !== "" && !input.includes('*')) { finalPrice = parseFloat(input.replace(',','.')); input = ""; }
+        
+        // Hinnanmuutos lennosta: jos syötetty numero (mutta ei kertoimena)
+        if(input !== "" && !input.includes('*')) {
+            finalPrice = parseFloat(input.replace(',','.'));
+            input = "";
+        }
+
         if(isReturnMode) finalPrice = -Math.abs(finalPrice);
+        
         cart.push({...p, price: finalPrice, qty: multiplier});
-        multiplier = 1; selectedIdx = cart.length - 1; updateReceipt(); updateDisplay();
+        multiplier = 1; 
+        selectedIdx = cart.length - 1; 
+        updateReceipt(); updateDisplay();
     }
 
     function updateReceipt() {
         let h = ""; let t = 0;
         cart.forEach((i, idx) => {
+            let rowTotal = i.price * i.qty;
             h += `<div class="receipt-row ${selectedIdx === idx ? 'selected' : ''}" onclick="selectedIdx=${idx};updateReceipt()">
-                <span>${i.qty}x ${i.name}</span><span>${(i.price * i.qty).toFixed(2)}€</span></div>`;
-            t += i.price * i.qty;
+                <span>${i.qty}x ${i.name}</span><span>${rowTotal.toFixed(2)}€</span></div>`;
+            t += rowTotal;
         });
         document.getElementById('receipt-list').innerHTML = h;
         document.getElementById('total-display').innerText = t.toFixed(2);
+        document.getElementById('h-member').innerText = currentMember ? "JÄSEN: " + currentMember.name : "JÄSEN: EI";
+        document.getElementById('h-receipt').innerText = "KUITTI: #" + db.nextReceipt;
         return t;
     }
 
     function toggleReturnMode() {
         isReturnMode = !isReturnMode;
         document.getElementById('main-header').className = isReturnMode ? "return-mode" : "";
+        document.getElementById('h-mode').innerText = isReturnMode ? "PALAUTUS" : "MYYNTI";
         document.getElementById('btn-return').classList.toggle('active-return');
         updateReceipt();
     }
 
+    function sellGiftCardAuto() {
+        let val = parseFloat(prompt("Lahjakortin arvo (€):"));
+        if(!isNaN(val) && val > 0) {
+            let code = db.nextGiftCardID.toString();
+            let price = isReturnMode ? -Math.abs(val) : Math.abs(val);
+            cart.push({id: "GC", name: "LAHJAKORTTI #" + code, price: price, qty: 1, gcCode: code});
+            db.nextGiftCardID++;
+            save(); updateReceipt();
+        }
+    }
+
+    function priceOverrideManually() {
+        if(selectedIdx > -1) {
+            let p = prompt("Aseta uusi hinta:");
+            if(p) { cart[selectedIdx].price = parseFloat(p); updateReceipt(); }
+        }
+    }
+
+    // --- MAKSUVALIKKO (F12) ---
+
     function openPayment() {
-        let t = updateReceipt(); if(t === 0) return;
+        let total = updateReceipt(); if(total === 0) return;
+        mode = "PAYMENT";
         showModal(`
-            <h2 style="text-align:center;">MAKSA: ${t.toFixed(2)} €</h2>
+            <h1 style="text-align:center; font-size:3rem;">MAKSU: ${total.toFixed(2)} €</h1>
             <div class="pay-grid">
-                <button class="pay-btn" style="background:var(--success)" onclick="finishSale('KÄTEINEN')">KÄTEINEN</button>
-                <button class="pay-btn" style="background:var(--k-blue)" onclick="finishSale('KORTTI')">KORTTI</button>
+                <button class="pay-btn" style="background:var(--success)" onclick="finishSale('KÄTEINEN')">KÄTEINEN (KÄT)</button>
+                <button class="pay-btn" style="background:var(--k-blue)" onclick="finishSale('KORTTI')">KORTTI (CARD)</button>
+                <button class="pay-btn" style="background:#fbc02d; color:black;" onclick="finishSale('LAHJAKORTTI')">LAHJAKORTTI</button>
                 <button class="pay-btn" style="background:#666" onclick="closeModals()">PERUUTA</button>
             </div>
         `);
     }
 
     function finishSale(method) {
-        db.sales.push({id: db.nextReceipt++, total: updateReceipt(), time: new Date(), method: method, seller: currentSeller.name});
+        let t = cart.reduce((a, b) => a + (b.price * b.qty), 0);
+        db.sales.push({id: db.nextReceipt++, total: t, time: new Date(), method: method, seller: currentSeller.name});
+        
+        // Rekisteröidään lahjakortit jos niitä myytiin
+        cart.forEach(i => { if(i.gcCode) db.giftcards.push({code: i.gcCode, balance: i.price, created: new Date()}); });
+        
         save(); cart = []; isReturnMode = false; currentMember = null;
         document.getElementById('main-header').className = "";
         closeModals(); updateReceipt();
     }
 
-    // --- HALLINTA (KAIKKI OSA-ALUEET) ---
+    // --- HALLINTA (F2) ---
+
     function openAdmin(tab = 'PROD') {
         mode = "ADMIN";
         let h = `
@@ -186,54 +235,63 @@
                 <button class="${tab==='SELL'?'active':''}" onclick="openAdmin('SELL')">MYYJÄT</button>
                 <button class="${tab==='MEMB'?'active':''}" onclick="openAdmin('MEMB')">JÄSENET</button>
                 <button class="${tab==='REPT'?'active':''}" onclick="openAdmin('REPT')">RAPORTIT</button>
-                <button onclick="closeModals()" style="background:var(--danger); color:white; margin-left:auto;">SULJE</button>
+                <button onclick="closeModals()" style="background:var(--danger); color:white; margin-left:auto;">SULJE X</button>
             </div><div id="admin-body">`;
 
         if(tab === 'PROD') {
-            h += `<h3>TUOTTEET <button onclick="adminAddProd()">+ LISÄÄ</button></h3><table class="admin-table">
-                <tr><th>ID</th><th>NIMI</th><th>HINTA</th><th>KAT</th><th>POISTA</th></tr>
-                ${db.products.map((p,idx) => `<tr><td>${p.id}</td><td>${p.name}</td><td>${p.price}</td><td>${p.cat}</td>
-                <td><button onclick="db.products.splice(${idx},1);save();openAdmin('PROD')">X</button></td></tr>`).join('')}</table>`;
+            h += `<h3>TUOTTEIDEN HALLINTA <button onclick="adminAddProd()">+ LISÄÄ TUOTE</button></h3>
+                <table class="admin-table"><tr><th>ID</th><th>NIMI</th><th>HINTA</th><th>KAT</th><th>TOIMINNOT</th></tr>
+                ${db.products.map((p,idx) => `<tr><td>${p.id}</td><td>${p.name}</td><td>${p.price.toFixed(2)}€</td><td>${p.cat}</td>
+                <td><button onclick="db.products.splice(${idx},1);save();openAdmin('PROD')">POISTA</button></td></tr>`).join('')}</table>`;
         } else if(tab === 'CAT') {
-            h += `<h3>KATEGORIAT <button onclick="adminAddCat()">+ LISÄÄ</button></h3><table class="admin-table">
-                ${db.categories.map((c,idx) => `<tr><td>${c}</td><td><button onclick="db.categories.splice(${idx},1);save();openAdmin('CAT')">POISTA</button></td></tr>`).join('')}</table>`;
+            h += `<h3>KATEGORIAT <button onclick="adminAddCat()">+ LISÄÄ</button></h3>
+                <table class="admin-table"><tr><th>NIMI</th><th>TOIMINNOT</th></tr>
+                ${db.categories.map((c,idx) => `<tr><td>${c}</td><td>
+                <button onclick="adminEditCat(${idx})">MUOKKAA</button>
+                <button onclick="db.categories.splice(${idx},1);save();openAdmin('CAT');renderCategories();">POISTA</button></td></tr>`).join('')}</table>`;
         } else if(tab === 'SELL') {
-            h += `<h3>MYYJÄT <button onclick="adminAddSeller()">+ LISÄÄ</button></h3><table class="admin-table">
-                <tr><th>ID</th><th>NIMI</th><th>POISTA</th></tr>
-                ${db.sellers.map((s,idx) => `<tr><td>${s.id}</td><td>${s.name}</td>
-                <td><button onclick="db.sellers.splice(${idx},1);save();openAdmin('SELL')">X</button></td></tr>`).join('')}</table>`;
+            h += `<h3>MYYJÄT <button onclick="adminAddSeller()">+ LISÄÄ MYYJÄ</button></h3>
+                <table class="admin-table"><tr><th>ID</th><th>NIMI</th><th>POISTA</th></tr>
+                ${db.sellers.map((s,idx) => `<tr><td>${s.id}</td><td>${s.name}</td><td><button onclick="db.sellers.splice(${idx},1);save();openAdmin('SELL')">X</button></td></tr>`).join('')}</table>`;
         } else if(tab === 'MEMB') {
-            h += `<h3>JÄSENET <button onclick="adminAddMemb()">+ LISÄÄ</button></h3><table class="admin-table">
-                <tr><th>ID</th><th>NIMI</th><th>TYYPPI</th><th>POISTA</th></tr>
-                ${db.members.map((m,idx) => `<tr><td>${m.id}</td><td>${m.name}</td><td>${m.type}</td>
-                <td><button onclick="db.members.splice(${idx},1);save();openAdmin('MEMB')">X</button></td></tr>`).join('')}</table>`;
+            h += `<h3>JÄSENET <button onclick="adminAddMemb()">+ LISÄÄ JÄSEN</button></h3>
+                <table class="admin-table"><tr><th>ID</th><th>NIMI</th><th>POISTA</th></tr>
+                ${db.members.map((m,idx) => `<tr><td>${m.id}</td><td>${m.name}</td><td><button onclick="db.members.splice(${idx},1);save();openAdmin('MEMB')">X</button></td></tr>`).join('')}</table>`;
         } else if(tab === 'REPT') {
-            h += `<h3>MYYNTIRAPORTTI</h3><table class="admin-table">
-                ${db.sales.slice().reverse().map(s => `<tr><td>#${s.id}</td><td>${s.total.toFixed(2)}€</td><td>${s.method}</td><td>${s.seller}</td></tr>`).join('')}</table>`;
+            h += `<h3>MYYNTIRAPORTIT</h3>
+                <table class="admin-table"><tr><th>ID</th><th>AIKA</th><th>SUMMA</th><th>MYYJÄ</th></tr>
+                ${db.sales.slice().reverse().map(s => `<tr><td>#${s.id}</td><td>${new Date(s.time).toLocaleString()}</td><td>${s.total.toFixed(2)}€</td><td>${s.seller}</td></tr>`).join('')}</table>`;
         }
-        
+
         h += `</div>`;
         showModal(h);
     }
 
-    // Hallinnan lisäystoiminnot
-    function adminAddSeller() { let id = prompt("Myyjä nro:"); let n = prompt("Nimi:"); if(id && n) { db.sellers.push({id, name: n}); save(); openAdmin('SELL'); } }
-    function adminAddMemb() { let id = prompt("Jäsen nro:"); let n = prompt("Nimi:"); if(id && n) { db.members.push({id, name: n, type: "Kulta"}); save(); openAdmin('MEMB'); } }
+    // HALLINNAN APUFUNKTIOT
     function adminAddCat() { let n = prompt("Kategorian nimi:"); if(n) { db.categories.push(n.toUpperCase()); save(); openAdmin('CAT'); renderCategories(); } }
+    function adminEditCat(idx) { let n = prompt("Uusi nimi:", db.categories[idx]); if(n) { db.categories[idx] = n.toUpperCase(); save(); openAdmin('CAT'); renderCategories(); } }
+    function adminAddSeller() { let id = prompt("ID:"); let n = prompt("Nimi:"); if(id && n) { db.sellers.push({id, name: n}); save(); openAdmin('SELL'); } }
+    function adminAddMemb() { let id = prompt("Jäsennro:"); let n = prompt("Nimi:"); if(id && n) { db.members.push({id, name: n, type: "Kulta"}); save(); openAdmin('MEMB'); } }
     function adminAddProd() {
-        let id = prompt("EAN:"); let n = prompt("Nimi:"); let p = parseFloat(prompt("Hinta:")); let c = prompt("Kat:");
+        let id = prompt("EAN:"); let n = prompt("Nimi:"); let p = parseFloat(prompt("Hinta:")); let c = prompt("Kategoria ("+db.categories.join(",")+"):");
         if(id && n) { db.products.push({id, name: n, price: p, mPrice: p*0.8, cat: c.toUpperCase()}); save(); openAdmin('PROD'); renderProducts(); }
     }
 
-    // --- APU ---
+    // --- LOGIIKKA JA NÄPPÄIMISTÖ ---
+
     function handleEnter() {
         if(mode === "LOGIN") {
             let s = db.sellers.find(x => x.id === input);
-            if(s) { mode="SALE"; currentSeller=s; document.getElementById('login-screen').style.display="none"; document.getElementById('h-seller').innerText="MYYJÄ: "+s.name; }
+            if(s) { 
+                mode="SALE"; currentSeller=s; 
+                document.getElementById('login-screen').style.display="none"; 
+                document.getElementById('h-seller').innerText="MYYJÄ: "+s.name; 
+            }
             input = ""; updateDisplay();
         } else {
             let p = db.products.find(x => x.id === input);
-            if(p) addToCart(p); input = ""; updateDisplay();
+            if(p) addToCart(p);
+            input = ""; updateDisplay();
         }
     }
 
@@ -242,27 +300,51 @@
         if(e.key === 'Enter') handleEnter();
         if(e.key === '*') { multiplier = parseFloat(input) || 1; input = ""; updateDisplay(); }
         if(e.key === '+') openPayment();
-        if(!isNaN(e.key) || e.key === ',') { input += e.key.replace(',','.'); updateDisplay(); }
         if(e.key === 'Backspace') { input = input.slice(0,-1); updateDisplay(); }
+        if(!isNaN(e.key) || e.key === ',' || e.key === '.') { input += e.key.replace(',','.'); updateDisplay(); }
         if(e.key.startsWith('F')) handleFKey(e.key);
     });
 
     function handleFKey(key) {
+        if(key === 'F2') openAdmin();
         if(key === 'F3') { let id = prompt("Jäsennro:"); currentMember = db.members.find(x => x.id === id); updateReceipt(); }
         if(key === 'F6' && selectedIdx > -1) { cart.splice(selectedIdx, 1); selectedIdx = -1; updateReceipt(); }
-        if(key === 'F11') { if(confirm("Mitätöi?")) { cart=[]; updateReceipt(); } }
+        if(key === 'F7') toggleReturnMode();
+        if(key === 'F11') { if(confirm("Mitätöidäänkö koko kuitti?")) { cart=[]; updateReceipt(); } }
+        if(key === 'F12') openPayment();
     }
 
     function showModal(h) { document.getElementById('modal-content').innerHTML = h; document.getElementById('main-modal').style.display="flex"; }
     function closeModals() { document.getElementById('main-modal').style.display="none"; mode="SALE"; }
-    function renderProducts() { document.getElementById('product-grid').innerHTML = db.products.filter(p => p.cat === currentCat).map(p => `<div class="grid-item" onclick='addToCart(${JSON.stringify(p)})'>${p.name}<br>${p.price.toFixed(2)}€</div>`).join(''); }
-    function renderCategories() { document.getElementById('category-grid').innerHTML = db.categories.map(c => `<div class="cat-item ${currentCat===c?'active':''}" onclick="currentCat='${c}';renderCategories();renderProducts();">${c}</div>`).join(''); }
-    function updateDisplay() { document.getElementById('pos-input-display').innerText = (multiplier !== 1 ? multiplier + " x " : "") + (input || "0.00"); }
+    
+    function renderProducts() { 
+        document.getElementById('product-grid').innerHTML = db.products
+            .filter(p => p.cat === currentCat)
+            .map(p => `<div class="grid-item" onclick='addToCart(${JSON.stringify(p)})'>${p.name}<br>${p.price.toFixed(2)}€</div>`).join(''); 
+    }
+    
+    function renderCategories() { 
+        document.getElementById('category-grid').innerHTML = db.categories.map(c => 
+            `<div class="cat-item ${currentCat===c?'active':''}" onclick="currentCat='${c}';renderCategories();renderProducts();">${c}</div>`).join(''); 
+    }
+    
+    function updateDisplay() { 
+        let displayStr = (multiplier !== 1 ? multiplier + " x " : "") + (input || "0.00");
+        document.getElementById('pos-input-display').innerText = displayStr;
+        document.getElementById('login-input-ui').innerText = input.replace(/./g, '*');
+    }
+
     function renderNumpad() {
         let pad = ['7','8','9','CLR','4','5','6','*','1','2','3','ENT','0','00',',','+'];
         pad.forEach(k => {
             let b = document.createElement('button'); b.className = "f-btn"; b.innerText = k;
-            b.onclick = () => { if(k==='ENT') handleEnter(); else if(k==='CLR') { input=""; updateDisplay(); } else if(k==='*') { multiplier=parseFloat(input)||1; input=""; updateDisplay(); } else if(k==='+') openPayment(); else { input += k; updateDisplay(); } };
+            b.onclick = () => { 
+                if(k==='ENT') handleEnter(); 
+                else if(k==='CLR') { input=""; updateDisplay(); } 
+                else if(k==='*') { multiplier=parseFloat(input)||1; input=""; updateDisplay(); } 
+                else if(k==='+') openPayment(); 
+                else { input += k; updateDisplay(); } 
+            };
             document.getElementById('numpad-ui').appendChild(b);
         });
     }
