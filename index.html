@@ -2,7 +2,7 @@
 <html lang="fi">
 <head>
     <meta charset="UTF-8">
-    <title>K-Rauta POS v6.2 Ultimate</title>
+    <title>K-Rauta POS v7.0 Enterprise Pro</title>
     <style>
         :root {
             --k-orange: #ff6600; --k-blue: #004593; --bg-grey: #d1d1d1;
@@ -16,40 +16,50 @@
         /* VASEN PANEELI */
         .left-panel { width: 420px; display: flex; flex-direction: column; gap: 5px; }
         .receipt-area { flex: 1; background: white; border: 1px solid var(--border-color); display: flex; flex-direction: column; }
-        .receipt-content { flex: 1; overflow-y: auto; font-family: 'Consolas', monospace; padding: 10px; font-size: 1rem; }
-        .receipt-row { padding: 8px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; justify-content: space-between; }
+        .receipt-content { flex: 1; overflow-y: auto; font-family: 'Consolas', monospace; padding: 10px; font-size: 0.9rem; }
+        .receipt-row { padding: 6px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; justify-content: space-between; }
         .receipt-row.selected { background: #fff3e0; outline: 2px solid var(--k-orange); font-weight: bold; }
         
         .total-container { background: #f0f0f0; border-top: 2px solid #ccc; padding: 10px; }
-        .total-row { display: flex; justify-content: space-between; font-size: 2.2rem; font-weight: bold; color: var(--k-blue); }
+        .total-row { display: flex; justify-content: space-between; font-size: 2rem; font-weight: bold; color: var(--k-blue); }
         .total-row.change { color: var(--danger); }
 
-        .input-display { background: #1a1a1a; color: #0f0; padding: 10px; text-align: right; font-size: 2rem; font-family: monospace; border: 2px inset #555; display: flex; justify-content: space-between; align-items: center; min-height: 55px; }
+        .input-display { background: #1a1a1a; color: #0f0; padding: 10px; text-align: right; font-size: 2rem; font-family: monospace; border: 2px inset #555; display: flex; justify-content: space-between; align-items: center; min-height: 50px; }
         .numpad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
-        .num-btn { height: 50px; background: #fefefe; border: 1px solid #777; font-size: 1.2rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .num-btn.orange { background: var(--k-orange); color: white; }
+        .num-btn { height: 45px; background: #fefefe; border: 1px solid #777; font-size: 1.1rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
         /* KESKIPANEELI */
         .center-panel { flex: 1; display: flex; flex-direction: column; gap: 5px; }
-        .product-display { flex: 4; background: #e0e0e0; border: 1px solid #bbb; padding: 10px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); grid-auto-rows: 90px; gap: 10px; }
-        .category-bar { flex: 1; background: #bcbcbc; border: 1px solid #999; display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 5px; padding: 5px; }
+        .product-display { flex: 4; background: #e0e0e0; border: 1px solid #bbb; padding: 10px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); grid-auto-rows: 80px; gap: 10px; }
+        .category-bar { flex: 1; background: #bcbcbc; border: 1px solid #999; display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 5px; padding: 5px; }
         
-        .grid-item { background: white; border: 1px solid #888; border-bottom: 4px solid var(--k-blue); font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; text-align: center; padding: 5px; font-size: 0.8rem; }
-        .cat-item { background: var(--k-blue); color: white; border: 1px solid #002e63; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .grid-item { background: white; border: 1px solid #888; border-bottom: 4px solid var(--k-blue); font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; text-align: center; padding: 5px; font-size: 0.75rem; }
+        .cat-item { background: var(--k-blue); color: white; border: 1px solid #002e63; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; }
         .cat-item.active { background: var(--k-orange); }
 
         /* OIKEA PANEELI */
-        .right-panel { width: 170px; display: grid; grid-template-rows: repeat(12, 1fr); gap: 3px; }
-        .f-btn { background: #eee; border: 1px solid #777; font-size: 0.7rem; font-weight: bold; padding-left: 8px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; }
-        .f-btn span { color: var(--k-blue); font-size: 0.8rem; }
+        .right-panel { width: 160px; display: grid; grid-template-rows: repeat(12, 1fr); gap: 2px; }
+        .f-btn { background: #eee; border: 1px solid #777; font-size: 0.65rem; font-weight: bold; padding-left: 5px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; }
+        .f-btn span { color: var(--k-blue); font-size: 0.75rem; }
 
-        /* MODAALIT JA LISTAT */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center; }
-        .modal-content { background: white; width: 600px; padding: 30px; border: 8px solid var(--k-blue); text-align: center; max-height: 80vh; overflow-y: auto; }
-        .search-input { width: 100%; padding: 15px; font-size: 1.5rem; border: 2px solid var(--k-blue); margin-bottom: 15px; box-sizing: border-box; }
-        .list-item { padding: 15px; border-bottom: 1px solid #ddd; text-align: left; cursor: pointer; display: flex; justify-content: space-between; }
-        .list-item:hover { background: #f0f0f0; border-left: 5px solid var(--k-orange); }
-        .status-msg { font-size: 1.5rem; font-weight: bold; margin: 20px; color: var(--k-blue); }
+        /* MODAALIT */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center; }
+        .modal-content { background: white; width: 80%; max-width: 900px; height: 80vh; padding: 20px; border: 5px solid var(--k-blue); display: flex; flex-direction: column; position: relative; }
+        .admin-layout { display: flex; flex: 1; gap: 20px; overflow: hidden; margin-top: 10px; }
+        .admin-sidebar { width: 200px; display: flex; flex-direction: column; gap: 5px; border-right: 1px solid #ccc; }
+        .admin-main { flex: 1; overflow-y: auto; padding: 10px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 0.9rem; }
+        th { background: var(--k-blue); color: white; }
+        tr:nth-child(even) { background: #f9f9f9; }
+        .btn-row { margin-top: 10px; display: flex; gap: 10px; }
+        
+        .action-btn { padding: 5px 10px; cursor: pointer; font-weight: bold; border: 1px solid #333; }
+        .btn-add { background: var(--success); color: white; }
+        .btn-del { background: var(--danger); color: white; }
+        .btn-edit { background: var(--k-orange); color: white; }
+
         .login-screen { position: fixed; inset: 0; background: var(--k-blue); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
     </style>
 </head>
@@ -58,11 +68,11 @@
 <div id="login-screen" class="login-screen">
     <h1 style="font-size: 4rem;">K-RAUTA</h1>
     <div class="input-display" style="width: 300px; background: white; color: black; justify-content: center;"><span id="login-val"></span></div>
-    <p>SYÖTÄ MYYJÄNUMERO (4422) JA ENTER</p>
+    <p>MYYJÄNUMERO JA ENTER</p>
 </div>
 
 <header>
-    <div>K-RAUTA POS v6.2 ULTIMATE</div>
+    <div>K-RAUTA v7.0 PRO</div>
     <div id="seller-info">MYYJÄ: -</div>
     <div id="clock">00:00:00</div>
 </header>
@@ -79,7 +89,7 @@
             </div>
         </div>
         <div class="input-display">
-            <span id="mode-label" style="font-size: 0.8rem; color: #ff0;">MYYNTI</span>
+            <span id="mode-label" style="font-size: 0.7rem; color: #ff0;">MYYNTI</span>
             <span id="pos-input">0.00</span>
         </div>
         <div class="numpad" id="numpad-ui"></div>
@@ -93,78 +103,72 @@
     <div class="right-panel">
         <div class="f-btn" onclick="openSearch()"><span>F1</span>HAKU</div>
         <div class="f-btn" onclick="openAdmin()"><span>F2</span>HALLINTA</div>
-        <div class="f-btn"><span>F3</span>JÄSEN</div>
+        <div class="f-btn" onclick="openMemberSearch()"><span>F3</span>JÄSEN</div>
         <div class="f-btn" onclick="location.reload()"><span>F4</span>ULOS</div>
-        <div class="f-btn"><span>F5</span>ALE</div>
+        <div class="f-btn" onclick="applyDiscount()"><span>F5</span>ALE</div>
         <div class="f-btn" onclick="removeRow()"><span>F6</span>POISTA RIVI</div>
-        <div class="f-btn"><span>F8</span>HINNAN MUUTOS</div>
+        <div class="f-btn" onclick="sellGiftCard()"><span>F7</span>LAHJA MYYNTI</div>
+        <div class="f-btn" onclick="changePrice()"><span>F8</span>HINNAN MUUTOS</div>
         <div class="f-btn" onclick="voidSale()"><span>F11</span>MITÄTÖI</div>
         <div class="f-btn" style="background:var(--success); color:white;" onclick="openPaymentMenu()"><span>F12</span>MAKSA (+)</div>
     </div>
 </div>
 
-<!-- MODAALIT -->
-<div id="info-modal" class="modal">
-    <div class="modal-content">
-        <div id="info-icon" style="font-size: 4rem;">ℹ️</div>
-        <div id="info-text" class="status-msg"></div>
-        <button class="num-btn orange" style="width: 100%;" onclick="closeModals()">SULJE (ESC)</button>
-    </div>
-</div>
-
-<div id="search-modal" class="modal">
-    <div class="modal-content" style="text-align: left;">
-        <h2>TUOTEHAKU</h2>
-        <input type="text" id="search-box" class="search-input" placeholder="Syötä nimi tai koodi..." oninput="doSearch()">
-        <div id="search-results" style="max-height: 400px; overflow-y: auto;"></div>
-        <button class="num-btn" style="width: 100%; margin-top: 10px;" onclick="closeModals()">SULJE</button>
-    </div>
-</div>
-
+<!-- HALLINTAPANEELI MODAALI -->
 <div id="admin-modal" class="modal">
     <div class="modal-content">
-        <h2>HALLINTA</h2>
-        <div class="num-btn" style="margin: 10px 0; height: 60px;" onclick="openMemberAdmin()">JÄSENHALLINTA</div>
-        <div class="num-btn" style="margin: 10px 0; height: 60px;">KASSARAPORTTI</div>
-        <div class="num-btn" style="margin: 10px 0; height: 60px;">HINNASTOJEN PÄIVITYS</div>
-        <button class="num-btn orange" style="width: 100%; margin-top: 20px;" onclick="closeModals()">SULJE (ESC)</button>
+        <div style="display:flex; justify-content: space-between; align-items:center; border-bottom: 2px solid var(--k-blue);">
+            <h2>JÄRJESTELMÄN HALLINTA</h2>
+            <button class="action-btn btn-del" onclick="closeModals()">SULJE (ESC)</button>
+        </div>
+        <div class="admin-layout">
+            <div class="admin-sidebar">
+                <button class="num-btn" onclick="renderAdminTable('products')">Tuotteet</button>
+                <button class="num-btn" onclick="renderAdminTable('categories')">Kategoriat</button>
+                <button class="num-btn" onclick="renderAdminTable('sellers')">Myyjät</button>
+                <button class="num-btn" onclick="renderAdminTable('members')">Jäsenet</button>
+                <button class="num-btn" onclick="renderAdminTable('giftcards')">Lahjakortit</button>
+                <hr style="width:100%">
+                <button class="num-btn" style="background:#eee" onclick="generateReport('X')">X-Raportti</button>
+                <button class="num-btn" style="background:#ddd" onclick="generateReport('Z')">Z-Raportti</button>
+            </div>
+            <div class="admin-main" id="admin-main-view">
+                <h3>Valitse osio vasemmalta</h3>
+            </div>
+        </div>
     </div>
 </div>
 
-<div id="member-modal" class="modal">
-    <div class="modal-content">
-        <h2>JÄSENHALLINTA</h2>
-        <div id="member-list" style="text-align: left;"></div>
-        <button class="num-btn orange" style="width: 100%; margin-top: 20px;" onclick="closeModals()">SULJE</button>
-    </div>
-</div>
-
-<div id="pay-menu-modal" class="modal">
-    <div class="modal-content">
-        <h2 id="pay-header">MAKSU: 0.00 €</h2>
-        <div class="num-btn" style="margin: 10px 0; height: 70px;" onclick="startCashPay()">F1: KÄTEINEN</div>
-        <div class="num-btn" style="margin: 10px 0; height: 70px;" onclick="startCardPay()">F2: KORTTI</div>
-        <div class="num-btn" style="margin: 10px 0; height: 70px;" onclick="startGiftPay()">F3: LAHJAKORTTI</div>
+<!-- YLEINEN INFO/MAKSU MODAALI -->
+<div id="info-modal" class="modal">
+    <div class="modal-content" style="height:auto; width:400px; text-align:center;">
+        <h2 id="info-title">INFO</h2>
+        <div id="info-body" style="font-size:1.2rem; margin: 20px 0;"></div>
+        <button class="num-btn orange" style="width:100%" onclick="closeModals()">OK / SULJE</button>
     </div>
 </div>
 
 <script>
+    // TIETOKANTA
     let db = {
         products: [
             {id: "101", name: "KESTOPUU 28x95", price: 2.25, cat: "PUUTAVARA"},
-            {id: "102", name: "KESTOPUU 45x95", price: 3.80, cat: "PUUTAVARA"},
-            {id: "201", name: "VASARA 16OZ", price: 19.90, cat: "TYÖKALUT"},
-            {id: "202", name: "RUUVINVÄÄNNIN 18V", price: 129.00, cat: "TYÖKALUT"},
-            {id: "301", name: "KUKKAMULTA 40L", price: 4.95, cat: "PIHA"},
-            {id: "302", name: "RUOHONLEIKKURI", price: 299.00, cat: "PIHA"}
+            {id: "201", name: "VASARA 16OZ", price: 19.90, cat: "TYÖKALUT"}
         ],
-        categories: ["PUUTAVARA", "TYÖKALUT", "PIHA"],
+        categories: ["PUUTAVARA", "TYÖKALUT", "PIHA", "MAALIT"],
+        sellers: [
+            {id: "4422", name: "Matti Myyjä"},
+            {id: "1111", name: "Admin User"}
+        ],
         members: [
-            {id: "1001", name: "Matti Meikäläinen", points: 450},
-            {id: "1002", name: "Maija Mehiläinen", points: 1200},
-            {id: "1003", name: "K-Rauta Pro Oy", points: 8900}
+            {id: "1001", name: "Meikäläinen Matti", points: 500}
         ],
-        currentCat: "PUUTAVARA"
+        giftcards: [
+            {code: "GIFT50", balance: 50.00}
+        ],
+        currentCat: "PUUTAVARA",
+        salesHistory: 0,
+        zCount: 1
     };
 
     let cart = [];
@@ -173,6 +177,7 @@
     let selectedIdx = -1;
     let multiplier = 1;
     let roundedTotal = 0;
+    let currentSeller = null;
 
     function init() {
         renderNumpad();
@@ -184,163 +189,182 @@
     // NÄPPÄIMISTÖ
     window.addEventListener('keydown', e => {
         if(e.key.startsWith('F')) e.preventDefault();
-        
-        if(e.key === 'Escape') { 
-            input = ""; multiplier = 1; closeModals(); updateDisplay(); return; 
-        }
-
-        if(e.key === '*') { e.preventDefault(); setMultiplier(); return; }
+        if(e.key === 'Escape') { closeModals(); return; }
+        if(e.key === '*') { e.preventDefault(); multiplier = parseFloat(input || 1); input = ""; updateDisplay(); return; }
         if(e.key === '+') { e.preventDefault(); if(mode === "SALE") openPaymentMenu(); return; }
-        if(e.key === 'ArrowUp') { e.preventDefault(); moveSelection(-1); return; }
-        if(e.key === 'ArrowDown') { e.preventDefault(); moveSelection(1); return; }
-        if(e.key === 'Enter') { e.preventDefault(); handleEnter(); return; }
+        if(e.key === 'ArrowUp') { moveSelection(-1); return; }
+        if(e.key === 'ArrowDown') { moveSelection(1); return; }
+        if(e.key === 'Enter') { handleEnter(); return; }
         if(e.key === 'Backspace') { input = input.slice(0,-1); updateDisplay(); return; }
-        
-        if(!isNaN(e.key) && e.key !== ' ') { input += e.key; updateDisplay(); }
-        if(e.key === '.' || e.key === ',') { input += '.'; updateDisplay(); }
-
-        if(mode === "SALE") {
-            if(e.key === 'F1') openSearch();
-            if(e.key === 'F2') openAdmin();
-            if(e.key === 'F12') openPaymentMenu();
-            if(e.key === 'F6') removeRow();
-        } else if(mode === "PAY_MENU") {
-            if(e.key === 'F1') startCashPay();
-            if(e.key === 'F2') startCardPay();
-            if(e.key === 'F3') startGiftPay();
-        }
+        if(!isNaN(e.key)) { input += e.key; updateDisplay(); }
     });
 
     function handleEnter() {
         if(mode === "LOGIN") {
-            if(input === "4422") { mode = "SALE"; document.getElementById('login-screen').style.display = "none"; }
+            let s = db.sellers.find(x => x.id === input);
+            if(s) { currentSeller = s; mode = "SALE"; document.getElementById('login-screen').style.display = "none"; document.getElementById('seller-info').innerText = "MYYJÄ: " + s.name; }
             input = "";
         } else if(mode === "SALE") {
             let p = db.products.find(x => x.id === input);
             if(p) addToCart(p);
             input = ""; multiplier = 1;
-        } else if(mode === "CASH_INPUT") processCash();
-        else if(mode === "GIFT_INPUT") finalizeSale();
+        } else if(mode === "CASH") {
+            let given = parseFloat(input || 0) / 100;
+            let change = given - roundedTotal;
+            if(change >= 0) {
+                document.getElementById('total-label').innerText = "VAIHTORAHA";
+                document.getElementById('total-display').innerText = "-" + change.toFixed(2);
+                db.salesHistory += parseFloat(roundedTotal);
+                setTimeout(finalizeSale, 3000);
+            }
+            input = "";
+        } else if(mode === "GC_PAY") {
+            let card = db.giftcards.find(x => x.code === input);
+            if(card) {
+                if(card.balance >= roundedTotal) {
+                    card.balance -= roundedTotal;
+                    db.salesHistory += parseFloat(roundedTotal);
+                    showInfo("MAKSU HYVÄKSYTTY", "Kortin saldo jäljellä: " + card.balance.toFixed(2) + "€");
+                    setTimeout(finalizeSale, 2000);
+                } else { showInfo("VIRHE", "Saldo ei riitä!"); }
+            } else { showInfo("VIRHE", "Korttia ei löydy!"); }
+            input = "";
+        }
         updateDisplay();
     }
 
-    // HAKUTOIMINTO
-    function openSearch() {
-        mode = "SEARCH";
-        document.getElementById('search-modal').style.display = "flex";
-        document.getElementById('search-box').value = "";
-        document.getElementById('search-results').innerHTML = "";
-        setTimeout(() => document.getElementById('search-box').focus(), 100);
-    }
-
-    function doSearch() {
-        let q = document.getElementById('search-box').value.toLowerCase();
-        let res = db.products.filter(p => p.name.toLowerCase().includes(q) || p.id.includes(q));
-        let container = document.getElementById('search-results');
-        container.innerHTML = "";
-        res.forEach(p => {
-            let div = document.createElement('div');
-            div.className = "list-item";
-            div.innerHTML = `<span>${p.name} (${p.id})</span> <b>${p.price.toFixed(2)}€</b>`;
-            div.onclick = () => { addToCart(p); closeModals(); };
-            container.appendChild(div);
-        });
-    }
-
-    // HALLINTA JA JÄSENET
-    function openAdmin() {
-        mode = "ADMIN";
-        document.getElementById('admin-modal').style.display = "flex";
-    }
-
-    function openMemberAdmin() {
-        closeModals();
-        mode = "MEMBER";
-        document.getElementById('member-modal').style.display = "flex";
-        let container = document.getElementById('member-list');
-        container.innerHTML = "";
-        db.members.forEach(m => {
-            let div = document.createElement('div');
-            div.className = "list-item";
-            div.innerHTML = `<span>${m.name} [ID: ${m.id}]</span> <span>Pisteet: ${m.points}</span>`;
-            container.appendChild(div);
-        });
-    }
-
-    // PERUSTOIMINNOT (Kuten aiemmin)
-    function setMultiplier() { multiplier = parseFloat(input || 1); input = ""; updateDisplay(); }
-    function addToCart(p) { cart.push({...p, qty: multiplier, price: p.price}); selectedIdx = cart.length - 1; updateReceipt(); }
-    function moveSelection(dir) { 
-        selectedIdx = Math.max(0, Math.min(cart.length - 1, selectedIdx + dir)); 
+    // TOIMINNOT
+    function addToCart(p) {
+        cart.push({...p, qty: multiplier, price: p.price, discount: 0});
+        selectedIdx = cart.length - 1;
         updateReceipt();
-        const active = document.querySelector('.receipt-row.selected');
-        if(active) active.scrollIntoView({ block: 'nearest' });
     }
+
+    function removeRow() { if(selectedIdx > -1) { cart.splice(selectedIdx, 1); updateReceipt(); } }
+    
+    function changePrice() {
+        if(selectedIdx === -1) return;
+        let newPrice = parseFloat(input) / 100;
+        if(newPrice > 0) cart[selectedIdx].price = newPrice;
+        input = ""; updateReceipt();
+    }
+
+    function applyDiscount() {
+        if(selectedIdx === -1) return;
+        let d = parseInt(input);
+        if(d > 0 && d <= 100) cart[selectedIdx].discount = d;
+        input = ""; updateReceipt();
+    }
+
+    function sellGiftCard() {
+        let amt = parseFloat(input) / 100;
+        if(amt > 0) {
+            let code = "GC" + Math.floor(Math.random()*1000);
+            db.giftcards.push({code: code, balance: amt});
+            addToCart({id: "GC", name: "LAHJA: " + code, price: amt, cat: "MUUT"});
+            showInfo("LAHJA MYYTY", "Koodi: " + code);
+        }
+        input = "";
+    }
+
+    function voidSale() { cart = []; updateReceipt(); }
 
     function updateReceipt() {
         const list = document.getElementById('receipt-list');
         list.innerHTML = "";
         let total = 0;
         cart.forEach((item, i) => {
+            let finalPrice = item.price * (1 - item.discount / 100);
             let row = document.createElement('div');
             row.className = `receipt-row ${selectedIdx === i ? 'selected' : ''}`;
-            row.innerHTML = `<span>${item.qty}x ${item.name}</span><span>${(item.price * item.qty).toFixed(2)}</span>`;
+            row.innerHTML = `<div>${item.qty} x ${item.name} ${item.discount > 0 ? '(-'+item.discount+'%)':''}</div><div>${(finalPrice * item.qty).toFixed(2)}</div>`;
             row.onclick = () => { selectedIdx = i; updateReceipt(); };
             list.appendChild(row);
-            total += (item.price * item.qty);
+            total += (finalPrice * item.qty);
         });
-        document.getElementById('total-display').innerText = total.toFixed(2);
         roundedTotal = (Math.round(total * 20) / 20).toFixed(2);
+        document.getElementById('total-display').innerText = roundedTotal;
     }
 
     function openPaymentMenu() {
         if(cart.length === 0) return;
-        mode = "PAY_MENU";
-        document.getElementById('pay-header').innerText = "MAKSU: " + roundedTotal + " €";
-        document.getElementById('pay-menu-modal').style.display = "flex";
+        let body = `
+            <button class="num-btn" style="width:100%; margin-bottom:5px;" onclick="mode='CASH'; closeModals(); showInfo('KÄTEINEN','Syötä saatu summa ja ENT')">KÄTEINEN (F1)</button>
+            <button class="num-btn" style="width:100%; margin-bottom:5px;" onclick="db.salesHistory+=parseFloat(roundedTotal); finalizeSale(); showInfo('KORTTI','Varmennetaan...')">KORTTIMAKSU (F2)</button>
+            <button class="num-btn" style="width:100%;" onclick="mode='GC_PAY'; closeModals(); showInfo('LAHJA','Syötä kortin koodi ja ENT')">LAHJA-ALENNUS (F3)</button>
+        `;
+        showInfo("VALITSE MAKSUTAPA", body);
     }
 
-    function startCashPay() { closeModals(); mode = "CASH_INPUT"; input = ""; showInfo("SYÖTÄ KÄTEISSUMMA", "💶"); }
-
-    function processCash() {
-        let given = parseFloat(input || 0) / 100;
-        let change = given - roundedTotal;
-        if(change < 0) { showInfo("SUMMA EI RIITÄ", "⚠️"); return; }
-        document.getElementById('total-label').innerText = "VAIHTORAHA";
-        document.getElementById('total-display').innerText = "-" + change.toFixed(2);
-        document.getElementById('total-row-ui').classList.add('change');
-        mode = "FINISHED";
-        setTimeout(() => { showInfo("MYYNTI VALMIS", "✅"); finalizeSale(); }, 2500);
+    // HALLINTA UI
+    function openAdmin() {
+        document.getElementById('admin-modal').style.display = "flex";
+        renderAdminTable('products');
     }
 
-    function startCardPay() {
-        closeModals();
-        showInfo("MAKSUPÄÄTE: ODOTTAA...", "📟");
-        setTimeout(() => showInfo("MAKSU HYVÄKSYTTY", "✅"), 2500);
-        setTimeout(finalizeSale, 3500);
+    function renderAdminTable(type) {
+        let view = document.getElementById('admin-main-view');
+        let html = `<h3>${type.toUpperCase()} HALLINTA</h3><button class="action-btn btn-add" onclick="addItem('${type}')">+ Lisää uusi</button><table><tr>`;
+        
+        if(type === 'products') {
+            html += `<th>ID</th><th>Nimi</th><th>Hinta</th><th>Toiminnot</th></tr>`;
+            db.products.forEach((p, i) => html += `<tr><td>${p.id}</td><td>${p.name}</td><td>${p.price}</td><td><button class="btn-del" onclick="db.products.splice(${i},1); renderAdminTable('products')">X</button></td></tr>`);
+        } else if(type === 'members') {
+            html += `<th>ID</th><th>Nimi</th><th>Pisteet</th><th>Toiminnot</th></tr>`;
+            db.members.forEach((m, i) => html += `<tr><td>${m.id}</td><td>${m.name}</td><td>${m.points}</td><td><button class="btn-del" onclick="db.members.splice(${i},1); renderAdminTable('members')">X</button></td></tr>`);
+        } else if(type === 'giftcards') {
+            html += `<th>Koodi</th><th>Saldo</th><th>Toiminnot</th></tr>`;
+            db.giftcards.forEach((g, i) => html += `<tr><td>${g.code}</td><td>${g.balance.toFixed(2)}€</td><td><button class="btn-del" onclick="db.giftcards.splice(${i},1); renderAdminTable('giftcards')">X</button></td></tr>`);
+        } else if(type === 'sellers') {
+            html += `<th>ID</th><th>Nimi</th><th>Toiminnot</th></tr>`;
+            db.sellers.forEach((s, i) => html += `<tr><td>${s.id}</td><td>${s.name}</td><td><button class="btn-del" onclick="db.sellers.splice(${i},1); renderAdminTable('sellers')">X</button></td></tr>`);
+        }
+        
+        html += `</table>`;
+        view.innerHTML = html;
     }
 
+    function addItem(type) {
+        let val = prompt("Syötä tiedot (pilkulla erotettuna, esim: 105,Ruuvi,1.50)");
+        if(!val) return;
+        let parts = val.split(",");
+        if(type === 'products') db.products.push({id: parts[0], name: parts[1], price: parseFloat(parts[2]), cat: "YLEINEN"});
+        if(type === 'sellers') db.sellers.push({id: parts[0], name: parts[1]});
+        if(type === 'members') db.members.push({id: parts[0], name: parts[1], points: 0});
+        renderAdminTable(type);
+    }
+
+    function generateReport(type) {
+        let now = new Date().toLocaleString();
+        let report = `RAUMA K-RAUTA\nTYYPPI: ${type}-RAPORTTI\nAIKA: ${now}\nMYYJÄ: ${currentSeller.name}\n------------------\nMYYNTI YHTEENSÄ: ${db.salesHistory.toFixed(2)} €\nALV 24%: ${(db.salesHistory*0.24).toFixed(2)} €\n------------------`;
+        if(type === 'Z') {
+            report += `\nKASSA SULJETTU JA NOLLATTU. Z-nro: ${db.zCount++}`;
+            db.salesHistory = 0;
+        }
+        showInfo(type + "-RAPORTTI", `<pre style="text-align:left">${report}</pre>`);
+    }
+
+    // APUFUNKTIOT
     function finalizeSale() {
-        cart = []; selectedIdx = -1;
+        cart = []; updateReceipt(); closeModals(); mode = "SALE";
         document.getElementById('total-label').innerText = "YHTEENSÄ";
-        document.getElementById('total-row-ui').classList.remove('change');
-        updateReceipt(); closeModals(); mode = "SALE";
     }
 
-    function showInfo(text, icon) {
-        document.getElementById('info-text').innerText = text;
-        document.getElementById('info-icon').innerText = icon || "ℹ️";
+    function showInfo(title, body) {
+        document.getElementById('info-title').innerText = title;
+        document.getElementById('info-body').innerHTML = body;
         document.getElementById('info-modal').style.display = "flex";
     }
 
-    function updateDisplay() {
-        if(mode === "LOGIN") document.getElementById('login-val').innerText = input;
-        else document.getElementById('pos-input').innerText = (multiplier > 1 ? multiplier + "x " : "") + (parseFloat(input || 0) / 100).toFixed(2);
+    function closeModals() { 
+        document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); 
+        if(mode !== "LOGIN" && mode !== "CASH" && mode !== "GC_PAY") mode = "SALE";
     }
 
-    function closeModals() {
-        document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
-        if(["CASH_INPUT", "FINISHED"].indexOf(mode) === -1) mode = "SALE";
+    function updateDisplay() {
+        let val = (parseFloat(input || 0) / 100).toFixed(2);
+        document.getElementById('pos-input').innerText = (multiplier > 1 ? multiplier + "x " : "") + val;
+        if(mode === "LOGIN") document.getElementById('login-val').innerText = input;
     }
 
     function renderCategories() {
@@ -358,7 +382,7 @@
     function renderProducts() {
         const grid = document.getElementById('product-grid');
         grid.innerHTML = "";
-        db.products.filter(p => p.cat === db.currentCat).forEach(p => {
+        db.products.filter(p => p.cat === db.currentCat || db.currentCat === "KAIKKI").forEach(p => {
             let div = document.createElement('div');
             div.className = 'grid-item';
             div.innerHTML = `${p.name}<br>${p.price.toFixed(2)}€`;
@@ -367,19 +391,18 @@
         });
     }
 
-    function removeRow() { if(selectedIdx > -1) { cart.splice(selectedIdx, 1); updateReceipt(); } }
-    function voidSale() { cart = []; updateReceipt(); showInfo("MYYNTI MITÄTÖITY", "🗑️"); }
+    function moveSelection(dir) {
+        selectedIdx = Math.max(0, Math.min(cart.length - 1, selectedIdx + dir));
+        updateReceipt();
+    }
 
     function renderNumpad() {
         const keys = ['7','8','9','KPL','4','5','6','HAE','1','2','3','CLR','0','00',',','ENT'];
         const ui = document.getElementById('numpad-ui');
+        ui.innerHTML = "";
         keys.forEach(k => {
             let b = document.createElement('div'); b.className = 'num-btn'; b.innerText = k;
-            b.onclick = () => { 
-                if(k === 'ENT') handleEnter(); else if(k === 'CLR') input = ""; 
-                else if(k === 'KPL') setMultiplier(); else if(k === 'HAE') openSearch();
-                else input += k; updateDisplay(); 
-            };
+            b.onclick = () => { if(k==='ENT') handleEnter(); else if(k==='CLR') input=""; else input+=k; updateDisplay(); };
             ui.appendChild(b);
         });
     }
