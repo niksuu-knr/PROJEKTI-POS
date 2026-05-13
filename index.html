@@ -2,7 +2,7 @@
 <html lang="fi">
 <head>
     <meta charset="UTF-8">
-    <title>K-Rauta POS v7.2 Enterprise Gold</title>
+    <title>K-Rauta POS v7.4 Enterprise Gold</title>
     <style>
         :root { --k-orange: #ff6600; --k-blue: #004593; --bg-grey: #d1d1d1; --danger: #cc0000; --success: #28a745; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg-grey); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
@@ -10,7 +10,7 @@
         
         .main-container { display: flex; flex: 1; gap: 5px; padding: 5px; height: calc(100vh - 45px); overflow: hidden; }
         
-        /* Vasen paneeli: Kuitti ja Syöte */
+        /* VASEN PANEELI */
         .left-panel { width: 420px; display: flex; flex-direction: column; gap: 5px; }
         .receipt-area { flex: 1; background: white; border: 1px solid #888; display: flex; flex-direction: column; overflow: hidden; }
         .receipt-content { flex: 1; overflow-y: auto; font-family: 'Consolas', monospace; padding: 10px; font-size: 0.9rem; }
@@ -22,7 +22,7 @@
         .numpad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
         .num-btn { height: 45px; background: #fefefe; border: 1px solid #777; font-size: 1.1rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-        /* Keskipaneeli: Tuoteryhmät ja Tuotteet */
+        /* KESKIPANEELI */
         .center-panel { flex: 1; display: flex; flex-direction: column; gap: 5px; overflow: hidden; }
         .product-display { flex: 4; background: #e0e0e0; border: 1px solid #bbb; padding: 10px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); grid-auto-rows: 80px; gap: 10px; }
         .category-bar { flex: 1; background: #bcbcbc; border: 1px solid #999; display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 5px; padding: 5px; }
@@ -30,23 +30,24 @@
         .cat-item { background: var(--k-blue); color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem; }
         .cat-item.active { background: var(--k-orange); }
 
-        /* Oikea paneeli: F-Näppäimet */
+        /* OIKEA PANEELI */
         .right-panel { width: 160px; display: grid; grid-template-rows: repeat(12, 1fr); gap: 2px; }
         .f-btn { background: #eee; border: 1px solid #777; font-size: 0.65rem; font-weight: bold; padding-left: 5px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; }
         .f-btn span { color: var(--k-blue); font-size: 0.75rem; }
 
-        /* Modaalit ja Hallinta */
+        /* MODAALIT JA HALLINTA */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center; }
-        .modal-content { background: white; width: 85%; height: 85vh; padding: 20px; border: 5px solid var(--k-blue); display: flex; flex-direction: column; }
+        .modal-content { background: white; width: 85%; height: 85vh; padding: 20px; border: 5px solid var(--k-blue); display: flex; flex-direction: column; position: relative; }
+        .menu-modal-content { width: 500px; height: auto; text-align: center; }
         .admin-layout { display: flex; flex: 1; gap: 20px; overflow: hidden; margin-top: 10px; }
-        .admin-sidebar { width: 180px; display: flex; flex-direction: column; gap: 5px; }
+        .admin-sidebar { width: 200px; display: flex; flex-direction: column; gap: 5px; }
         .admin-main { flex: 1; overflow-y: auto; background: #f9f9f9; padding: 15px; border: 1px solid #ccc; }
         
         table { width: 100%; border-collapse: collapse; }
         th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
         th { background: var(--k-blue); color: white; position: sticky; top: 0; }
+        .menu-btn { width: 100%; padding: 15px; margin: 5px 0; font-size: 1.2rem; font-weight: bold; cursor: pointer; background: #f0f0f0; border: 1px solid #888; }
         .login-screen { position: fixed; inset: 0; background: var(--k-blue); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
-        .action-btn { padding: 5px 10px; font-weight: bold; cursor: pointer; margin-right: 5px; }
     </style>
 </head>
 <body onload="init()">
@@ -54,11 +55,11 @@
 <div id="login-screen" class="login-screen">
     <h1 style="font-size: 4rem; margin: 0;">K-RAUTA</h1>
     <h2 id="login-display" style="background:white; color:black; padding:10px 40px; min-width:150px; text-align:center;"></h2>
-    <p>SYÖTÄ MYYJÄNUMERO (esim. 4422) JA PAINA ENTER</p>
+    <p>SYÖTÄ MYYJÄNUMERO JA PAINA ENTER</p>
 </div>
 
 <header>
-    <div>K-RAUTA v7.2 ENTERPRISE</div>
+    <div>K-RAUTA v7.4 ENTERPRISE GOLD</div>
     <div id="seller-info">MYYJÄ: -</div>
     <div id="clock">00:00:00</div>
 </header>
@@ -71,24 +72,19 @@
                 <div class="total-row"><span>YHTEENSÄ</span><span id="total-display">0.00</span></div>
             </div>
         </div>
-        <div class="input-display">
-            <span id="multiplier-label" style="font-size: 1rem; color: #ff0;"></span>
-            <span id="pos-input">0.00</span>
-        </div>
+        <div class="input-display"><span id="pos-input">0.00</span></div>
         <div class="numpad" id="numpad-ui"></div>
     </div>
-
     <div class="center-panel">
         <div class="product-display" id="product-grid"></div>
         <div class="category-bar" id="category-grid"></div>
     </div>
-
     <div class="right-panel">
         <div class="f-btn" onclick="handleFKey('F1')"><span>F1</span>HAKU</div>
         <div class="f-btn" onclick="handleFKey('F2')"><span>F2</span>HALLINTA</div>
         <div class="f-btn" onclick="handleFKey('F3')"><span>F3</span>JÄSEN</div>
         <div class="f-btn" onclick="handleFKey('F4')"><span>F4</span>ULOS</div>
-        <div class="f-btn" onclick="handleFKey('F5')"><span>F5</span>ALE %</div>
+        <div class="f-btn" onclick="handleFKey('F5')"><span>F5</span>ALE</div>
         <div class="f-btn" onclick="handleFKey('F6')"><span>F6</span>POISTA RIVI</div>
         <div class="f-btn" onclick="handleFKey('F7')"><span>F7</span>LAHJA MYYNTI</div>
         <div class="f-btn" onclick="handleFKey('F8')"><span>F8</span>HINNAN MUUTOS</div>
@@ -97,318 +93,233 @@
     </div>
 </div>
 
-<!-- Hallintamodaali -->
+<!-- HALLINTAMODAALI -->
 <div id="admin-modal" class="modal">
     <div class="modal-content">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid var(--k-blue); padding-bottom:10px;">
-            <h2 id="admin-title">JÄRJESTELMÄHALLINTA</h2>
-            <button class="action-btn" style="background:var(--danger); color:white;" onclick="closeModals()">SULJE (ESC)</button>
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid var(--k-blue);">
+            <h2>JÄRJESTELMÄHALLINTA</h2>
+            <button class="num-btn" style="background:var(--danger); color:white; padding:5px 20px;" onclick="closeModals()">SULJE (ESC)</button>
         </div>
         <div class="admin-layout">
             <div class="admin-sidebar">
-                <button class="num-btn" onclick="showAdminSection('products')">Tuotteet</button>
-                <button class="num-btn" onclick="showAdminSection('categories')">Tuoteryhmät</button>
-                <button class="num-btn" onclick="showAdminSection('sellers')">Myyjät</button>
-                <button class="num-btn" onclick="showAdminSection('members')">Jäsenet</button>
-                <button class="num-btn" onclick="showAdminSection('giftcards')">Lahjakortit</button>
+                <button class="menu-btn" onclick="showAdminSection('products')">Tuotteet</button>
+                <button class="menu-btn" onclick="showAdminSection('categories')">Tuoteryhmät</button>
+                <button class="menu-btn" onclick="showAdminSection('sellers')">Myyjät</button>
+                <button class="menu-btn" onclick="showAdminSection('members')">Jäsenet</button>
+                <button class="menu-btn" onclick="showAdminSection('giftcards')">Lahjakortit</button>
                 <hr style="width:100%">
-                <button class="num-btn" style="background:#ddd" onclick="generateReport('X')">X-Raportti</button>
-                <button class="num-btn" style="background:#bbb" onclick="generateReport('Z')">Z-Raportti</button>
+                <button class="menu-btn" style="background:#eee" onclick="generateReport('X')">X-Raportti</button>
+                <button class="menu-btn" style="background:#ddd" onclick="generateReport('Z')">Z-Raportti</button>
             </div>
-            <div class="admin-main" id="admin-view">
-                <h3>Valitse toiminto vasemmalta.</h3>
-            </div>
+            <div class="admin-main" id="admin-view"></div>
         </div>
     </div>
 </div>
 
-<!-- Yleinen Info/Haku-modaali -->
-<div id="info-modal" class="modal">
-    <div class="modal-content" style="height:auto; width:500px; text-align:center;">
-        <h2 id="info-title">INFO</h2>
-        <div id="info-body" style="margin: 20px 0; font-size:1.2rem;"></div>
-        <div id="search-results" style="max-height:300px; overflow-y:auto;"></div>
-        <button class="num-btn" style="width:100%; background:var(--k-orange); color:white;" onclick="closeModals()">SULJE (ESC)</button>
-    </div>
+<!-- DYNAAMISET VALIKOT (ALE, MAKSU) -->
+<div id="menu-modal" class="modal">
+    <div class="modal-content menu-modal-content" id="menu-content"></div>
 </div>
 
 <script>
-    // Tietokanta
     let db = {
         products: [
-            {id: "101", name: "RUUVIPAKKI 500kpl", price: 29.90, cat: "TYÖKALUT"},
-            {id: "102", name: "PORAKONE 18V", price: 159.00, cat: "TYÖKALUT"},
-            {id: "201", name: "KESTOPUU 28x95", price: 2.45, cat: "PUUTAVARA"},
-            {id: "301", name: "ULKOMAALI VALKOINEN", price: 89.00, cat: "MAALIT"}
+            {id: "101", name: "PORAKONE 18V", price: 129.00, cat: "TYÖKALUT"},
+            {id: "201", name: "KESTOPUU 28x95", price: 2.45, cat: "PIHA"},
+            {id: "301", name: "ULKOMAALI 10L", price: 89.00, cat: "MAALIT"}
         ],
-        categories: ["TYÖKALUT", "PUUTAVARA", "MAALIT", "PIHA"],
-        sellers: [{id: "4422", name: "Matti Meikäläinen"}, {id: "1111", name: "Admin"}],
-        members: [{id: "1001", name: "Esimerkki Jäsen", points: 450}],
-        giftcards: [{id: "GC123", balance: 50.00}],
-        currentCat: "TYÖKALUT",
-        salesSession: 0
+        categories: ["TYÖKALUT", "PIHA", "MAALIT"],
+        sellers: [{id: "4422", name: "Matti"}, {id: "1111", name: "Admin"}],
+        members: [{id: "1001", name: "Esimerkki Jäsen", points: 50}],
+        giftcards: [{id: "GC100", balance: 100.00}],
+        salesSession: 0,
+        currentCat: "TYÖKALUT"
     };
 
     let cart = [];
     let input = "";
-    let mode = "LOGIN";
-    let multiplier = 1;
+    let mode = "LOGIN"; // LOGIN, SALE, ALE_LEVEL, ALE_TYPE, PAYMENT, ADMIN
     let selectedIdx = -1;
-    let currentSeller = null;
+    let aleContext = { target: '', type: '' };
 
     function init() {
         renderNumpad(); renderCategories(); renderProducts();
         setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('fi-FI'); }, 1000);
     }
 
-    // NÄPPÄIMISTÖN KÄSITTELY (KORJATTU F-NÄPPÄIN LOGIIKKA)
+    // --- NÄPPÄIMISTÖLOGIIKKA ---
     window.addEventListener('keydown', e => {
-        if (e.key.startsWith('F')) {
-            e.preventDefault(); // Estää selaimen oletustoiminnot
-            handleFKey(e.key);
-            return;
-        }
-
+        if (e.key.startsWith('F')) e.preventDefault();
         if (e.key === 'Escape') { closeModals(); return; }
         if (e.key === 'Enter') { handleEnter(); return; }
-        if (e.key === 'Backspace') { input = input.slice(0, -1); updateDisplay(); return; }
-        if (e.key === '*') { e.preventDefault(); setMultiplier(); return; }
+        if (e.key === 'Backspace') { input = input.slice(0,-1); updateDisplay(); return; }
         if (e.key === '+') { e.preventDefault(); handleFKey('F12'); return; }
-        
-        if (!isNaN(e.key)) { input += e.key; updateDisplay(); }
+        if (!isNaN(e.key)) { input += e.key; updateDisplay(); return; }
+        handleFKey(e.key);
     });
 
     function handleFKey(key) {
-        if (mode === "LOGIN") return;
-
-        switch(key) {
-            case 'F1': openSearch(); break;
-            case 'F2': openAdmin(); break;
-            case 'F3': openMemberSearch(); break;
-            case 'F4': location.reload(); break;
-            case 'F5': applyDiscount(); break;
-            case 'F6': removeRow(); break;
-            case 'F7': sellGiftCard(); break;
-            case 'F8': changePrice(); break;
-            case 'F11': voidSale(); break;
-            case 'F12': openPayment(); break;
+        if (mode === "SALE") {
+            switch(key) {
+                case 'F1': openSearch(); break;
+                case 'F2': openAdmin(); break;
+                case 'F3': openMemberSearch(); break;
+                case 'F4': location.reload(); break;
+                case 'F5': openAleLevelMenu(); break;
+                case 'F6': removeRow(); break;
+                case 'F7': sellGiftCard(); break;
+                case 'F8': changePrice(); break;
+                case 'F11': voidSale(); break;
+                case 'F12': openPaymentMenu(); break;
+            }
+        } else if (mode === "ALE_LEVEL") {
+            if (key === 'F1') openAleTypeMenu('ROW');
+            if (key === 'F2') openAleTypeMenu('TOTAL');
+        } else if (mode === "ALE_TYPE") {
+            if (key === 'F1') applyAleAction('PERCENT');
+            if (key === 'F2') applyAleAction('SUM');
+        } else if (mode === "PAYMENT") {
+            if (key === 'F1') finalizeSale('KÄTEINEN');
+            if (key === 'F2') finalizeSale('KORTTI');
+            if (key === 'F3') finalizeSale('LAHJAKORTTI');
         }
     }
 
     function handleEnter() {
         if (mode === "LOGIN") {
             let s = db.sellers.find(x => x.id === input);
-            if (s) {
-                currentSeller = s; mode = "SALE";
-                document.getElementById('login-screen').style.display = "none";
-                document.getElementById('seller-info').innerText = "MYYJÄ: " + s.name;
-            }
-            input = "";
+            if (s) { mode = "SALE"; document.getElementById('login-screen').style.display="none"; document.getElementById('seller-info').innerText = "MYYJÄ: " + s.name; }
         } else if (mode === "SALE") {
             let p = db.products.find(x => x.id === input);
-            if (p) { addToCart(p); }
-            input = ""; multiplier = 1;
-        } else if (mode === "PAY_CASH") {
-            processCash();
-        } else if (mode === "PAY_GC") {
-            processGCPayment();
+            if (p) addToCart(p);
         }
-        updateDisplay();
+        input = ""; updateDisplay();
     }
 
-    // TOIMINNOT
-    function addToCart(p) {
-        cart.push({...p, qty: multiplier, price: p.price, discount: 0});
-        selectedIdx = cart.length - 1;
-        updateReceipt();
+    // --- ALE VALIKOT (PYYNNÖN MUKAAN) ---
+    function openAleLevelMenu() {
+        mode = "ALE_LEVEL";
+        showMenu(`<h2>ALENNUSKOHDE</h2>
+                  <button class="menu-btn">F1: RIVIALENNUS</button>
+                  <button class="menu-btn">F2: KOKOALENNUS</button>`);
     }
 
-    function removeRow() { if (selectedIdx > -1) { cart.splice(selectedIdx, 1); updateReceipt(); } }
-    
-    function voidSale() { if (confirm("Mitätöidäänkö koko myynti?")) { cart = []; updateReceipt(); } }
-
-    function setMultiplier() { multiplier = parseInt(input) || 1; input = ""; updateDisplay(); }
-
-    function applyDiscount() {
-        if (selectedIdx === -1) return;
-        let d = parseInt(input);
-        if (d >= 0 && d <= 100) { cart[selectedIdx].discount = d; updateReceipt(); }
-        input = "";
+    function openAleTypeMenu(target) {
+        aleContext.target = target;
+        mode = "ALE_TYPE";
+        showMenu(`<h2>ALENNUSTYYPPI (${target})</h2>
+                  <button class="menu-btn">F1: PROSENTTI (%)</button>
+                  <button class="menu-btn">F2: SUMMA (€)</button>`);
     }
 
-    function changePrice() {
-        if (selectedIdx === -1) return;
-        let newP = parseFloat(input) / 100;
-        if (newP > 0) { cart[selectedIdx].price = newP; updateReceipt(); }
-        input = "";
-    }
-
-    function sellGiftCard() {
+    function applyAleAction(type) {
         let val = parseFloat(input) / 100;
-        if (val > 0) {
-            let id = "GC-" + Math.floor(Math.random()*9000+1000);
-            db.giftcards.push({id: id, balance: val});
-            addToCart({id: id, name: "LAHJAOSTO " + id, price: val, cat: "MUUT"});
-        }
-        input = "";
-    }
-
-    function openSearch() {
-        let q = prompt("Hae tuotetta nimellä:");
-        if (!q) return;
-        let results = db.products.filter(p => p.name.toLowerCase().includes(q.toLowerCase()));
-        let html = results.map(p => `<div class='receipt-row' onclick='addToCartById("${p.id}")'>${p.name} - ${p.price.toFixed(2)}€</div>`).join("");
-        showInfo("HAKUTULOKSET", html || "Ei osumia");
-    }
-
-    function addToCartById(id) { 
-        let p = db.products.find(x => x.id === id); 
-        if(p) addToCart(p); closeModals(); 
-    }
-
-    // MAKSU LOGIIKKA
-    function openPayment() {
-        if (cart.length === 0) return;
-        let total = calculateTotal();
-        let body = `
-            <h3>YHTEENSÄ: ${total.toFixed(2)} €</h3>
-            <button class="num-btn" style="width:100%; margin-bottom:10px;" onclick="startPayment('CASH')">KÄTEINEN (F1)</button>
-            <button class="num-btn" style="width:100%; margin-bottom:10px;" onclick="processCardPayment()">KORTTI (F2)</button>
-            <button class="num-btn" style="width:100%;" onclick="startPayment('GC')">LAHJAKORTTI (F3)</button>
-        `;
-        showInfo("MAKSU", body);
-    }
-
-    function startPayment(type) {
-        mode = "PAY_" + type;
-        closeModals();
-        showInfo("MAKSUSUORITUS", type === 'CASH' ? "Syötä saatu summa ja Enter" : "Syötä lahjakortin koodi ja Enter");
-    }
-
-    function processCash() {
-        let paid = parseFloat(input) / 100;
-        let total = calculateTotal();
-        if (paid >= total) {
-            db.salesSession += total;
-            showInfo("MAKSU VALMIS", "Vaihtorahaa: " + (paid - total).toFixed(2) + " €");
-            finalizeSale();
-        }
-    }
-
-    function processGCPayment() {
-        let gc = db.giftcards.find(x => x.id === input);
-        let total = calculateTotal();
-        if (gc && gc.balance >= total) {
-            gc.balance -= total;
-            db.salesSession += total;
-            showInfo("MAKSU VALMIS", "Lahjakortin uusi saldo: " + gc.balance.toFixed(2) + " €");
-            finalizeSale();
+        if (val <= 0) { alert("Syötä summa!"); return; }
+        
+        if (aleContext.target === 'ROW' && selectedIdx > -1) {
+            if (type === 'PERCENT') cart[selectedIdx].price *= (1 - val/100);
+            else cart[selectedIdx].price -= val;
         } else {
-            alert("Virheellinen koodi tai saldo ei riitä!");
+            cart.forEach(i => {
+                if (type === 'PERCENT') i.price *= (1 - val/100);
+                else i.price -= (val / cart.length);
+            });
         }
-        input = "";
+        updateReceipt(); closeModals();
     }
 
-    function processCardPayment() {
-        db.salesSession += calculateTotal();
-        showInfo("MAKSU VALMIS", "Korttimaksu hyväksytty.");
-        finalizeSale();
-    }
-
-    function finalizeSale() { cart = []; updateReceipt(); mode = "SALE"; input = ""; }
-
-    // HALLINTA (CRUD)
-    function openAdmin() { document.getElementById('admin-modal').style.display = "flex"; showAdminSection('products'); }
+    // --- HALLINTA JA CRUD ---
+    function openAdmin() { mode = "ADMIN"; document.getElementById('admin-modal').style.display="flex"; showAdminSection('products'); }
 
     function showAdminSection(type) {
-        let html = `<h3>${type.toUpperCase()} HALLINTA</h3><button class="action-btn" style="background:var(--success); color:white;" onclick="addItem('${type}')">+ Lisää uusi</button><table><tr>`;
+        let html = `<h3>${type.toUpperCase()}</h3><button class="num-btn" style="background:var(--success); color:white; margin-bottom:10px;" onclick="addItem('${type}')">+ Lisää</button><table><tr>`;
         if (type === 'products') {
             html += "<th>ID</th><th>Nimi</th><th>Hinta</th><th>Toiminnot</th></tr>";
-            db.products.forEach((p, i) => html += `<tr><td>${p.id}</td><td>${p.name}</td><td>${p.price.toFixed(2)}</td><td><button onclick="db.products.splice(${i},1); showAdminSection('products')">X</button></td></tr>`);
+            db.products.forEach((p, i) => html += `<tr><td>${p.id}</td><td>${p.name}</td><td>${p.price.toFixed(2)}</td><td><button onclick="db.products.splice(${i},1); showAdminSection('products')">POISTA</button></td></tr>`);
         } else if (type === 'sellers') {
             html += "<th>ID</th><th>Nimi</th><th>Toiminnot</th></tr>";
-            db.sellers.forEach((s, i) => html += `<tr><td>${s.id}</td><td>${s.name}</td><td><button onclick="db.sellers.splice(${i},1); showAdminSection('sellers')">X</button></td></tr>`);
+            db.sellers.forEach((s, i) => html += `<tr><td>${s.id}</td><td>${s.name}</td><td><button onclick="db.sellers.splice(${i},1); showAdminSection('sellers')">POISTA</button></td></tr>`);
         } else if (type === 'giftcards') {
-            html += "<th>Koodi</th><th>Saldo</th></tr>";
+            html += "<th>ID</th><th>Saldo</th></tr>";
             db.giftcards.forEach(g => html += `<tr><td>${g.id}</td><td>${g.balance.toFixed(2)}€</td></tr>`);
         }
         document.getElementById('admin-view').innerHTML = html + "</table>";
     }
 
     function addItem(type) {
-        let res = prompt("Syötä tiedot (pilkulla erotettuna):");
+        let res = prompt("Syötä tiedot pilkulla erotettuna (esim: 105, Tuotenimi, 10.00)");
         if (!res) return;
         let p = res.split(",");
-        if (type === 'products') db.products.push({id: p[0], name: p[1], price: parseFloat(p[2]), cat: "YLEINEN"});
-        if (type === 'sellers') db.sellers.push({id: p[0], name: p[1]});
+        if (type === 'products') db.products.push({id: p[0].trim(), name: p[1].trim(), price: parseFloat(p[2]), cat: "YLEINEN"});
+        if (type === 'sellers') db.sellers.push({id: p[0].trim(), name: p[1].trim()});
         showAdminSection(type);
     }
 
     function generateReport(type) {
-        let report = `RAUMA K-RAUTA\n${type}-RAPORTTI\nMyynti: ${db.salesSession.toFixed(2)} €\nALV (24%): ${(db.salesSession * 0.24).toFixed(2)} €`;
-        if (type === 'Z') { db.salesSession = 0; report += "\nKASSA NOLLATTU."; }
-        showInfo(type + "-RAPORTTI", `<pre style="text-align:left">${report}</pre>`);
+        let report = `K-RAUTA POS\n${type}-RAPORTTI\nMyynti: ${db.salesSession.toFixed(2)}€`;
+        if (type === 'Z') db.salesSession = 0;
+        alert(report);
     }
 
-    // APUFUNKTIOT UI
-    function calculateTotal() {
-        return cart.reduce((sum, item) => sum + (item.price * (1 - item.discount / 100) * item.qty), 0);
-    }
+    // --- PERUSTOIMINNOT ---
+    function addToCart(p) { cart.push({...p}); selectedIdx = cart.length - 1; updateReceipt(); }
+    function removeRow() { if (selectedIdx > -1) { cart.splice(selectedIdx, 1); updateReceipt(); } }
+    function voidSale() { if(confirm("Mitätöidäänkö?")) { cart = []; updateReceipt(); } }
+    function changePrice() { if(selectedIdx > -1) { cart[selectedIdx].price = parseFloat(input)/100; updateReceipt(); input=""; } }
 
     function updateReceipt() {
-        const list = document.getElementById('receipt-list');
-        list.innerHTML = "";
+        const list = document.getElementById('receipt-list'); list.innerHTML = "";
+        let total = 0;
         cart.forEach((item, i) => {
-            let lineTotal = (item.price * (1 - item.discount / 100) * item.qty);
-            let div = document.createElement('div');
-            div.className = `receipt-row ${selectedIdx === i ? 'selected' : ''}`;
-            div.innerHTML = `<span>${item.qty}x ${item.name} ${item.discount > 0 ? '(-'+item.discount+'%)':''}</span><span>${lineTotal.toFixed(2)}</span>`;
-            div.onclick = () => { selectedIdx = i; updateReceipt(); };
-            list.appendChild(div);
+            let row = document.createElement('div');
+            row.className = `receipt-row ${selectedIdx === i ? 'selected' : ''}`;
+            row.innerHTML = `<span>${item.name}</span><span>${item.price.toFixed(2)}</span>`;
+            row.onclick = () => { selectedIdx = i; updateReceipt(); };
+            list.appendChild(row);
+            total += item.price;
         });
-        document.getElementById('total-display').innerText = calculateTotal().toFixed(2);
+        document.getElementById('total-display').innerText = total.toFixed(2);
     }
 
+    function openPaymentMenu() {
+        mode = "PAYMENT";
+        showMenu(`<h2>VALITSE MAKSU</h2>
+                  <button class="menu-btn">F1: KÄTEINEN</button>
+                  <button class="menu-btn">F2: KORTTI</button>
+                  <button class="menu-btn">F3: LAHJAKORTTI</button>`);
+    }
+
+    function finalizeSale(method) {
+        let total = parseFloat(document.getElementById('total-display').innerText);
+        db.salesSession += total;
+        alert("Maksu suoritettu: " + method);
+        cart = []; updateReceipt(); closeModals();
+    }
+
+    function showMenu(html) { document.getElementById('menu-content').innerHTML = html; document.getElementById('menu-modal').style.display = "flex"; }
+    function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display="none"); mode = "SALE"; }
+
     function updateDisplay() {
-        let val = (parseFloat(input || 0) / 100).toFixed(2);
-        document.getElementById('pos-input').innerText = val;
-        document.getElementById('multiplier-label').innerText = multiplier > 1 ? multiplier + " x " : "";
+        document.getElementById('pos-input').innerText = (parseFloat(input || 0) / 100).toFixed(2);
         if (mode === "LOGIN") document.getElementById('login-display').innerText = input;
     }
 
     function renderCategories() {
         const bar = document.getElementById('category-grid');
-        bar.innerHTML = "";
-        db.categories.forEach(cat => {
-            let d = document.createElement('div');
-            d.className = `cat-item ${db.currentCat === cat ? 'active' : ''}`;
-            d.innerText = cat;
-            d.onclick = () => { db.currentCat = cat; renderCategories(); renderProducts(); };
+        db.categories.forEach(c => {
+            let d = document.createElement('div'); d.className = 'cat-item'; d.innerText = c;
+            d.onclick = () => { db.currentCat = c; renderProducts(); };
             bar.appendChild(d);
         });
     }
 
     function renderProducts() {
-        const grid = document.getElementById('product-grid');
-        grid.innerHTML = "";
+        const grid = document.getElementById('product-grid'); grid.innerHTML = "";
         db.products.filter(p => p.cat === db.currentCat).forEach(p => {
-            let d = document.createElement('div');
-            d.className = 'grid-item';
+            let d = document.createElement('div'); d.className = 'grid-item';
             d.innerHTML = `${p.name}<br>${p.price.toFixed(2)}€`;
-            d.onclick = () => addToCart(p);
-            grid.appendChild(d);
+            d.onclick = () => addToCart(p); grid.appendChild(d);
         });
-    }
-
-    function showInfo(title, body) {
-        document.getElementById('info-title').innerText = title;
-        document.getElementById('info-body').innerHTML = body;
-        document.getElementById('info-modal').style.display = "flex";
-    }
-
-    function closeModals() { 
-        document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
-        if (mode.startsWith("PAY")) mode = "SALE";
     }
 
     function renderNumpad() {
@@ -416,7 +327,7 @@
         const ui = document.getElementById('numpad-ui');
         keys.forEach(k => {
             let b = document.createElement('div'); b.className = 'num-btn'; b.innerText = k;
-            b.onclick = () => { if(k==='ENT') handleEnter(); else if(k==='CLR') input=""; else if(k==='*') setMultiplier(); else if(k==='+') handleFKey('F12'); else input+=k; updateDisplay(); };
+            b.onclick = () => { if(k==='ENT') handleEnter(); else if(k==='CLR') input=""; else input+=k; updateDisplay(); };
             ui.appendChild(b);
         });
     }
