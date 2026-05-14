@@ -2,7 +2,7 @@
 <html lang="fi">
 <head>
     <meta charset="UTF-8">
-    <title>K-RAUTA POS v37.5 - QUICK MEMBER</title>
+    <title>K-RAUTA POS v38.4 - RETAIL PRO</title>
     <style>
         :root { --k-orange: #ff6600; --k-blue: #004593; --bg-grey: #d1d1d1; --danger: #cc0000; --success: #28a745; --terminal-green: #0f0; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg-grey); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
@@ -10,48 +10,52 @@
         header { background: var(--k-blue); color: white; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; height: 60px; border-bottom: 4px solid var(--k-orange); flex-shrink: 0; }
         .main-container { display: flex; flex: 1; gap: 8px; padding: 8px; height: calc(100vh - 68px); overflow: hidden; }
         
-        /* Vasen: Kuitti ja Syöttö */
         .left-panel { width: 450px; display: flex; flex-direction: column; gap: 8px; }
         .receipt-area { flex: 1; background: white; border: 2px solid #666; display: flex; flex-direction: column; overflow: hidden; }
         .receipt-content { flex: 1; overflow-y: auto; font-family: 'Consolas', monospace; padding: 10px; }
         .receipt-row { padding: 6px 5px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; cursor: pointer; }
         .receipt-row.selected { background: #e3f2fd; border-left: 5px solid var(--k-blue); }
-        .receipt-row.voided { text-decoration: line-through; color: #999; font-style: italic; background: #f9f9f9; }
+        .receipt-row.voided { text-decoration: line-through; color: #999; }
 
-        .total-container { background: #eee; border-top: 3px solid #999; padding: 10px; }
+        .total-container { background: #eee; border-top: 3px solid #999; padding: 15px; }
         .total-row { display: flex; justify-content: space-between; font-size: 1.8rem; font-weight: bold; color: var(--k-blue); }
         .input-display { background: #000; color: var(--terminal-green); padding: 10px; text-align: right; font-size: 2.5rem; font-family: 'Courier New'; border: 4px inset #444; }
 
-        /* Keskellä: Tuotteet */
         .center-panel { flex: 1; display: flex; flex-direction: column; gap: 8px; }
-        .product-display { flex: 1; background: #bbb; border: 2px solid #888; padding: 10px; display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); grid-auto-rows: 90px; gap: 8px; overflow-y: auto; }
-        .grid-item { background: white; border: 1px solid #666; border-bottom: 4px solid var(--k-blue); font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 5px; font-size: 0.8rem; }
-        .category-bar { height: 55px; display: flex; gap: 5px; padding: 5px; background: #888; overflow-x: auto; }
-        .cat-btn { background: var(--k-blue); color: white; border: none; padding: 0 15px; font-weight: bold; cursor: pointer; white-space: nowrap; }
-        .cat-btn.active { background: var(--k-orange); }
+        .product-display { flex: 1; background: #bbb; border: 2px solid #888; padding: 10px; display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); grid-auto-rows: 110px; gap: 8px; overflow-y: auto; }
+        .grid-item { background: white; border: 1px solid #666; border-bottom: 4px solid var(--k-blue); font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 5px; }
+        .grid-item small { color: var(--k-orange); font-size: 0.7rem; }
+        
+        .category-bar { height: 60px; display: flex; gap: 5px; padding: 5px; background: #888; overflow-x: auto; }
+        .cat-btn { background: var(--k-blue); color: white; border: none; padding: 0 20px; font-weight: bold; cursor: pointer; white-space: nowrap; }
 
-        /* Oikealla: Toiminnot */
         .right-panel { width: 150px; display: grid; grid-template-rows: repeat(12, 1fr); gap: 4px; }
-        .f-btn { background: #fdfdfd; border: 2px solid #777; font-size: 0.7rem; font-weight: bold; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; }
-        .f-btn span { color: var(--k-blue); font-size: 1rem; }
+        .f-btn { background: #fdfdfd; border: 2px solid #777; font-size: 0.75rem; font-weight: bold; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; }
+        .f-btn span { color: var(--k-blue); font-size: 1.1rem; }
 
-        /* Modaalit */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 5000; align-items: center; justify-content: center; }
-        .modal-content { background: #eee; width: 90%; height: 85%; border: 8px solid var(--k-blue); display: flex; flex-direction: column; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 5000; align-items: center; justify-content: center; }
+        .modal-content { background: #eee; width: 950px; max-height: 90vh; border: 10px solid var(--k-blue); display: flex; flex-direction: column; }
         .admin-nav { background: #333; display: flex; padding: 10px; gap: 5px; }
-        .admin-nav button { padding: 12px 20px; cursor: pointer; border: none; font-weight: bold; background: #555; color: white; }
+        .admin-nav button { padding: 10px 15px; cursor: pointer; border: none; background: #555; color: white; font-weight: bold; }
         .admin-nav button.active { background: var(--k-orange); }
         .admin-body { flex: 1; padding: 20px; overflow-y: auto; background: white; }
         
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+        .admin-form { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; background: #f9f9f9; padding: 15px; border: 1px solid #ccc; }
+        .admin-form div { display: flex; flex-direction: column; }
+        .admin-form input, .admin-form select { padding: 8px; margin-top: 4px; }
+
+        .terminal { background: #222; color: var(--terminal-green); padding: 40px; font-family: 'Courier New'; border: 5px solid #444; text-align: center; }
+        .pay-btn { width: 100%; padding: 20px; margin: 10px 0; font-size: 1.3rem; font-weight: bold; cursor: pointer; text-align: left; display: flex; justify-content: space-between; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; font-size: 0.9rem; }
+        th { background: #eee; }
     </style>
 </head>
 <body onload="init()">
 
 <header>
-    <div style="font-weight: 900; font-size: 1.4rem;">K-RAUTA POS v37.5</div>
-    <div id="status-bar">MYYJÄ: 101 - ADMIN | <span id="current-member-name">EI JÄSENTÄ</span></div>
+    <div style="font-weight: 900; font-size: 1.4rem;">K-RAUTA POS v38.4</div>
+    <div id="status-bar">MYYJÄ: <span id="cur-seller">101 - Admin</span> | <span id="cur-mem">EI JÄSENTÄ</span></div>
     <div id="clock">00:00:00</div>
 </header>
 
@@ -60,7 +64,7 @@
         <div class="receipt-area">
             <div id="receipt-list" class="receipt-content"></div>
             <div class="total-container">
-                <div class="total-row"><span>YHTEENSÄ</span><span id="total-val">0.00</span></div>
+                <div class="total-row"><span id="total-label">YHTEENSÄ</span><span id="total-val">0.00</span></div>
             </div>
         </div>
         <div id="display" class="input-display">0.00</div>
@@ -75,182 +79,236 @@
     <div class="right-panel">
         <div class="f-btn" onclick="location.reload()"><span>F1</span>ULOS</div>
         <div class="f-btn" onclick="openAdmin('PRODUCTS')"><span>F2</span>HALLINTA</div>
-        <div class="f-btn" onclick="handleF('F3')"><span>F3</span>HAE JÄSEN</div>
-        <div class="f-btn" onclick="handleF('F4')"><span>F4</span>LAHJAK. MYYNTI</div>
-        <div class="f-btn" onclick="handleF('F6')"><span>F6</span>POISTA RIVI</div>
+        <div class="f-btn" onclick="openMemberSearch()"><span>F3</span>HAE JÄSEN</div>
+        <div class="f-btn" onclick="handleF('F4')"><span>F4</span>LAHJAK.</div>
+        <div class="f-btn" style="background:#e3f2fd;" onclick="handleF('F5')"><span>F5</span>ALENNUS</div>
+        <div class="f-btn" onclick="voidRow()"><span>F6</span>POISTA RIVI</div>
         <div class="f-btn" onclick="handleF('F7')"><span>F7</span>PALAUTUS</div>
-        <div class="f-btn" style="background: #fff3e0;" onclick="handleF('F9')"><span>F9</span>JÄSEN LISÄYS</div>
-        <div class="f-btn" onclick="handleF('F11')"><span>F11</span>MITÄTÖI</div>
-        <div class="f-btn" style="background:var(--success); color:white;" onclick="handleF('F12')"><span>F12</span>MAKSA</div>
+        <div class="f-btn" style="background:#fff3e0;" onclick="handleF('F9')"><span>F9</span>JÄSEN LISÄYS</div>
+        <div class="f-btn" onclick="resetCart()"><span>F11</span>MITÄTÖI</div>
+        <div class="f-btn" style="background:var(--success); color:white;" onclick="openPaymentMenu()"><span>F12 / +</span>MAKSA</div>
     </div>
 </div>
 
-<!-- Hallinta/Pikalisäys-ikkuna -->
 <div id="modal" class="modal">
     <div class="modal-content">
-        <div id="admin-menu" class="admin-nav">
+        <div id="admin-nav" class="admin-nav" style="display:none;">
             <button id="btn-P" onclick="openAdmin('PRODUCTS')">TUOTTEET</button>
             <button id="btn-C" onclick="openAdmin('CATEGORIES')">KATEGORIAT</button>
             <button id="btn-S" onclick="openAdmin('SELLERS')">MYYJÄT</button>
             <button id="btn-M" onclick="openAdmin('MEMBERS')">JÄSENET</button>
             <button id="btn-R" onclick="openAdmin('REPORTS')">RAPORTIT</button>
-            <button style="margin-left:auto; background:var(--danger);" onclick="closeModal()">SULJE (ESC)</button>
+            <button style="margin-left:auto; background:var(--danger);" onclick="closeModal()">SULJE</button>
         </div>
-        <div id="admin-body" class="admin-body"></div>
+        <div id="modal-body" class="admin-body"></div>
     </div>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('pos_v37_5_db')) || {
-        products: [{id: "03199337", name: "NAULAIN MAKITA", price: 299.00, cat: "KONEET"}],
-        categories: ["KONEET", "TYÖKALUT", "RAKENNUS"],
+    let db = JSON.parse(localStorage.getItem('pos_v38_4_db')) || {
+        products: [{ean: "641123", name: "ESIMERKKI TUOTE", price: 29.90, memberPrice: 24.90, cat: "RAKENNUS", discount: 0}],
+        categories: ["RAKENNUS", "TYÖKALUT", "PUUTAVARA", "SÄHKÖ"],
         sellers: [{id: "101", name: "Admin"}],
-        members: [{id: "777", name: "Matti Meikäläinen"}],
+        members: [{id: "040123", name: "Testi Jäsen"}],
         history: []
     };
 
-    let cart = [], input = "", currentCat = "KONEET", selectedIdx = -1, activeMember = null;
+    let cart = [], input = "", currentCat = "RAKENNUS", selectedIdx = -1, activeMember = null, saleFinished = false, modalMode = null;
 
-    function save() { localStorage.setItem('pos_v37_5_db', JSON.stringify(db)); }
+    function save() { localStorage.setItem('pos_v38_4_db', JSON.stringify(db)); }
 
     function init() {
         renderProducts(); renderCategories(); renderNumpad();
         window.addEventListener('keydown', (e) => {
+            if(modalMode === 'PAYMENT') {
+                if(e.key === '1') payCash();
+                if(e.key === '2') payCard();
+                if(e.key === '3') payGift();
+                if(e.key === '4') applyTotalDisc();
+                if(e.key === 'Escape') closeModal();
+                return;
+            }
+            if(e.key === '+' || e.key === 'F12') { e.preventDefault(); openPaymentMenu(); return; }
             if(e.key.startsWith('F')) { e.preventDefault(); handleF(e.key); }
+            if(!isNaN(e.key)) btnP(e.key);
+            if(e.key === 'Enter') btnP('ENT');
             if(e.key === 'Escape') closeModal();
-            if(!isNaN(e.key)) { input += e.key; updateDisplay(); }
         });
         setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('fi-FI'); }, 1000);
     }
 
     function handleF(key) {
-        if (key === 'F2') openAdmin('PRODUCTS');
-        if (key === 'F3') searchMember();
-        if (key === 'F4') sellGiftCard();
-        if (key === 'F6') voidRow();
-        if (key === 'F7') returnSale();
-        if (key === 'F9') quickMemberAdd(); // UUSI TOIMINTO
-        if (key === 'F11') { if(confirm("Mitätöidäänkö kuitti?")) { cart = []; activeMember = null; updateReceipt(); } }
-        if (key === 'F12') openPayment();
+        if(key === 'F2') openAdmin('PRODUCTS');
+        if(key === 'F3') openMemberSearch();
+        if(key === 'F6') voidRow();
+        if(key === 'F11') resetCart();
     }
 
-    // --- JÄSENHALLINTA ---
-    function quickMemberAdd() {
-        document.getElementById('admin-menu').style.display = "none";
-        document.getElementById('admin-body').innerHTML = `
-            <div style="max-width:400px; margin:auto; text-align:center;">
-                <h2>PIKALISÄYS: UUSI JÄSEN</h2>
-                <input id="q-id" placeholder="Puhelinnumero / ID" style="width:100%; padding:15px; margin:10px 0; font-size:1.2rem;">
-                <input id="q-name" placeholder="Asiakkaan nimi" style="width:100%; padding:15px; margin:10px 0; font-size:1.2rem;">
-                <button onclick="saveQuickMember()" style="width:100%; padding:20px; background:var(--success); color:white; font-weight:bold; border:none; cursor:pointer;">TALLENNA JA VALITSE</button>
-                <button onclick="closeModal()" style="margin-top:20px; border:none; background:none; color:grey; cursor:pointer;">Peruuta</button>
-            </div>
-        `;
-        document.getElementById('modal').style.display = "flex";
-        setTimeout(() => document.getElementById('q-id').focus(), 100);
-    }
-
-    function saveQuickMember() {
-        let id = document.getElementById('q-id').value;
-        let name = document.getElementById('q-name').value;
-        if(id && name) {
-            let newMember = {id: id, name: name};
-            db.members.push(newMember);
-            save();
-            activeMember = newMember;
-            document.getElementById('current-member-name').innerText = "JÄSEN: " + name;
-            closeModal();
-            alert("Jäsen tallennettu ja liitetty kuitille.");
-        } else { alert("Täytä molemmat kentät!"); }
-    }
-
-    function searchMember() {
-        let id = prompt("Syötä Jäsen-ID tai puh.nro:");
-        let m = db.members.find(x => x.id === id);
-        if(m) { 
-            activeMember = m; 
-            document.getElementById('current-member-name').innerText = "JÄSEN: " + m.name;
-        } else { alert("Ei löytynyt!"); }
-    }
-
-    // --- MYYNTI JA POISTO ---
-    function voidRow() {
-        if (selectedIdx > -1) {
-            cart[selectedIdx].voided = !cart[selectedIdx].voided;
-            selectedIdx = -1;
-            updateReceipt();
-        } else { alert("Valitse ensin rivi kuitilta klikkaamalla!"); }
-    }
-
-    function sellGiftCard() {
-        let a = parseFloat(input);
-        if(a > 0) {
-            cart.push({id:"GIFT", name:"LAHJAKORTTI", price:a, voided:false});
-            input = ""; updateDisplay(); updateReceipt();
-        } else { alert("Syötä summa näppäimistöllä ensin!"); }
-    }
-
-    // --- HALLINTAPANEELI (F2) ---
-    function openAdmin(tab) {
-        document.getElementById('admin-menu').style.display = "flex";
-        document.querySelectorAll('.admin-nav button').forEach(b => b.classList.remove('active'));
-        const btn = document.getElementById('btn-' + tab[0]);
-        if(btn) btn.classList.add('active');
+    // --- TUOTTEIDEN LISÄYS JA LOGIIKKA ---
+    function addProduct(p) {
+        if(saleFinished) { cart = []; saleFinished = false; document.getElementById('total-label').innerText = "YHTEENSÄ"; }
         
-        let html = `<h2>${tab}</h2>`;
-        const body = document.getElementById('admin-body');
-
-        if (tab === 'PRODUCTS') {
-            html += `<div><input id="p-n" placeholder="Nimi"> <input id="p-p" placeholder="Hinta"> <select id="p-c">${db.categories.map(c=>`<option>${c}</option>`).join('')}</select> <button onclick="addP()">LISÄÄ</button></div>
-                     <table><tr><th>ID</th><th>Nimi</th><th>Hinta</th><th>Kategoria</th></tr>${db.products.map(p=>`<tr><td>${p.id}</td><td>${p.name}</td><td>${p.price.toFixed(2)}€</td><td>${p.cat}</td></tr>`).join('')}</table>`;
-        } else if (tab === 'CATEGORIES') {
-            html += `<div><input id="c-n" placeholder="Uusi kategoria"> <button onclick="addC()">LISÄÄ</button></div>
-                     <ul>${db.categories.map(c=>`<li>${c} <button onclick="db.categories=db.categories.filter(x=>x!=='${c}');save();openAdmin('CATEGORIES');renderCategories();">X</button></li>`).join('')}</ul>`;
-        } else if (tab === 'MEMBERS') {
-            html += `<table><tr><th>ID</th><th>Nimi</th></tr>${db.members.map(m=>`<tr><td>${m.id}</td><td>${m.name}</td></tr>`).join('')}</table>`;
-        } else if (tab === 'REPORTS') {
-            let rev = db.history.reduce((a,b)=>a+b.total, 0);
-            html += `<h3>Kokonaisvaihto: ${rev.toFixed(2)} €</h3><button onclick="if(confirm('Nollataanko?')){db.history=[];save();openAdmin('REPORTS');}">TYHJENNÄ HISTORIA (Z)</button>
-                     <table><tr><th>Pvm</th><th>Summa</th><th>Tapa</th></tr>${db.history.map(h=>`<tr><td>${h.date}</td><td>${h.total.toFixed(2)}€</td><td>${h.method}</td></tr>`).join('')}</table>`;
+        // Valitse hinta: Jos jäsen aktiivinen, käytä jäsenhintaa
+        let unitPrice = (activeMember && p.memberPrice > 0) ? p.memberPrice : p.price;
+        
+        // Laske tuotekohtainen alennus jos sellainen on asetettu
+        if(p.discount > 0) {
+            unitPrice = unitPrice * (1 - (p.discount / 100));
         }
+
+        cart.push({
+            ean: p.ean,
+            name: p.name + (activeMember ? " (JÄSENHINTA)" : ""),
+            price: unitPrice,
+            voided: false
+        });
+        updateReceipt();
+    }
+
+    function openMemberSearch() {
+        let code = prompt("Syötä jäsennumero tai puhelin:");
+        let m = db.members.find(x => x.id === code);
+        if(m) {
+            activeMember = m;
+            alert("Jäsen tunnistettu: " + m.name);
+            updateReceipt();
+        } else {
+            alert("Jäsentä ei löytynyt.");
+        }
+    }
+
+    // --- HALLINTAPANEELI ---
+    function openAdmin(tab) {
+        modalMode = 'ADMIN';
+        document.getElementById('admin-nav').style.display = "flex";
+        document.querySelectorAll('.admin-nav button').forEach(b => b.classList.remove('active'));
+        document.getElementById('btn-' + tab.charAt(0)).classList.add('active');
+        const body = document.getElementById('modal-body');
+        
+        let html = `<h2>${tab}</h2><hr>`;
+        
+        if(tab==='PRODUCTS') {
+            html += `
+                <div class="admin-form">
+                    <div>EAN: <input id="ad-ean"></div>
+                    <div>NIMI: <input id="ad-name"></div>
+                    <div>MYYNTIHINTA (€): <input id="ad-price" type="number" step="0.01"></div>
+                    <div>JÄSENHINTA (€): <input id="ad-mprice" type="number" step="0.01"></div>
+                    <div>KATEGORIA: <select id="ad-cat">${db.categories.map(c=>`<option>${c}</option>`).join('')}</select></div>
+                    <div>ALENNUS %: <input id="ad-disc" type="number" value="0"></div>
+                    <div style="grid-column: span 3"><button onclick="saveP()" style="width:100%; padding:10px; background:var(--success); color:white; font-weight:bold;">TALLENNA TUOTE</button></div>
+                </div>
+                <table>
+                    <thead><tr><th>EAN</th><th>Nimi</th><th>Hinta</th><th>Jäsen</th><th>Kat</th><th>Ale %</th></tr></thead>
+                    <tbody>${db.products.map(p=>`<tr><td>${p.ean}</td><td>${p.name}</td><td>${p.price.toFixed(2)}€</td><td>${p.memberPrice.toFixed(2)}€</td><td>${p.cat}</td><td>${p.discount}%</td></tr>`).join('')}</tbody>
+                </table>`;
+        } else if(tab==='CATEGORIES') {
+            html += `<div class="admin-form"><div>Uusi kategoria: <input id="new-cat"></div><button onclick="saveC()">LISÄÄ</button></div>
+                     <ul>${db.categories.map(c=>`<li>${c}</li>`).join('')}</ul>`;
+        } else if(tab==='REPORTS') {
+            let total = db.history.reduce((a,b)=>a+b.total, 0);
+            html += `<h3>KASSARAPORTTI</h3><p>Päivän kokonaismyynti: <b>${total.toFixed(2)} €</b></p>
+                     <table><tr><th>Aika</th><th>Summa</th><th>Tapa</th></tr>${db.history.map(h=>`<tr><td>${h.date}</td><td>${h.total.toFixed(2)}€</td><td>${h.method}</td></tr>`).join('')}</table>`;
+        } else if(tab==='MEMBERS') {
+            html += `<div class="admin-form"><div>ID/Puh: <input id="m-id"></div><div>Nimi: <input id="m-name"></div><button onclick="saveM()">LISÄÄ JÄSEN</button></div>
+                     <table>${db.members.map(m=>`<tr><td>${m.id}</td><td>${m.name}</td></tr>`).join('')}</table>`;
+        }
+        
         body.innerHTML = html;
         document.getElementById('modal').style.display = "flex";
     }
 
-    function addP() { let n=document.getElementById('p-n').value, p=parseFloat(document.getElementById('p-p').value), c=document.getElementById('p-c').value; if(n&&p){db.products.push({id:Date.now().toString().slice(-6), name:n, price:p, cat:c}); save(); openAdmin('PRODUCTS'); renderProducts();} }
-    function addC() { let n=document.getElementById('c-n').value; if(n){db.categories.push(n); save(); openAdmin('CATEGORIES'); renderCategories();} }
+    function saveP() {
+        let p = {
+            ean: document.getElementById('ad-ean').value,
+            name: document.getElementById('ad-name').value.toUpperCase(),
+            price: parseFloat(document.getElementById('ad-price').value) || 0,
+            memberPrice: parseFloat(document.getElementById('ad-mprice').value) || 0,
+            cat: document.getElementById('ad-cat').value,
+            discount: parseFloat(document.getElementById('ad-disc').value) || 0
+        };
+        if(!p.ean || !p.name) return alert("Täytä vähintään EAN ja Nimi");
+        db.products.push(p);
+        save();
+        openAdmin('PRODUCTS');
+        renderProducts();
+    }
 
-    // --- MAKSU JA APU ---
-    function openPayment() {
-        let t = cart.reduce((a,b)=>a+(b.voided?0:b.price),0);
-        document.getElementById('admin-menu').style.display = "none";
-        document.getElementById('admin-body').innerHTML = `
-            <div style="text-align:center;">
-                <h1>MAKSETAAN: ${t.toFixed(2)} €</h1>
-                <button class="f-btn" style="width:200px; height:80px; margin:10px;" onclick="finalize('KÄTEINEN')">KÄTEINEN</button>
-                <button class="f-btn" style="width:200px; height:80px; margin:10px;" onclick="finalize('KORTTI')">KORTTI</button>
+    function saveC() { db.categories.push(document.getElementById('new-cat').value.toUpperCase()); save(); openAdmin('CATEGORIES'); renderCategories(); }
+    function saveM() { db.members.push({id: document.getElementById('m-id').value, name: document.getElementById('m-name').value}); save(); openAdmin('MEMBERS'); }
+
+    // --- MAKSUVALIKKO (PIKANÄPPÄIMILLÄ) ---
+    function openPaymentMenu() {
+        let t = calculateTotal(); if(t <= 0) return;
+        modalMode = 'PAYMENT';
+        document.getElementById('admin-nav').style.display = "none";
+        document.getElementById('modal-body').innerHTML = `
+            <div style="text-align:center">
+                <h1 style="font-size:3rem">YHTEENSÄ: ${t.toFixed(2)} €</h1>
+                <button class="pay-btn" style="border-left:10px solid var(--success)" onclick="payCash()">KÄTEINEN <span style="background:white; color:black; padding:2px 10px;">1</span></button>
+                <button class="pay-btn" style="border-left:10px solid var(--k-blue)" onclick="payCard()">KORTTIMAKSU <span style="background:white; color:black; padding:2px 10px;">2</span></button>
+                <button class="pay-btn" style="border-left:10px solid var(--k-orange)" onclick="payGift()">LAHJAKORTTI <span style="background:white; color:black; padding:2px 10px;">3</span></button>
+                <button class="pay-btn" style="border-left:10px solid #666" onclick="applyTotalDisc()">KOKOALENNUS % <span style="background:white; color:black; padding:2px 10px;">4</span></button>
+                <p>ESC = Peruuta</p>
             </div>`;
         document.getElementById('modal').style.display = "flex";
     }
 
-    function finalize(m) {
-        let t = cart.reduce((a,b)=>a+(b.voided?0:b.price),0);
-        db.history.push({id: Date.now(), date: new Date().toLocaleString(), total: t, items: [...cart], method: m, member: activeMember});
-        save(); cart = []; activeMember = null; updateReceipt(); closeModal(); alert("Maksu suoritettu!");
+    function payCard() {
+        let t = calculateTotal(); modalMode = 'SIM';
+        const steps = ["ODOTETAAN KORTTIA...", "LUETAAN SIRUA...", "YHDISTETÄÄN...", "HYVÄKSYTTY!"];
+        let i = 0;
+        const interval = setInterval(() => {
+            document.getElementById('modal-body').innerHTML = `<div class="terminal"><h1>${steps[i]}</h1><p>SUMMA: ${t.toFixed(2)} €</p></div>`;
+            if(i++ === steps.length-1) { clearInterval(interval); setTimeout(() => finishSale(t, "KORTTI", "MAKSU HYVÄKSYTTY"), 800); }
+        }, 700);
     }
 
-    function renderProducts() { document.getElementById('products').innerHTML = db.products.filter(p=>p.cat===currentCat).map(p=>`<div class="grid-item" onclick='cart.push({...${JSON.stringify(p)}, voided:false});updateReceipt();'>${p.name}<br>${p.price.toFixed(2)}€</div>`).join(''); }
-    function renderCategories() { document.getElementById('categories').innerHTML = db.categories.map(c=>`<button class="cat-btn ${currentCat===c?'active':''}" onclick="currentCat='${c}';renderCategories();renderProducts();">${c}</button>`).join(''); }
+    function payCash() {
+        let t = calculateTotal();
+        let rounded = (Math.round(t * 20) / 20);
+        let cashInput = input !== "" ? parseFloat(input) : rounded;
+        if(cashInput < rounded) return alert("Liian vähän käteistä!");
+        finishSale(rounded, "KÄTEINEN", `VAIHTORAHA: ${(cashInput - rounded).toFixed(2)} €`);
+    }
+
+    function finishSale(sum, method, label) {
+        db.history.push({date: new Date().toLocaleString(), total: sum, method: method});
+        save();
+        document.getElementById('total-label').innerText = label;
+        saleFinished = true; input = ""; updateDisplay(); closeModal();
+    }
+
+    // --- APUTOIMINNOT ---
+    function calculateTotal() { return cart.reduce((s, i) => s + (i.voided ? 0 : i.price), 0); }
+    function closeModal() { document.getElementById('modal').style.display = "none"; modalMode = null; }
+    function updateDisplay() { document.getElementById('display').innerText = input || "0.00"; }
+    function renderProducts() { document.getElementById('products').innerHTML = db.products.filter(p=>p.cat===currentCat).map(p=>`
+        <div class="grid-item" onclick='addProduct(${JSON.stringify(p)})'>
+            ${p.name}<br>${p.price.toFixed(2)}€
+            ${p.memberPrice > 0 ? `<small>Jäsen: ${p.memberPrice.toFixed(2)}€</small>` : ''}
+        </div>`).join(''); 
+    }
+    function renderCategories() { document.getElementById('categories').innerHTML = db.categories.map(c=>`<button class="cat-btn" style="background:${currentCat===c?'var(--k-orange)':'var(--k-blue)'}" onclick="currentCat='${c}';renderCategories();renderProducts();">${c}</button>`).join(''); }
     function updateReceipt() {
-        let t = cart.reduce((a,b)=>a+(b.voided?0:b.price),0);
-        document.getElementById('receipt-list').innerHTML = cart.map((item, i) => `<div class="receipt-row ${selectedIdx===i?'selected':''} ${item.voided?'voided':''}" onclick="selectedIdx=${i};updateReceipt();"><span>${item.name}</span><span>${item.voided?'0.00':item.price.toFixed(2)}€</span></div>`).join('');
-        document.getElementById('total-val').innerText = t.toFixed(2);
-        document.getElementById('current-member-name').innerText = activeMember ? "JÄSEN: " + activeMember.name : "EI JÄSENTÄ";
+        document.getElementById('receipt-list').innerHTML = cart.map((item, i) => `<div class="receipt-row ${selectedIdx===i?'selected':''} ${item.voided?'voided':''}" onclick="selectedIdx=${i};updateReceipt();"><span>${item.name}</span><span>${item.price.toFixed(2)}€</span></div>`).join('');
+        document.getElementById('total-val').innerText = calculateTotal().toFixed(2);
+        document.getElementById('cur-mem').innerText = activeMember ? "JÄSEN: " + activeMember.name : "EI JÄSENTÄ";
+    }
+    function btnP(k) {
+        if(saleFinished) { cart = []; activeMember = null; saleFinished = false; document.getElementById('total-label').innerText = "YHTEENSÄ"; }
+        if(k==='C') input = "";
+        else if(k==='ENT') { 
+            let p=db.products.find(x=>x.ean===input || x.id===input); 
+            if(p) addProduct(p); 
+            input=""; 
+        }
+        else input += k;
+        updateDisplay();
     }
     function renderNumpad() { document.getElementById('numpad').innerHTML = ['7','8','9','C','4','5','6','-','1','2','3','+','0',',','.','ENT'].map(k=>`<button class="f-btn" style="height:50px" onclick="btnP('${k}')">${k}</button>`).join(''); }
-    function btnP(k) { if(k==='C') input=""; else if(k==='ENT') { let p=db.products.find(x=>x.id===input); if(p) {cart.push({...p, voided:false}); updateReceipt(); input="";} } else input+=k; updateDisplay(); }
-    function updateDisplay() { document.getElementById('display').innerText = input || "0.00"; }
-    function closeModal() { document.getElementById('modal').style.display = "none"; }
+    function voidRow() { if(selectedIdx > -1) { cart[selectedIdx].voided = !cart[selectedIdx].voided; updateReceipt(); } }
+    function resetCart() { cart = []; activeMember = null; updateReceipt(); }
 </script>
 </body>
 </html>
